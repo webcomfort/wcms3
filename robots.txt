@@ -1,0 +1,9 @@
+User-agent: Yandex
+Disallow: /search
+Host: site.ru
+Clean-param: utm_source&utm_medium&utm_term&utm_content&utm_campaign&_openstat&_from&from
+
+User-agent: *
+Disallow: /search
+
+Sitemap: http://site.ru/sitemap.xml

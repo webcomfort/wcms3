@@ -1,0 +1,57 @@
+<IfModule mod_rewrite.c>
+
+DirectoryIndex index.php
+RewriteEngine on
+
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ http://%1%{REQUEST_URI} [R=301,QSA,NC,L]
+
+RewriteRule ^index$ / [R=301,NC,L]
+
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.php\ HTTP/
+RewriteRule ^index\.php$ / [R=301,L]
+
+RewriteCond $1 !^(index\.php|public|robots\.txt|favicon\.ico)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ ./index.php/$1 [L,QSA]
+
+</IfModule>
+
+<IfModule mod_mime.c>
+    AddType application/javascript          js
+    AddType application/vnd.ms-fontobject   eot
+    AddType application/x-font-ttf          ttf ttc
+    AddType font/opentype                   otf
+    AddType application/x-font-woff         woff
+    AddType image/svg+xml                   svg svgz
+    AddEncoding gzip                        svgz
+</Ifmodule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css application/json
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE text/xml application/xml text/x-component
+    AddOutputFilterByType DEFLATE application/xhtml+xml application/rss+xml application/atom+xml
+    AddOutputFilterByType DEFLATE image/x-icon image/svg+xml application/vnd.ms-fontobject application/x-font-ttf font/opentype
+</Ifmodule>
+
+# Включаем кэш в браузерах посетителей
+<ifModule mod_headers.c>
+    # Все html и htm файлы будут храниться в кэше браузера один день
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "max-age=43200"
+    </FilesMatch>
+    # Все css, javascript и текстовые файлы будут храниться в кэше браузера одну неделю
+    <FilesMatch "\.(js|css|txt)$">
+        Header set Cache-Control "max-age=604800"
+    </FilesMatch>
+    # Все флэш файлы и изображения будут храниться в кэше браузера один месяц
+    <FilesMatch "\.(flv|swf|ico|gif|jpg|jpeg|png|svg|svgz)$">
+        Header set Cache-Control "max-age=2592000"
+    </FilesMatch>
+    # Отключаем кеширование php и других служебных файлов
+    <FilesMatch "\.(pl|php|cgi|spl|scgi|fcgi)$">
+        Header unset Cache-Control
+    </FilesMatch>
+</IfModule>
