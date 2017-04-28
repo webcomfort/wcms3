@@ -12,6 +12,7 @@ class Adm_pages extends CI_Model {
         parent::__construct();
         $this->load->helper( array('string') );
         $this->load->model('Cms_inclusions');
+        $this->load->model('Cms_articles');
     }
 
     // ------------------------------------------------------------------------
@@ -24,10 +25,6 @@ class Adm_pages extends CI_Model {
 	 */
     function get_meta()
     {
-        if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
-        elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
-        else $id = 0;
-
         $meta = '<script>
         $(document).ready(function() {
 
@@ -44,10 +41,6 @@ class Adm_pages extends CI_Model {
             $(\'#PME_data_page_url\').keyup(function(){
                 check_availability();
             });
-
-            get_page_fields();
-
-            $(\'#PME_data_page_view_id\').change(function() { get_page_fields(); });
             
         });
 
@@ -84,14 +77,6 @@ class Adm_pages extends CI_Model {
                     }
                 });
             }
-        }
-
-        function get_page_fields(){
-            var tpl = $(\'#PME_data_page_view_id\').val();
-            $.post(\'/adm_pages/p_page_articles\', { tpl: tpl, id: "'.$id.'", '.$this->security->get_csrf_token_name().': "'.$this->security->get_csrf_hash().'" }, function(result){
-                $(\'#page_articles_area\').empty();
-                $(\'#page_articles_area\').append(result);
-            });
         }
 
         </script>';
@@ -216,124 +201,17 @@ class Adm_pages extends CI_Model {
      * @access  public
      * @return  string
      */
-    function p_page_articles()
+    function get_articles()
     {
         $rights = $this->cms_user->get_user_rights();
 
         if ( is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
         {
-            $views  = $this->config->item('cms_site_views');
-            $num    = $views[$this->input->post('tpl', TRUE)]['text'];
-            $fields = '';
+            if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
+            elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
+            else $id = 0;
 
-            for ($i = 1; $i <= $num; $i++)
-            {
-                $fields .= '<div class="article-div" data-id="'.$i.'">';
-                $fields .= '<div class="article-buttons-div">
-<button class="btn btn-primary btn-xs article-button-plus" data-id="'.$i.'" title="Добавить еще блок"><span class="glyphicon glyphicon-plus"></span></button>
-<button class="btn btn-default btn-xs article-button-move article-button-up" data-id="'.$i.'" title="Наверх"><span class="glyphicon glyphicon-chevron-up"></span></button>
-<button class="btn btn-default btn-xs article-button-move article-button-down" data-id="'.$i.'"  title="Вниз"><span class="glyphicon glyphicon-chevron-down"></span></button>
-<button class="btn btn-default btn-xs article-button-remove" data-id="'.$i.'" title="Удалить"><span class="glyphicon glyphicon-remove"></span></button>
-</div>';
-                if ($this->input->post('id', TRUE) == 0)
-                {
-                    $fields .= '<textarea name="page_article_'.$i.'"></textarea><script>CKEDITOR.replace(\'page_article_'.$i.'\');</script>';
-                }
-                else
-                {
-                    $this->db->select('article_text');
-                    $this->db->where('article_page_id', $this->input->post('id', TRUE));
-                    $this->db->where('article_id', $i);
-                    $query = $this->db->get('w_pages_articles');
-
-                    if ($query->num_rows() > 0)
-                    {
-                        $row = $query->row();
-                        $fields .= '<textarea name="page_article_'.$i.'">'.$row->article_text.'</textarea><script>CKEDITOR.replace(\'page_article_'.$i.'\');</script>';
-                    }
-                    else
-                    {
-                        $fields .= '<textarea name="page_article_'.$i.'"></textarea><script>CKEDITOR.replace(\'page_article_'.$i.'\');</script>';
-                    }
-                }
-                $fields .= '</div>';
-            }
-
-            $fields .= '<script>
-
-function firstAndLast(container) {
-    if (!container) {
-        return false;
-    }
-    else {
-        container.find(\'button:disabled\').prop(\'disabled\', false);
-        container.find(\'button.article-button-up:first\').prop(\'disabled\', true);
-        container.find(\'button.article-button-down:last\').prop(\'disabled\', true);
-    }
-}
-
-function getMaximum() {
-    var maximum = null;
-
-    $(\'.article-div\').each(function() {
-        var value = parseFloat($(this).data(\'id\'));
-        maximum = (value > maximum) ? value : maximum;
-    });
-    
-    return maximum;
-}
-
-firstAndLast($(\'#page_articles_area\'));
-
-$(document).on(\'click\', \'.article-button-move\', function(e) {
-    e.preventDefault();
-
-    var parent = $(this).closest(\'.article-div\');
-    var id = parent.data(\'id\');
-    var grandparent = $(\'#page_articles_area\');
-    var editor = \'page_article_\'+id;
-
-    if ($(this).hasClass(\'article-button-up\')) {
-        CKEDITOR.instances[editor].destroy();
-        parent.insertBefore(parent.prev(\'.article-div\'));
-        CKEDITOR.replace(editor);
-        firstAndLast(grandparent);
-    }
-    else if ($(this).hasClass(\'article-button-down\')) {
-        CKEDITOR.instances[editor].destroy();
-        parent.insertAfter(parent.next(\'.article-div\'));
-        CKEDITOR.replace(editor);
-        firstAndLast(grandparent);
-    }
-});
-        
-$(document).on(\'click\', \'.article-button-plus\', function(e) {
-    e.preventDefault();
-    var grandparent = $(\'#page_articles_area\');
-    var parent = $(this).closest(\'.article-div\');    
-    var id = parent.data(\'id\');
-    var maxId = getMaximum();
-    var nextId = maxId + 1;
-    var article = \'<div class="article-div" data-id="\'+nextId+\'">\' +
-    \'<div class="article-buttons-div"><button class="btn btn-primary btn-xs article-button-plus" data-id="\'+nextId+\'" title="Добавить еще блок"><span class="glyphicon glyphicon-plus"></span></button><button class="btn btn-default btn-xs article-button-move article-button-up" data-id="\'+nextId+\'" title="Наверх"><span class="glyphicon glyphicon-chevron-up"></span></button><button class="btn btn-default btn-xs article-button-move article-button-down" data-id="\'+nextId+\'"  title="Вниз"><span class="glyphicon glyphicon-chevron-down"></span></button><button class="btn btn-default btn-xs article-button-remove" data-id="\'+nextId+\'" title="Удалить"><span class="glyphicon glyphicon-remove"></span></button></div>\' +
-    \'<textarea name="page_article_\'+nextId+\'"></textarea>\' +
-     \'</div>\';
-    
-    $( article ).insertBefore(parent);
-    CKEDITOR.replace(\'page_article_\'+nextId);
-    firstAndLast(grandparent);
-});
-    
-$(document).on(\'click\', \'.article-button-remove\', function(e) {
-    e.preventDefault();
-    var grandparent = $(\'#page_articles_area\');
-    var parent = $(this).closest(\'.article-div\');
-    parent.remove();
-    firstAndLast(grandparent);
-});
-</script>';
-
-            echo $fields;
+            return $this->Cms_articles->get_article_editors($id, 'pages');
         }
     }
 
@@ -678,8 +556,8 @@ $(document).on(\'click\', \'.article-button-remove\', function(e) {
             'name'          => 'Тексты',
             'nodb'          => true,
             'options'       => 'ACP',
-            'add_display'   => '<div id="page_articles_area"></div>',
-            'change_display'=> '<div id="page_articles_area"></div>',
+            'add_display'   => $this->get_articles(),
+            'change_display'=> $this->get_articles(),
             'sort'          => false,
             'help'          => 'Заполните поля требуемыми текстами. На сайт они будут выводится по следующему порядку: справа-налево и сверху-вниз.'
         );

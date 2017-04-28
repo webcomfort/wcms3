@@ -12,10 +12,7 @@ $('#contacts_form').on('submit', function (e) {
             var json = $.parseJSON(result);
             $("#contacts_error").html(json.error);
             if(json.error_code == '2') {
-                $("#contacts_email").val('');
-                $("#contacts_name").val('');
-                $("#contacts_subject").val('');
-                $("#contacts_message").val('');
+                $("#contacts_form")[0].reset();
             }
         },
         error: function () {

@@ -139,10 +139,11 @@ td.pme-tab-selected a { text-decoration: none; }
 .select2-container .select2-selection--single .select2-selection__rendered { white-space: normal; }
 
 /*----------  2.7. Pages  ----------*/
-.article-div { position: relative; background-color: #e9e9e9; border: #dbdbdb 1px solid; padding: 35px 20px 20px 20px; margin-bottom: 10px; }
-.article-buttons-div { position: absolute; top: 5px; right: 20px; }
+.article-div { position: relative; background-color: #e9e9e9; border: #dbdbdb 1px solid; padding: 50px 20px 20px 20px; margin-bottom: 10px; }
+.article-buttons-div { position: absolute; top: 10px; right: 20px; }
 .article-buttons-div button { margin-right: 3px; }
-.article-name-div { position: absolute; top: 5px; left: 20px; }
+.article-selects-div { position: absolute; top: 10px; left: 20px; }
+.article-selects-div select { padding: 3px; max-width: 200px; }
 
 
 /*=================================
