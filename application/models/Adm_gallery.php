@@ -10,7 +10,6 @@ class Adm_gallery extends CI_Model {
     {
         if($this->input->post('PME_sys_rec', TRUE) === '0' || $this->input->post('PME_sys_savecopy', TRUE) || $this->input->post('PME_sys_savedelete', TRUE)) header ('Location: /admin/'.$this->uri->segment(2));
         parent::__construct();
-        $this->config->load('cms_gallery');
     }
 
     // ------------------------------------------------------------------------

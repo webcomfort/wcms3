@@ -8,15 +8,7 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
-                        <?php echo @$page_article_1; ?>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6">
-                        <?php echo @$page_article_2; ?>
-                    </div>
-                    <div class="col-xs-6">
-                        <?php echo @$page_article_3; ?>
+                        <?php echo @$page_articles; ?>
                     </div>
                 </div>
             </div>

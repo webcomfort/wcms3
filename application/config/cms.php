@@ -46,6 +46,9 @@ $config['cms_lang'] = array(
 |--------------------------------------------------------------------------
 */
 
+// Фоны
+$config['cms_bg_dir'] = '/public/upload/backgrounds/';
+
 // Меню
 $config['cms_site_menues'] = array(
     '1' => array(
@@ -63,23 +66,32 @@ $config['cms_site_views'] = array(
     '1' => array(
         'file'      => 'page_default',
         'name'      => 'Макет для регулярной страницы с меню второго уровня и последними новостями',
-        'text'      => 1,
         'header'    => 'page_header',
         'footer'    => 'page_footer'
     ),
     '3' => array(
         'file'      => 'page_default_wide',
         'name'      => 'Макет для регулярной страницы на всю ширину',
-        'text'      => 1,
         'header'    => 'page_header',
         'footer'    => 'page_footer'
     ),
     '2' => array(
         'file'      => 'page_index',
         'name'      => 'Макет для главной страницы',
-        'text'      => 3,
         'header'    => 'page_header',
         'footer'    => 'page_footer'
+    )
+);
+
+// Макеты статей
+$config['cms_article_views'] = array(
+    '1' => array(
+        'file'      => 'article_default',
+        'name'      => 'Стандартный макет для статьи'
+    ),
+    '2' => array(
+        'file'      => 'article_with_bg',
+        'name'      => 'Макет с фоном для статьи'
     )
 );
 
@@ -121,6 +133,78 @@ $config['cms_site_inclusions'] = array(
         'where'         => array('pages', 'news'),
         'add_code'      => '<a class="btn btn-primary btn-inc" href="#" role="button" data-toggle="modal" data-target="#GalleryModal">Создать</a>',
         'modal_code'    => 'admin/inc_gallery'
+    )
+);
+
+/*
+|--------------------------------------------------------------------------
+| Баннеры
+|--------------------------------------------------------------------------
+*/
+$config['cms_banners_dir'] = '/public/upload/special/';
+$config['cms_banners_views'] = array(
+    '1' => array(
+        'name'      => 'По умолчанию',
+        'view'      => 'banner_default' // макет баннера
+    )
+);
+$config['cms_banners_places'] = array(
+    '1' => array(
+        'name'      => 'Первый баннер под большим слайдером на главной',
+        'list'      => false,
+        'class'     => false,
+        'view'      => 'banner_xxx' // макет списка
+    )
+);
+
+/*
+|--------------------------------------------------------------------------
+| Галереи и фотографии
+|--------------------------------------------------------------------------
+*/
+$config['cms_gallery_dir'] = '/public/upload/gallery/';
+$config['cms_gallery_views'] = array(
+    '1' => array(
+        'file'  => 'gallery_index',
+        'name'  => 'Слайдер',
+        'img'   => array(
+            '_thumb' => array(
+                'width'     => 150,
+                'height'    => 0,
+                'class'     => '',
+                'rel'       => ''
+            ),
+            '_big' => array(
+                'width'     => 750,
+                'height'    => 400,
+                'class'     => '',
+                'rel'       => ''
+            )
+        )
+    )
+);
+
+/*
+|--------------------------------------------------------------------------
+| Новости
+|--------------------------------------------------------------------------
+*/
+$config['cms_news_limit'] = 3;
+$config['cms_news_dir'] = '/public/upload/news/';
+$config['cms_news_images'] = array(
+    '_thumb' => array(
+        'width'     => 300,
+        'height'    => 0
+    ),
+    '_big' => array(
+        'width'     => 1140,
+        'height'    => 250
+    )
+);
+$config['cms_news_views'] = array(
+    '1' => array(
+        'file'  => 'news_list_default',
+        'name'  => 'Базовый макет ленты новостей'
     )
 );
 

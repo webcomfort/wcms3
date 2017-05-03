@@ -19,9 +19,12 @@ class Cms_articles extends CI_Model {
      *
      * @access  public
      * @param   int - номер блока
+     * @param   string - статья
+     * @param   int - номер фона
+     * @param   int - номер вида
      * @return  string
      */
-    function p_get_html($id=false, $article='')
+    function p_get_html($id=false, $article='', $bg=0, $view=0)
     {
         if($this->input->get('id', TRUE)) $id = $this->input->get('id', TRUE);
 
@@ -30,16 +33,8 @@ class Cms_articles extends CI_Model {
             $response['div'] = '<div class="article-div" data-id="'.$id.'">';
 
             $response['selects'] = '<div class="article-selects-div">
-            <select name="page_article_view_'.$id.'">
-                <option value="0">Выберите оформление</option>
-                <option value="1">Вариант 1</option>
-                <option value="2">Вариант 2</option>
-            </select>
-            <select name="page_article_bg_'.$id.'">
-                <option value="0">Выберите фон</option>
-                <option value="1">Вариант 1</option>
-                <option value="2">Вариант 2</option>
-            </select>
+            '.form_dropdown('page_article_view_'.$id, $this->_get_article_views(), $view).'
+            '.form_dropdown('page_article_bg_'.$id, $this->_get_article_bg(), $bg).'
             </div>';
 
             $response['buttons'] = '<div class="article-buttons-div">
@@ -70,7 +65,7 @@ class Cms_articles extends CI_Model {
         $i = 1;
         $fields = '';
 
-        $this->db->select('article_text');
+        $this->db->select('article_text, article_bg_id, article_view_id');
         $this->db->where('article_pid', $id);
         $this->db->where('article_pid_type', $type);
         $this->db->order_by('article_order', 'ASC');
@@ -80,7 +75,7 @@ class Cms_articles extends CI_Model {
         {
             foreach ($query->result() as $row)
             {
-                $html = $this->p_get_html($i, $row->article_text);
+                $html = $this->p_get_html($i, $row->article_text, $row->article_bg_id, $row->article_view_id);
 
                 $fields .= $html['div'];
                 $fields .= $html['selects'];
@@ -104,6 +99,106 @@ class Cms_articles extends CI_Model {
             $fields .= '</div>';
         }
 
-        return $fields;
+        return '<div id="articles_area">'.$fields.'</div>';
+    }
+
+    /**
+     * Массив макетов для формирования выпадающего списка
+     *
+     * @access	private
+     * @return	array
+     */
+
+    function _get_article_views()
+    {
+        $views  = $this->config->item('cms_article_views');
+
+        foreach ($views as $key => $value)
+        {
+            $val_arr[$key] = $value['name'];
+        }
+
+        return $val_arr;
+    }
+
+    /**
+     * Массив фонов для формирования выпадающего списка
+     *
+     * @access	private
+     * @return	array
+     */
+
+    function _get_article_bg()
+    {
+        $val_arr[0] = 'Выберите фон';
+
+        $this->db->select('bg_id, bg_name');
+        $this->db->where('bg_active', 1);
+        $this->db->order_by('bg_name', 'ASC');
+        $query = $this->db->get('w_backgrounds');
+
+        if ($query->num_rows() > 0)
+        {
+            foreach ($query->result() as $row) {
+
+                $val_arr[$row->bg_id] =$row->bg_name;
+            }
+        }
+
+        return $val_arr;
+    }
+
+    /**
+     * Статьи на вывод
+     *
+     * @access  public
+     * @param   int
+     * @return  array
+     */
+    function get_articles($id, $type='pages')
+    {
+        $articles = '';
+        $views = $this->config->item('cms_article_views');
+
+        $this->db->select('article_id, article_bg_id, article_view_id, article_text');
+        $this->db->where('article_pid', $id);
+        $this->db->where('article_pid_type', $type);
+        $this->db->order_by('article_order', 'asc');
+        $query = $this->db->get('w_pages_articles');
+
+        if ($query->num_rows() > 0)
+        {
+            $this->load->library('parser');
+
+            foreach ($query->result() as $row)
+            {
+                $text = $this->parser->parse_modules($row->article_text);
+                $view = $views[$row->article_view_id]['file'];
+                $data['article_text'] = $text;
+                $data['article_bg'] = $this->_get_bg($row->article_bg_id);
+                if ($view) $articles .= $this->load->view('site/'.$view, $data, true);
+            }
+
+            return $articles;
+        }
+        else
+        {
+            return $articles;
+        }
+    }
+
+    /**
+     * Фон
+     *
+     * @access  public
+     * @param   int
+     * @return  array
+     */
+    function _get_bg($id)
+    {
+        $iid = ceil(intval($id)/1000);
+        $path = FCPATH.substr($this->config->item('cms_bg_dir'), 1).$iid.'/'.$id.'.jpg';
+        $url  = $this->config->item('cms_bg_dir').$iid.'/'.$id.'.jpg';
+        if (is_file ($path)) return $url;
     }
 }

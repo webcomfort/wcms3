@@ -2,6 +2,58 @@
 
 /*
 |--------------------------------------------------------------------------
+| Контакты
+|--------------------------------------------------------------------------
+*/
+$lang['contacts_title']     = 'Send the message';
+$lang['contacts_name']      = 'Name';
+$lang['contacts_email']     = 'Email';
+$lang['contacts_message']   = 'Message';
+$lang['contacts_captcha']   = 'Captcha';
+$lang['contacts_submit']    = 'Send message';
+$lang['contacts_subject']   = 'Letter from the websites contact form '.$_SERVER["HTTP_HOST"];
+$lang['contacts_required_error']    = 'Please, fill in message field';
+$lang['contacts_email_error']       = 'Not valid email';
+$lang['contacts_captcha_error']     = 'Not valid captcha';
+$lang['contacts_send_error']        = 'Message was not sent!';
+$lang['contacts_success'] = 'Thank you, your message was sent. We will reply you shortly!';
+
+/*
+|--------------------------------------------------------------------------
+| Новости
+|--------------------------------------------------------------------------
+*/
+$lang['news_latest_link']   = 'Read all news';
+$lang['news_content_link']  = 'Back to the news list';
+$lang['news_page']          = 'page';
+$lang['news_404']           = 'Page was not found!';
+
+/*
+|--------------------------------------------------------------------------
+| Постраничная разбивка
+|--------------------------------------------------------------------------
+*/
+$lang['pagination_first_link'] = '&laquo; First';
+$lang['pagination_last_link'] = 'Last &raquo;';
+$lang['pagination_next_link'] = 'Next';
+$lang['pagination_prev_link'] = 'Prev';
+
+/*
+|--------------------------------------------------------------------------
+| Поиск
+|--------------------------------------------------------------------------
+*/
+$lang['search_phrase']  = 'Enter search words';
+$lang['search_submit']  = 'Search';
+$lang['search_decl_1']  = 'match';
+$lang['search_decl_2']  = 'matches';
+$lang['search_decl_3']  = 'matches';
+$lang['search_result']  = 'Search results for "%s"';
+$lang['search_error']   = 'No match is found.';
+$lang['search_num']     = '%s is found';
+
+/*
+|--------------------------------------------------------------------------
 | Названия полей форм, кнопок и т.д.
 |--------------------------------------------------------------------------
 */
@@ -42,7 +94,7 @@ $lang['cms_user_error_11'] = 'Incorrect access code.';
 $lang['cms_user_reg_conf_subj'] = $_SERVER["HTTP_HOST"].' registration confirmation.';
 
 // После успешной регистрации
-$lang['cms_user_reg_subj'] = 'New account registration for '.$_SERVER["HTTP_HOST"].;
+$lang['cms_user_reg_subj'] = 'New account registration for '.$_SERVER["HTTP_HOST"];
 
 // Подтверждение сброса пароля
 $lang['cms_user_rem_conf_subj'] = 'Password reset link for '.$_SERVER["HTTP_HOST"];

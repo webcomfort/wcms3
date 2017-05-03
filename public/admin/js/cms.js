@@ -62,14 +62,14 @@ $(document).ready(function () {
         });
     }
 
-    firstAndLast($('#page_articles_area'));
+    firstAndLast($('#articles_area'));
 
     $(document).on('click', '.article-button-move', function(e) {
         e.preventDefault();
 
         var parent = $(this).closest('.article-div');
         var id = parent.data('id');
-        var grandparent = $('#page_articles_area');
+        var grandparent = $('#articles_area');
         var editor = 'page_article_'+id;
 
         if ($(this).hasClass('article-button-up')) {
@@ -90,7 +90,7 @@ $(document).ready(function () {
 
     $(document).on('click', '.article-button-plus', function(e) {
         e.preventDefault();
-        var grandparent = $('#page_articles_area');
+        var grandparent = $('#articles_area');
         var parent = $(this).closest('.article-div');
         var id = parent.data('id');
         var maxId = getMaximum();
@@ -118,7 +118,7 @@ $(document).ready(function () {
 
     $(document).on('click', '.article-button-remove', function(e) {
         e.preventDefault();
-        var grandparent = $('#page_articles_area');
+        var grandparent = $('#articles_area');
         var parent = $(this).closest('.article-div');
         parent.remove();
         firstAndLast(grandparent);

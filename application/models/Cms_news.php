@@ -10,9 +10,6 @@ class Cms_news extends CI_Model {
     function __construct()
     {
         parent::__construct();
-
-        $this->config->load('cms_news');
-        if (defined('LANGF')) $this->lang->load('cms_news', LANGF);
         $this->load->helper(array('html'));
     }
 
@@ -86,11 +83,12 @@ class Cms_news extends CI_Model {
     {
         $thumbs = $this->config->item('cms_news_images');
         $images = array();
+        $iid = ceil(intval($id)/1000);
 
         foreach ($thumbs as $key => $value)
         {
-            $path = FCPATH.substr($this->config->item('cms_news_dir'), 1).$id.$key.'.jpg';
-            $url  = substr($this->config->item('cms_news_dir'), 1).$id.$key.'.jpg';
+            $path = FCPATH.substr($this->config->item('cms_news_dir'), 1).$iid.'/'.$id.$key.'.jpg';
+            $url  = substr($this->config->item('cms_news_dir'), 1).$iid.'/'.$id.$key.'.jpg';
 
             if (is_file ($path))
             {

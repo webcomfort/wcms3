@@ -23,42 +23,6 @@ class Cms_page extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-     * Тексты
-     *
-     * @access  public
-     * @param   int
-     * @return  array
-     */
-    function get_articles($id)
-    {
-        $data = array();
-
-        $this->db->select('article_id, article_text');
-        $this->db->where('article_page_id', $id);
-        $this->db->order_by('article_id', 'asc');
-        $query = $this->db->get('w_pages_articles');
-
-        if ($query->num_rows() > 0)
-        {
-            $this->load->library('parser');
-
-            foreach ($query->result() as $row)
-            {
-                $text = $this->parser->parse_modules($row->article_text);
-                $data['page_article_'.$row->article_id] = $text;
-            }
-
-            return $data;
-        }
-        else
-        {
-            return $data;
-        }
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
      * Получение настройки
      *
      * @access  public

@@ -1,0 +1,1 @@
+<div style="padding: 20px; color: #fff; background-image:url(<?php echo $article_bg; ?>);"><?php echo $article_text; ?></div>

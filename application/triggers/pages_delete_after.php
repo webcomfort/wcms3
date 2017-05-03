@@ -37,13 +37,13 @@ if($this->CI->config->item('cms_site_indexing'))
 // ------------------------------------------------------------------------
 // Удаление статей
 
-$query = $this->CI->db->get_where('w_pages_articles', array('article_page_id' => $id));
+$query = $this->CI->db->get_where('w_pages_articles', array('article_pid' => $id, 'article_pid_type' => 'pages'));
 
 if ($query->num_rows() > 0)
 {
     foreach ($query->result() as $row)
     {
-        $this->CI->trigger->delete_relative($row->pa_id, $last_basket_element, 'w_pages_articles', 'pa_id', 'Статья', '');
+        $this->CI->trigger->delete_relative($row->article_id, $last_basket_element, 'w_pages_articles', 'article_id', 'Статья', '');
     }
 }
 

@@ -151,6 +151,7 @@ class Page extends CI_Controller {
         // Вспомогательные функции
         $this->load->model('Cms_page');
         $this->load->model('Cms_inclusions');
+        $this->load->model('Cms_articles');
 
         // Установка id активной страницы
         define('PAGE_ID', $params->page_id);
@@ -166,6 +167,8 @@ class Page extends CI_Controller {
 
         define('LANG', $params->page_lang_id);
         define('LANGF', $langs[$params->page_lang_id]['folder']);
+
+        $this->lang->load('cms', $langs[$params->page_lang_id]['folder']);
 
         // Макеты
         $views      = $this->config->item('cms_site_views');
@@ -185,7 +188,7 @@ class Page extends CI_Controller {
         $data['page_name'] = $params->page_name;
 
         // Тексты
-        $data = array_merge_recursive((array)$data, (array)$this->Cms_page->get_articles($params->page_id));
+        $data['page_articles'] = $this->Cms_articles->get_articles($params->page_id, 'pages');
 
         // Подключения
         $data = array_merge_recursive((array)$data, (array)$this->Cms_inclusions->get_inclusions($params->page_id, 'pages'));

@@ -31,7 +31,6 @@ class Mod_gallery extends CI_Model {
         if ($query->num_rows() > 0)
         {
             $row = $query->row();
-            $this->config->load('cms_gallery');
             $views = $this->config->item('cms_gallery_views');
             $view_id = $row->gallery_view_id;
             $view = $views[$view_id]['file'];
@@ -49,8 +48,9 @@ class Mod_gallery extends CI_Model {
                 {
                     foreach ($views[$view_id]['img'] as $key => $value)
                     {
-                        $path = FCPATH.substr($this->config->item('cms_gallery_dir'), 1).$row->photo_id.$key.'.jpg';
-                        $url  = substr($this->config->item('cms_gallery_dir'), 1).$row->photo_id.$key.'.jpg';
+                        $iid = ceil(intval($row->photo_id)/1000);
+                        $path = FCPATH.substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.$key.'.jpg';
+                        $url  = substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.$key.'.jpg';
 
                         if (is_file ($path))
                         {

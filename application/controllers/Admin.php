@@ -16,7 +16,7 @@ class Admin extends CI_Controller {
         $this->lang_array = $this->config->item('cms_lang');
 
         // Язык для модуля cms_user (берем системный)
-        $this->lang->load('cms_user');
+        $this->lang->load('cms');
 
         // ------------------------------------------------------------------------
 

@@ -27,7 +27,6 @@ class Mod_news_latest extends CI_Model {
         $id         = (isset($params[0])) ? $params[0] : false;
         $limit      = (isset($params[1])) ? $params[1] : 3;
         $view       = (isset($params[2])) ? $params[2] : false;
-        $page_url   = $this->Cms_news->get_news_page($id);
         $cat        = $this->Cms_news->get_cat_params($id);
         $cat_name   = $cat['name'];
 
@@ -56,7 +55,7 @@ class Mod_news_latest extends CI_Model {
                 $news[] = array(
                     'news_id'   => $row->news_id,
                     'news_name' => $row->news_name,
-                    'news_url'  => '/'.$page_url.'/'.$row->news_url,
+                    'news_url'  => '/post/'.$row->news_url,
                     'news_date' => date_format_rus ( $row->news_date, 'date' ),
                     'news_cut'  => $row->news_cut,
                     'news_img'  => $this->Cms_news->get_img($row->news_id, $row->news_name)

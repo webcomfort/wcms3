@@ -23,8 +23,6 @@ class Mod_banner extends CI_Model {
      */
     function get_output($params = array())
     {
-        $this->config->load('cms_banners');
-
         $id      = $params[0];
         $places  = $this->config->item('cms_banners_places');
         $views   = $this->config->item('cms_banners_views');

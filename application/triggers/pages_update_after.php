@@ -33,6 +33,17 @@ $data = array(
 
 $this->CI->db->insert('w_changelog', $data);
 
+$last_basket_element = $this->CI->trigger->get_last_basket_element();
+
+// --------------------------------------------------------------------
+
+$this->CI->db->select('article_id');
+$this->CI->db->where('article_pid', $id);
+$this->CI->db->where('article_pid_type', 'pages');
+$query = $this->CI->db->get('w_pages_articles');
+$total = $query->num_rows();
+$i = 0;
+
 foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 {
     unset($data);
@@ -40,41 +51,68 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
     // --------------------------------------------------------------------
 	// Статьи
 
-    if (preg_match("/^page_article_([1-9][0-9]*)$/", $key, $matches))
+    if (preg_match("/^page_article_order_([1-9][0-9]*)$/", $key, $matches))
 	{
-		$this->CI->db->select('pa_id, article_text');
-        $this->CI->db->where('article_page_id', $id);
-        $this->CI->db->where('article_id', $matches[1]);
+        $this->CI->db->select('article_id');
+        $this->CI->db->where('article_pid', $id);
+        $this->CI->db->where('article_pid_type', 'pages');
+        $this->CI->db->where('article_order', $value);
         $query = $this->CI->db->get('w_pages_articles');
 
 		if ($query->num_rows() > 0)
 		{
 			$row = $query->row();
 
-            $this->CI->trigger->change_relative ($row->pa_id, $this->CI->trigger->get_last_basket_element(), 'w_pages_articles', 'pa_id', 'article_text', 'Изменение статей на странице ', $oldvals['page_name']);
+            $this->CI->trigger->change_relative ($row->article_id, $last_basket_element, 'w_pages_articles', 'article_id', 'article_text', 'Изменение статей на странице ', $oldvals['page_name']);
 
-			$data = array( 'article_text' => $value );
-			$this->CI->db->where('pa_id', $row->pa_id);
-			$this->CI->db->update('w_pages_articles', $data);
+            $data = array(
+                'article_order'     => $value,
+                'article_bg_id'     => $this->CI->input->post('page_article_bg_'.$matches[1]),
+                'article_view_id'   => $this->CI->input->post('page_article_view_'.$matches[1]),
+                'article_text'      => $this->CI->input->post('page_article_'.$matches[1])
+            );
+            $this->CI->db->where('article_id', $row->article_id);
+            $this->CI->db->update('w_pages_articles', $data);
 		}
 		else
 		{
-			$data = array(
-				'pa_id' 			=> '',
-				'article_page_id'	=> $id,
-				'article_id' 		=> $matches[1],
-				'article_text' 		=> $this->CI->input->post($key)
-			);
+            $data = array(
+                'article_id' 		=> '',
+                'article_pid'	    => $id,
+                'article_pid_type'  => 'pages',
+                'article_order' 	=> $value,
+                'article_bg_id'     => $this->CI->input->post('page_article_bg_'.$matches[1]),
+                'article_view_id'   => $this->CI->input->post('page_article_view_'.$matches[1]),
+                'article_text' 		=> $this->CI->input->post('page_article_'.$matches[1])
+            );
 
-			$this->CI->db->insert('w_pages_articles', $data);
+            $this->CI->db->insert('w_pages_articles', $data);
 		}
 
 		// Индексирование статей
 		if($this->CI->config->item('cms_site_indexing'))
 		{
-            $articles .= $this->CI->input->post($key);
+            $articles .= $this->CI->input->post('page_article_'.$matches[1]);
 		}
+
+		$i++;
 	}
+}
+
+// Если общее число статей уменьшилось
+if ($total > $i) {
+    for ($j = $i+1; $j <= $total; $j++) {
+        // Удаление лишних статей
+        $query = $this->CI->db->get_where('w_pages_articles', array('article_pid' => $id, 'article_pid_type' => 'pages'));
+
+        if ($query->num_rows() > 0)
+        {
+            foreach ($query->result() as $row)
+            {
+                if($row->article_order == $j) $this->CI->trigger->delete_relative($row->article_id, $last_basket_element, 'w_pages_articles', 'article_id', 'Статья', '');
+            }
+        }
+    }
 }
 
 // Подключения

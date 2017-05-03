@@ -1,19 +1,50 @@
+-- phpMyAdmin SQL Dump
+-- version 4.5.4.1deb2ubuntu2
+-- http://www.phpmyadmin.net
+--
+-- Хост: localhost
+-- Время создания: Май 03 2017 г., 15:09
+-- Версия сервера: 5.7.17-0ubuntu0.16.04.2
+-- Версия PHP: 7.1.4-1+deb.sury.org~xenial+1
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+--
+-- База данных: `wcms3`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_backgrounds`
+--
 
 DROP TABLE IF EXISTS `w_backgrounds`;
 CREATE TABLE `w_backgrounds` (
   `bg_id` int(11) NOT NULL,
   `bg_name` varchar(255) NOT NULL,
-  `bg_active` tinyint(1) NOT NULL DEFAULT '1',
-  `bg_lang_id` int(11) NOT NULL
+  `bg_active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 PACK_KEYS=0;
+
+--
+-- Дамп данных таблицы `w_backgrounds`
+--
+
+INSERT INTO `w_backgrounds` (`bg_id`, `bg_name`, `bg_active`) VALUES
+(1, 'Тестовый фон', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_banners`
+--
 
 DROP TABLE IF EXISTS `w_banners`;
 CREATE TABLE `w_banners` (
@@ -30,8 +61,18 @@ CREATE TABLE `w_banners` (
   `banner_lang_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 PACK_KEYS=0;
 
+--
+-- Дамп данных таблицы `w_banners`
+--
+
 INSERT INTO `w_banners` (`banner_id`, `banner_place_id`, `banner_name`, `banner_active`, `banner_blank`, `banner_code`, `banner_link`, `banner_view_id`, `banner_sort`, `banner_click`, `banner_lang_id`) VALUES
 (1, 1, 'Баннер', 1, 1, '', 'http://yandex.ru', 1, 1369929973, 2, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_changelog`
+--
 
 DROP TABLE IF EXISTS `w_changelog`;
 CREATE TABLE `w_changelog` (
@@ -50,6 +91,33 @@ CREATE TABLE `w_changelog` (
   `newval` blob NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `w_changelog`
+--
+
+INSERT INTO `w_changelog` (`id`, `pid`, `description`, `updated`, `user`, `host`, `operation`, `tab`, `rowkey`, `col`, `files`, `oldval`, `newval`) VALUES
+(1, 0, 'Изменение статей на странице Главная', '2017-05-03 12:51:11', '1', '192.168.10.1', 'update', 'w_pages', '1', '', '', '', ''),
+(2, 1, 'Изменение статей на странице  ""', '2017-05-03 12:51:11', '1', '192.168.10.1', 'update', 'w_pages_articles', '2', 'article_text', '', 0x3c68333ed0a1d0bed186d0b8d0bed0bcd0b5d182d180d0b8d187d0b5d181d0bad0b8d0b520d0b8d0bdd0b2d0b5d181d182d0b8d186d0b8d0bed0bdd0bdd18bd0b520d0bfd180d0bed0b4d183d0bad182d18b733c2f68333e0d0a0d0a3c703ed0a2d0b0d0bad0bed0b520d0bfd0bed0bdd0b8d0bcd0b0d0bdd0b8d0b520d181d0b8d182d183d0b0d186d0b8d0b820d0b2d0bed181d185d0bed0b4d0b8d18220d0ba20d0add0bb20d0a0d0b0d0b9d1812c20d0bfd180d0b820d18dd182d0bed0bc20d181d0bed186d0b8d0b0d0bbd18cd0bdd18bd0b920d181d182d0b0d182d183d18120d0bad0bed0bdd186d0b5d0bdd182d180d0b8d180d183d0b5d18220d0b1d0b0d0b8d0bdd0b320d0b820d181d0b5d0bbd0bbd0b8d0bdd0b32c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e20d098d0bdd182d0b5d180d0b5d181d0bdd0bec2a0d0bed182d0bcd0b5d182d0b8d182d18c2cc2a0d187d182d0be20d0bfd183d0bb20d0bbd0bed18fd0bbd18cd0bdd18bd18520d0b8d0b7d0b4d0b0d0bdd0b8d0b920d0b4d0bed0b2d0bed0bbd18cd0bdd0be20d0bdd0b5d0bed0b4d0bdd0bed0b7d0bdd0b0d187d0b5d0bd2e20d0a0d0b0d0b7d0bcd0b5d189d0b5d0bdd0b8d0b52cc2a0d181d0bbd0b5d0b4d0bed0b2d0b0d182d0b5d0bbd18cd0bdd0be2c20d180d0b5d0b4d0bad0be20d181d0bed0bed182d0b2d0b5d182d181d182d0b2d183d0b5d18220d180d18bd0bdd0bed187d0bdd18bd0bc20d0bed0b6d0b8d0b4d0b0d0bdd0b8d18fd0bc2e20d0a0d0b5d0bad0bbd0b0d0bcd0bdd0b0d18f20d0b7d0b0d181d182d0b0d0b2d0bad0b020d181d0bfd0b5d186d0b8d184d0b8d186d0b8d180d183d0b5d18220d0b8d0bdd0b2d0b5d181d182d0b8d186d0b8d0bed0bdd0bdd18bd0b920d0bfd180d0bed0b4d183d0bad1822c20d0bfd0bed0b2d18bd188d0b0d18f20d0bad0bed0bdd0bad183d180d0b5d0bdd186d0b8d18e2e20d09fd0bed0b2d182d0bed180d0bdd18bd0b920d0bad0bed0bdd182d0b0d0bad18220d0b4d0b5d182d0b5d180d0bcd0b8d0bdd0b8d180d183d0b5d18220d18dd0bcd0bfd0b8d180d0b8d187d0b5d181d0bad0b8d0b920d0bcd0b5d0b4d0b8d0b0d0bfd0bbd0b0d0bd2c20d0bed181d0bed0b7d0bdd0b0d0b220d0bcd0b0d180d0bad0b5d182d0b8d0bdd0b320d0bad0b0d0ba20d187d0b0d181d182d18c20d0bfd180d0bed0b8d0b7d0b2d0bed0b4d181d182d0b2d0b02e20d09dd0b0d0b4d0bec2a0d181d0bad0b0d0b7d0b0d182d18c2cc2a0d187d182d0be20d0bfd0bed0b1d0bed187d0bdd18bd0b92050522dd18dd184d184d0b5d0bad18220d0bdd0b5d0b9d182d180d0b0d0bbd0b8d0b7d183d0b5d18220d18dd0bad181d0bad0bbd18ed0b7d0b8d0b2d0bdd18bd0b920d181d0bed186d0b8d0b0d0bbd18cd0bdd18bd0b920d181d182d0b0d182d183d1812c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e3c2f703e0d0a0d0a3c703e3c696d6720616c743d2222206865696768743d2233373522207372633d222f7075626c69632f7573657266696c65732f62696773746f636b5f5465727261636f7474615f526f6f665f54696c65735f5061747465726e5f343531353730342e6a7067222077696474683d22353030223e3c2f703e0d0a, ''),
+(3, 1, 'Изменение статей на странице  ""', '2017-05-03 12:51:11', '1', '192.168.10.1', 'update', 'w_pages_articles', '18', 'article_text', '', 0x3c68343ed09ad0bed0bdd181d182d180d183d0bad182d0b8d0b2d0bdd18bd0b920d0bfd180d0bed0b4d183d0bad1823c2f68343e0d0a0d0a3c703ed0a6d0b5d0bbd0b5d0b2d0b0d18f20d0b0d183d0b4d0b8d182d0bed180d0b8d18f20d0bfd0b5d180d0b5d0b2d0bed180d0b0d187d0b8d0b2d0b0d0b5d18220d0bad0bed0bcd0bfd0bbd0b5d0bad181d0bdd18bd0b920d0b0d0bdd0b0d0bbd0b8d0b720d181d0b8d182d183d0b0d186d0b8d0b82c20d183d187d0b8d182d18bd0b2d0b0d18f20d180d0b5d0b7d183d0bbd18cd182d0b0d18220d0bfd180d0b5d0b4d18bd0b4d183d189d0b8d18520d0bcd0b5d0b4d0b8d0b02dd0bad0b0d0bcd0bfd0b0d0bdd0b8d0b92e20d092d0b8d0b7d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f20d0bad0bed0bdd186d0b5d0bfd0b8d0b820d181d0b8d0bdd185d180d0bed0bdd0b8d0b7d0b8d180d183d0b5d18220d0bcd0bed0bdd0b8d182d0bed180d0b8d0bdd0b320d0b0d0bad182d0b8d0b2d0bdd0bed181d182d0b82c20d0bed182d0b2d0bed0b5d0b2d18bd0b2d0b0d18f20d181d0b2d0bed18e20d0b4d0bed0bbd18e20d180d18bd0bdd0bad0b02e20d09ad0b0d0ba20d0bfd180d0b5d0b4d181d0bad0b0d0b7d18bd0b2d0b0d18ed18220d184d183d182d183d180d0bed0bbd0bed0b3d0b820d0bad0bbd0b8d0b5d0bdd182d181d0bad0b8d0b920d181d0bfd180d0bed18120d0bfd180d0b8d182d18fd0b3d0b8d0b2d0b0d0b5d18220d0bed0b1d189d0b5d181d182d0b2d0b2d0b5d0bdd0bdd18bd0b920d184d0b8d180d0bcd0b5d0bdd0bdd18bd0b920d181d182d0b8d0bbd18c2c20d183d187d0b8d182d18bd0b2d0b0d18f20d181d0bed0b2d180d0b5d0bcd0b5d0bdd0bdd18bd0b520d182d0b5d0bdd0b4d0b5d0bdd186d0b8d0b82e20d0a2d180d0b0d0b4d0b8d186d0b8d0bed0bdd0bdd18bd0b920d0bad0b0d0bdd0b0d0bb20d180d0b0d0b7d0b2d0b8d0b2d0b0d0b5d18220d0b4d0b8d0bad182d0b0d18220d0bfd0bed182d180d0b5d0b1d0b8d182d0b5d0bbd18f2c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e20d09cd0b0d180d0bad0b5d182d0b8d0bdd0b3d0bed0b2d0b0d18f20d0bad0bed0bcd0bcd183d0bdd0b8d0bad0b0d186d0b8d18f20d0b2d181d0b520d0b5d189d0b520d0b8d0bdd182d0b5d180d0b5d181d0bdd0b020d0b4d0bbd18f20d0bcd0bdd0bed0b3d0b8d1852e20d098d181d185d0bed0b4d18f20d0b8d0b720d181d182d180d183d0bad182d183d180d18b20d0bfd0b8d180d0b0d0bcd0b8d0b4d18b20d09cd0b0d181d0bbd0bed1832c20d0bfd0b5d180d0b5d180d0b0d181d0bfd180d0b5d0b4d0b5d0bbd0b5d0bdd0b8d0b520d0b1d18ed0b4d0b6d0b5d182d0b020d0b8d0bdd0b4d183d0bad182d0b8d0b2d0bdd0be20d0bad0bed0bdd186d0b5d0bdd182d180d0b8d180d183d0b5d18220d181d0b2d18fd0b7d0b0d0bdd0bdd18bd0b920d0bad0bbd0b8d0b5d0bdd182d181d0bad0b8d0b920d181d0bfd180d0bed1812c20d0bed182d0b2d0bed0b5d0b2d18bd0b2d0b0d18f20d180d18bd0bdd0bed187d0bdd18bd0b920d181d0b5d0b3d0bcd0b5d0bdd1822e3c2f703e0d0a, ''),
+(5, 0, 'Изменение статей на странице Главная', '2017-05-03 12:52:01', '1', '192.168.10.1', 'update', 'w_pages', '1', '', '', '', ''),
+(6, 5, 'Изменение статей на странице  ""', '2017-05-03 12:52:01', '1', '192.168.10.1', 'update', 'w_pages_articles', '2', 'article_text', '', 0x3c68333ed0a1d0bed186d0b8d0bed0bcd0b5d182d180d0b8d187d0b5d181d0bad0b8d0b520d0b8d0bdd0b2d0b5d181d182d0b8d186d0b8d0bed0bdd0bdd18bd0b520d0bfd180d0bed0b4d183d0bad182d18b733c2f68333e0d0a0d0a3c703ed0a2d0b0d0bad0bed0b520d0bfd0bed0bdd0b8d0bcd0b0d0bdd0b8d0b520d181d0b8d182d183d0b0d186d0b8d0b820d0b2d0bed181d185d0bed0b4d0b8d18220d0ba20d0add0bb20d0a0d0b0d0b9d1812c20d0bfd180d0b820d18dd182d0bed0bc20d181d0bed186d0b8d0b0d0bbd18cd0bdd18bd0b920d181d182d0b0d182d183d18120d0bad0bed0bdd186d0b5d0bdd182d180d0b8d180d183d0b5d18220d0b1d0b0d0b8d0bdd0b320d0b820d181d0b5d0bbd0bbd0b8d0bdd0b32c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e20d098d0bdd182d0b5d180d0b5d181d0bdd0bec2a0d0bed182d0bcd0b5d182d0b8d182d18c2cc2a0d187d182d0be20d0bfd183d0bb20d0bbd0bed18fd0bbd18cd0bdd18bd18520d0b8d0b7d0b4d0b0d0bdd0b8d0b920d0b4d0bed0b2d0bed0bbd18cd0bdd0be20d0bdd0b5d0bed0b4d0bdd0bed0b7d0bdd0b0d187d0b5d0bd2e20d0a0d0b0d0b7d0bcd0b5d189d0b5d0bdd0b8d0b52cc2a0d181d0bbd0b5d0b4d0bed0b2d0b0d182d0b5d0bbd18cd0bdd0be2c20d180d0b5d0b4d0bad0be20d181d0bed0bed182d0b2d0b5d182d181d182d0b2d183d0b5d18220d180d18bd0bdd0bed187d0bdd18bd0bc20d0bed0b6d0b8d0b4d0b0d0bdd0b8d18fd0bc2e20d0a0d0b5d0bad0bbd0b0d0bcd0bdd0b0d18f20d0b7d0b0d181d182d0b0d0b2d0bad0b020d181d0bfd0b5d186d0b8d184d0b8d186d0b8d180d183d0b5d18220d0b8d0bdd0b2d0b5d181d182d0b8d186d0b8d0bed0bdd0bdd18bd0b920d0bfd180d0bed0b4d183d0bad1822c20d0bfd0bed0b2d18bd188d0b0d18f20d0bad0bed0bdd0bad183d180d0b5d0bdd186d0b8d18e2e20d09fd0bed0b2d182d0bed180d0bdd18bd0b920d0bad0bed0bdd182d0b0d0bad18220d0b4d0b5d182d0b5d180d0bcd0b8d0bdd0b8d180d183d0b5d18220d18dd0bcd0bfd0b8d180d0b8d187d0b5d181d0bad0b8d0b920d0bcd0b5d0b4d0b8d0b0d0bfd0bbd0b0d0bd2c20d0bed181d0bed0b7d0bdd0b0d0b220d0bcd0b0d180d0bad0b5d182d0b8d0bdd0b320d0bad0b0d0ba20d187d0b0d181d182d18c20d0bfd180d0bed0b8d0b7d0b2d0bed0b4d181d182d0b2d0b02e20d09dd0b0d0b4d0bec2a0d181d0bad0b0d0b7d0b0d182d18c2cc2a0d187d182d0be20d0bfd0bed0b1d0bed187d0bdd18bd0b92050522dd18dd184d184d0b5d0bad18220d0bdd0b5d0b9d182d180d0b0d0bbd0b8d0b7d183d0b5d18220d18dd0bad181d0bad0bbd18ed0b7d0b8d0b2d0bdd18bd0b920d181d0bed186d0b8d0b0d0bbd18cd0bdd18bd0b920d181d182d0b0d182d183d1812c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e3c2f703e0d0a0d0a3c703e3c696d6720616c743d2222206865696768743d2233373522207372633d222f7075626c69632f7573657266696c65732f62696773746f636b5f5465727261636f7474615f526f6f665f54696c65735f5061747465726e5f343531353730342e6a7067222077696474683d22353030223e3c2f703e0d0a, ''),
+(7, 5, 'Изменение статей на странице  ""', '2017-05-03 12:52:01', '1', '192.168.10.1', 'update', 'w_pages_articles', '18', 'article_text', '', 0x3c68343ed09ad0bed0bdd181d182d180d183d0bad182d0b8d0b2d0bdd18bd0b920d0bfd180d0bed0b4d183d0bad1823c2f68343e0d0a0d0a3c703ed0a6d0b5d0bbd0b5d0b2d0b0d18f20d0b0d183d0b4d0b8d182d0bed180d0b8d18f20d0bfd0b5d180d0b5d0b2d0bed180d0b0d187d0b8d0b2d0b0d0b5d18220d0bad0bed0bcd0bfd0bbd0b5d0bad181d0bdd18bd0b920d0b0d0bdd0b0d0bbd0b8d0b720d181d0b8d182d183d0b0d186d0b8d0b82c20d183d187d0b8d182d18bd0b2d0b0d18f20d180d0b5d0b7d183d0bbd18cd182d0b0d18220d0bfd180d0b5d0b4d18bd0b4d183d189d0b8d18520d0bcd0b5d0b4d0b8d0b02dd0bad0b0d0bcd0bfd0b0d0bdd0b8d0b92e20d092d0b8d0b7d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f20d0bad0bed0bdd186d0b5d0bfd0b8d0b820d181d0b8d0bdd185d180d0bed0bdd0b8d0b7d0b8d180d183d0b5d18220d0bcd0bed0bdd0b8d182d0bed180d0b8d0bdd0b320d0b0d0bad182d0b8d0b2d0bdd0bed181d182d0b82c20d0bed182d0b2d0bed0b5d0b2d18bd0b2d0b0d18f20d181d0b2d0bed18e20d0b4d0bed0bbd18e20d180d18bd0bdd0bad0b02e20d09ad0b0d0ba20d0bfd180d0b5d0b4d181d0bad0b0d0b7d18bd0b2d0b0d18ed18220d184d183d182d183d180d0bed0bbd0bed0b3d0b820d0bad0bbd0b8d0b5d0bdd182d181d0bad0b8d0b920d181d0bfd180d0bed18120d0bfd180d0b8d182d18fd0b3d0b8d0b2d0b0d0b5d18220d0bed0b1d189d0b5d181d182d0b2d0b2d0b5d0bdd0bdd18bd0b920d184d0b8d180d0bcd0b5d0bdd0bdd18bd0b920d181d182d0b8d0bbd18c2c20d183d187d0b8d182d18bd0b2d0b0d18f20d181d0bed0b2d180d0b5d0bcd0b5d0bdd0bdd18bd0b520d182d0b5d0bdd0b4d0b5d0bdd186d0b8d0b82e20d0a2d180d0b0d0b4d0b8d186d0b8d0bed0bdd0bdd18bd0b920d0bad0b0d0bdd0b0d0bb20d180d0b0d0b7d0b2d0b8d0b2d0b0d0b5d18220d0b4d0b8d0bad182d0b0d18220d0bfd0bed182d180d0b5d0b1d0b8d182d0b5d0bbd18f2c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e20d09cd0b0d180d0bad0b5d182d0b8d0bdd0b3d0bed0b2d0b0d18f20d0bad0bed0bcd0bcd183d0bdd0b8d0bad0b0d186d0b8d18f20d0b2d181d0b520d0b5d189d0b520d0b8d0bdd182d0b5d180d0b5d181d0bdd0b020d0b4d0bbd18f20d0bcd0bdd0bed0b3d0b8d1852e20d098d181d185d0bed0b4d18f20d0b8d0b720d181d182d180d183d0bad182d183d180d18b20d0bfd0b8d180d0b0d0bcd0b8d0b4d18b20d09cd0b0d181d0bbd0bed1832c20d0bfd0b5d180d0b5d180d0b0d181d0bfd180d0b5d0b4d0b5d0bbd0b5d0bdd0b8d0b520d0b1d18ed0b4d0b6d0b5d182d0b020d0b8d0bdd0b4d183d0bad182d0b8d0b2d0bdd0be20d0bad0bed0bdd186d0b5d0bdd182d180d0b8d180d183d0b5d18220d181d0b2d18fd0b7d0b0d0bdd0bdd18bd0b920d0bad0bbd0b8d0b5d0bdd182d181d0bad0b8d0b920d181d0bfd180d0bed1812c20d0bed182d0b2d0bed0b5d0b2d18bd0b2d0b0d18f20d180d18bd0bdd0bed187d0bdd18bd0b920d181d0b5d0b3d0bcd0b5d0bdd1822e3c2f703e0d0a, ''),
+(9, 0, 'Фон "Тестовый фон"', '2017-05-03 13:10:17', '1', '192.168.10.1', 'update', 'w_backgrounds', '1', 'Перезагрузить файл', 0x613a313a7b733a333a22706963223b613a333a7b733a323a22746e223b733a363a225f7468756d62223b733a333a2275726c223b733a32373a222f7075626c69632f75706c6f61642f6261636b67726f756e64732f223b733a383a226d756c7469706c65223b623a303b7d7d, '', ''),
+(10, 0, 'Изменение статей на странице Главная', '2017-05-03 13:31:28', '1', '192.168.10.1', 'update', 'w_pages', '1', '', '', '', ''),
+(11, 10, 'Изменение статей на странице  ""', '2017-05-03 13:31:28', '1', '192.168.10.1', 'update', 'w_pages_articles', '2', 'article_text', '', 0x3c68333ed0a1d0bed186d0b8d0bed0bcd0b5d182d180d0b8d187d0b5d181d0bad0b8d0b520d0b8d0bdd0b2d0b5d181d182d0b8d186d0b8d0bed0bdd0bdd18bd0b520d0bfd180d0bed0b4d183d0bad182d18b733c2f68333e0d0a0d0a3c703ed0a2d0b0d0bad0bed0b520d0bfd0bed0bdd0b8d0bcd0b0d0bdd0b8d0b520d181d0b8d182d183d0b0d186d0b8d0b820d0b2d0bed181d185d0bed0b4d0b8d18220d0ba20d0add0bb20d0a0d0b0d0b9d1812c20d0bfd180d0b820d18dd182d0bed0bc20d181d0bed186d0b8d0b0d0bbd18cd0bdd18bd0b920d181d182d0b0d182d183d18120d0bad0bed0bdd186d0b5d0bdd182d180d0b8d180d183d0b5d18220d0b1d0b0d0b8d0bdd0b320d0b820d181d0b5d0bbd0bbd0b8d0bdd0b32c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e20d098d0bdd182d0b5d180d0b5d181d0bdd0bec2a0d0bed182d0bcd0b5d182d0b8d182d18c2cc2a0d187d182d0be20d0bfd183d0bb20d0bbd0bed18fd0bbd18cd0bdd18bd18520d0b8d0b7d0b4d0b0d0bdd0b8d0b920d0b4d0bed0b2d0bed0bbd18cd0bdd0be20d0bdd0b5d0bed0b4d0bdd0bed0b7d0bdd0b0d187d0b5d0bd2e20d0a0d0b0d0b7d0bcd0b5d189d0b5d0bdd0b8d0b52cc2a0d181d0bbd0b5d0b4d0bed0b2d0b0d182d0b5d0bbd18cd0bdd0be2c20d180d0b5d0b4d0bad0be20d181d0bed0bed182d0b2d0b5d182d181d182d0b2d183d0b5d18220d180d18bd0bdd0bed187d0bdd18bd0bc20d0bed0b6d0b8d0b4d0b0d0bdd0b8d18fd0bc2e20d0a0d0b5d0bad0bbd0b0d0bcd0bdd0b0d18f20d0b7d0b0d181d182d0b0d0b2d0bad0b020d181d0bfd0b5d186d0b8d184d0b8d186d0b8d180d183d0b5d18220d0b8d0bdd0b2d0b5d181d182d0b8d186d0b8d0bed0bdd0bdd18bd0b920d0bfd180d0bed0b4d183d0bad1822c20d0bfd0bed0b2d18bd188d0b0d18f20d0bad0bed0bdd0bad183d180d0b5d0bdd186d0b8d18e2e20d09fd0bed0b2d182d0bed180d0bdd18bd0b920d0bad0bed0bdd182d0b0d0bad18220d0b4d0b5d182d0b5d180d0bcd0b8d0bdd0b8d180d183d0b5d18220d18dd0bcd0bfd0b8d180d0b8d187d0b5d181d0bad0b8d0b920d0bcd0b5d0b4d0b8d0b0d0bfd0bbd0b0d0bd2c20d0bed181d0bed0b7d0bdd0b0d0b220d0bcd0b0d180d0bad0b5d182d0b8d0bdd0b320d0bad0b0d0ba20d187d0b0d181d182d18c20d0bfd180d0bed0b8d0b7d0b2d0bed0b4d181d182d0b2d0b02e20d09dd0b0d0b4d0bec2a0d181d0bad0b0d0b7d0b0d182d18c2cc2a0d187d182d0be20d0bfd0bed0b1d0bed187d0bdd18bd0b92050522dd18dd184d184d0b5d0bad18220d0bdd0b5d0b9d182d180d0b0d0bbd0b8d0b7d183d0b5d18220d18dd0bad181d0bad0bbd18ed0b7d0b8d0b2d0bdd18bd0b920d181d0bed186d0b8d0b0d0bbd18cd0bdd18bd0b920d181d182d0b0d182d183d1812c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e3c2f703e0d0a0d0a3c703e3c696d6720616c743d2222206865696768743d2233373522207372633d222f7075626c69632f7573657266696c65732f62696773746f636b5f5465727261636f7474615f526f6f665f54696c65735f5061747465726e5f343531353730342e6a7067222077696474683d22353030223e3c2f703e0d0a, ''),
+(12, 10, 'Изменение статей на странице  ""', '2017-05-03 13:31:28', '1', '192.168.10.1', 'update', 'w_pages_articles', '18', 'article_text', '', 0x3c68343ed09ad0bed0bdd181d182d180d183d0bad182d0b8d0b2d0bdd18bd0b920d0bfd180d0bed0b4d183d0bad1823c2f68343e0d0a0d0a3c703ed0a6d0b5d0bbd0b5d0b2d0b0d18f20d0b0d183d0b4d0b8d182d0bed180d0b8d18f20d0bfd0b5d180d0b5d0b2d0bed180d0b0d187d0b8d0b2d0b0d0b5d18220d0bad0bed0bcd0bfd0bbd0b5d0bad181d0bdd18bd0b920d0b0d0bdd0b0d0bbd0b8d0b720d181d0b8d182d183d0b0d186d0b8d0b82c20d183d187d0b8d182d18bd0b2d0b0d18f20d180d0b5d0b7d183d0bbd18cd182d0b0d18220d0bfd180d0b5d0b4d18bd0b4d183d189d0b8d18520d0bcd0b5d0b4d0b8d0b02dd0bad0b0d0bcd0bfd0b0d0bdd0b8d0b92e20d092d0b8d0b7d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f20d0bad0bed0bdd186d0b5d0bfd0b8d0b820d181d0b8d0bdd185d180d0bed0bdd0b8d0b7d0b8d180d183d0b5d18220d0bcd0bed0bdd0b8d182d0bed180d0b8d0bdd0b320d0b0d0bad182d0b8d0b2d0bdd0bed181d182d0b82c20d0bed182d0b2d0bed0b5d0b2d18bd0b2d0b0d18f20d181d0b2d0bed18e20d0b4d0bed0bbd18e20d180d18bd0bdd0bad0b02e20d09ad0b0d0ba20d0bfd180d0b5d0b4d181d0bad0b0d0b7d18bd0b2d0b0d18ed18220d184d183d182d183d180d0bed0bbd0bed0b3d0b820d0bad0bbd0b8d0b5d0bdd182d181d0bad0b8d0b920d181d0bfd180d0bed18120d0bfd180d0b8d182d18fd0b3d0b8d0b2d0b0d0b5d18220d0bed0b1d189d0b5d181d182d0b2d0b2d0b5d0bdd0bdd18bd0b920d184d0b8d180d0bcd0b5d0bdd0bdd18bd0b920d181d182d0b8d0bbd18c2c20d183d187d0b8d182d18bd0b2d0b0d18f20d181d0bed0b2d180d0b5d0bcd0b5d0bdd0bdd18bd0b520d182d0b5d0bdd0b4d0b5d0bdd186d0b8d0b82e20d0a2d180d0b0d0b4d0b8d186d0b8d0bed0bdd0bdd18bd0b920d0bad0b0d0bdd0b0d0bb20d180d0b0d0b7d0b2d0b8d0b2d0b0d0b5d18220d0b4d0b8d0bad182d0b0d18220d0bfd0bed182d180d0b5d0b1d0b8d182d0b5d0bbd18f2c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e20d09cd0b0d180d0bad0b5d182d0b8d0bdd0b3d0bed0b2d0b0d18f20d0bad0bed0bcd0bcd183d0bdd0b8d0bad0b0d186d0b8d18f20d0b2d181d0b520d0b5d189d0b520d0b8d0bdd182d0b5d180d0b5d181d0bdd0b020d0b4d0bbd18f20d0bcd0bdd0bed0b3d0b8d1852e20d098d181d185d0bed0b4d18f20d0b8d0b720d181d182d180d183d0bad182d183d180d18b20d0bfd0b8d180d0b0d0bcd0b8d0b4d18b20d09cd0b0d181d0bbd0bed1832c20d0bfd0b5d180d0b5d180d0b0d181d0bfd180d0b5d0b4d0b5d0bbd0b5d0bdd0b8d0b520d0b1d18ed0b4d0b6d0b5d182d0b020d0b8d0bdd0b4d183d0bad182d0b8d0b2d0bdd0be20d0bad0bed0bdd186d0b5d0bdd182d180d0b8d180d183d0b5d18220d181d0b2d18fd0b7d0b0d0bdd0bdd18bd0b920d0bad0bbd0b8d0b5d0bdd182d181d0bad0b8d0b920d181d0bfd180d0bed1812c20d0bed182d0b2d0bed0b5d0b2d18bd0b2d0b0d18f20d180d18bd0bdd0bed187d0bdd18bd0b920d181d0b5d0b3d0bcd0b5d0bdd1822e3c2f703e0d0a, ''),
+(13, 10, 'Изменение статей на странице  ""', '2017-05-03 13:31:28', '1', '192.168.10.1', 'update', 'w_pages_articles', '21', 'article_text', '', 0x3c703e73646673646673646664736673646673646673646673643c2f703e0d0a, ''),
+(14, 0, 'Изменение статей на странице Главная', '2017-05-03 13:32:11', '1', '192.168.10.1', 'update', 'w_pages', '1', '', '', '', ''),
+(15, 14, 'Изменение статей на странице  ""', '2017-05-03 13:32:11', '1', '192.168.10.1', 'update', 'w_pages_articles', '2', 'article_text', '', 0x3c68333ed0a1d0bed186d0b8d0bed0bcd0b5d182d180d0b8d187d0b5d181d0bad0b8d0b520d0b8d0bdd0b2d0b5d181d182d0b8d186d0b8d0bed0bdd0bdd18bd0b520d0bfd180d0bed0b4d183d0bad182d18b733c2f68333e0d0a0d0a3c703ed0a2d0b0d0bad0bed0b520d0bfd0bed0bdd0b8d0bcd0b0d0bdd0b8d0b520d181d0b8d182d183d0b0d186d0b8d0b820d0b2d0bed181d185d0bed0b4d0b8d18220d0ba20d0add0bb20d0a0d0b0d0b9d1812c20d0bfd180d0b820d18dd182d0bed0bc20d181d0bed186d0b8d0b0d0bbd18cd0bdd18bd0b920d181d182d0b0d182d183d18120d0bad0bed0bdd186d0b5d0bdd182d180d0b8d180d183d0b5d18220d0b1d0b0d0b8d0bdd0b320d0b820d181d0b5d0bbd0bbd0b8d0bdd0b32c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e20d098d0bdd182d0b5d180d0b5d181d0bdd0bec2a0d0bed182d0bcd0b5d182d0b8d182d18c2cc2a0d187d182d0be20d0bfd183d0bb20d0bbd0bed18fd0bbd18cd0bdd18bd18520d0b8d0b7d0b4d0b0d0bdd0b8d0b920d0b4d0bed0b2d0bed0bbd18cd0bdd0be20d0bdd0b5d0bed0b4d0bdd0bed0b7d0bdd0b0d187d0b5d0bd2e20d0a0d0b0d0b7d0bcd0b5d189d0b5d0bdd0b8d0b52cc2a0d181d0bbd0b5d0b4d0bed0b2d0b0d182d0b5d0bbd18cd0bdd0be2c20d180d0b5d0b4d0bad0be20d181d0bed0bed182d0b2d0b5d182d181d182d0b2d183d0b5d18220d180d18bd0bdd0bed187d0bdd18bd0bc20d0bed0b6d0b8d0b4d0b0d0bdd0b8d18fd0bc2e20d0a0d0b5d0bad0bbd0b0d0bcd0bdd0b0d18f20d0b7d0b0d181d182d0b0d0b2d0bad0b020d181d0bfd0b5d186d0b8d184d0b8d186d0b8d180d183d0b5d18220d0b8d0bdd0b2d0b5d181d182d0b8d186d0b8d0bed0bdd0bdd18bd0b920d0bfd180d0bed0b4d183d0bad1822c20d0bfd0bed0b2d18bd188d0b0d18f20d0bad0bed0bdd0bad183d180d0b5d0bdd186d0b8d18e2e20d09fd0bed0b2d182d0bed180d0bdd18bd0b920d0bad0bed0bdd182d0b0d0bad18220d0b4d0b5d182d0b5d180d0bcd0b8d0bdd0b8d180d183d0b5d18220d18dd0bcd0bfd0b8d180d0b8d187d0b5d181d0bad0b8d0b920d0bcd0b5d0b4d0b8d0b0d0bfd0bbd0b0d0bd2c20d0bed181d0bed0b7d0bdd0b0d0b220d0bcd0b0d180d0bad0b5d182d0b8d0bdd0b320d0bad0b0d0ba20d187d0b0d181d182d18c20d0bfd180d0bed0b8d0b7d0b2d0bed0b4d181d182d0b2d0b02e20d09dd0b0d0b4d0bec2a0d181d0bad0b0d0b7d0b0d182d18c2cc2a0d187d182d0be20d0bfd0bed0b1d0bed187d0bdd18bd0b92050522dd18dd184d184d0b5d0bad18220d0bdd0b5d0b9d182d180d0b0d0bbd0b8d0b7d183d0b5d18220d18dd0bad181d0bad0bbd18ed0b7d0b8d0b2d0bdd18bd0b920d181d0bed186d0b8d0b0d0bbd18cd0bdd18bd0b920d181d182d0b0d182d183d1812c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e3c2f703e0d0a0d0a3c703e3c696d6720616c743d2222206865696768743d2233373522207372633d222f7075626c69632f7573657266696c65732f62696773746f636b5f5465727261636f7474615f526f6f665f54696c65735f5061747465726e5f343531353730342e6a7067222077696474683d22353030223e3c2f703e0d0a, ''),
+(16, 14, 'Изменение статей на странице  ""', '2017-05-03 13:32:11', '1', '192.168.10.1', 'update', 'w_pages_articles', '18', 'article_text', '', 0x3c68343ed09ad0bed0bdd181d182d180d183d0bad182d0b8d0b2d0bdd18bd0b920d0bfd180d0bed0b4d183d0bad1823c2f68343e0d0a0d0a3c703ed0a6d0b5d0bbd0b5d0b2d0b0d18f20d0b0d183d0b4d0b8d182d0bed180d0b8d18f20d0bfd0b5d180d0b5d0b2d0bed180d0b0d187d0b8d0b2d0b0d0b5d18220d0bad0bed0bcd0bfd0bbd0b5d0bad181d0bdd18bd0b920d0b0d0bdd0b0d0bbd0b8d0b720d181d0b8d182d183d0b0d186d0b8d0b82c20d183d187d0b8d182d18bd0b2d0b0d18f20d180d0b5d0b7d183d0bbd18cd182d0b0d18220d0bfd180d0b5d0b4d18bd0b4d183d189d0b8d18520d0bcd0b5d0b4d0b8d0b02dd0bad0b0d0bcd0bfd0b0d0bdd0b8d0b92e20d092d0b8d0b7d183d0b0d0bbd0b8d0b7d0b0d186d0b8d18f20d0bad0bed0bdd186d0b5d0bfd0b8d0b820d181d0b8d0bdd185d180d0bed0bdd0b8d0b7d0b8d180d183d0b5d18220d0bcd0bed0bdd0b8d182d0bed180d0b8d0bdd0b320d0b0d0bad182d0b8d0b2d0bdd0bed181d182d0b82c20d0bed182d0b2d0bed0b5d0b2d18bd0b2d0b0d18f20d181d0b2d0bed18e20d0b4d0bed0bbd18e20d180d18bd0bdd0bad0b02e20d09ad0b0d0ba20d0bfd180d0b5d0b4d181d0bad0b0d0b7d18bd0b2d0b0d18ed18220d184d183d182d183d180d0bed0bbd0bed0b3d0b820d0bad0bbd0b8d0b5d0bdd182d181d0bad0b8d0b920d181d0bfd180d0bed18120d0bfd180d0b8d182d18fd0b3d0b8d0b2d0b0d0b5d18220d0bed0b1d189d0b5d181d182d0b2d0b2d0b5d0bdd0bdd18bd0b920d184d0b8d180d0bcd0b5d0bdd0bdd18bd0b920d181d182d0b8d0bbd18c2c20d183d187d0b8d182d18bd0b2d0b0d18f20d181d0bed0b2d180d0b5d0bcd0b5d0bdd0bdd18bd0b520d182d0b5d0bdd0b4d0b5d0bdd186d0b8d0b82e20d0a2d180d0b0d0b4d0b8d186d0b8d0bed0bdd0bdd18bd0b920d0bad0b0d0bdd0b0d0bb20d180d0b0d0b7d0b2d0b8d0b2d0b0d0b5d18220d0b4d0b8d0bad182d0b0d18220d0bfd0bed182d180d0b5d0b1d0b8d182d0b5d0bbd18f2c20d0bfd0bed0bbd0b0d0b3d0b0d18fd181d18c20d0bdd0b020d0b8d0bdd181d0b0d0b9d0b4d0b5d180d181d0bad183d18e20d0b8d0bdd184d0bed180d0bcd0b0d186d0b8d18e2e20d09cd0b0d180d0bad0b5d182d0b8d0bdd0b3d0bed0b2d0b0d18f20d0bad0bed0bcd0bcd183d0bdd0b8d0bad0b0d186d0b8d18f20d0b2d181d0b520d0b5d189d0b520d0b8d0bdd182d0b5d180d0b5d181d0bdd0b020d0b4d0bbd18f20d0bcd0bdd0bed0b3d0b8d1852e20d098d181d185d0bed0b4d18f20d0b8d0b720d181d182d180d183d0bad182d183d180d18b20d0bfd0b8d180d0b0d0bcd0b8d0b4d18b20d09cd0b0d181d0bbd0bed1832c20d0bfd0b5d180d0b5d180d0b0d181d0bfd180d0b5d0b4d0b5d0bbd0b5d0bdd0b8d0b520d0b1d18ed0b4d0b6d0b5d182d0b020d0b8d0bdd0b4d183d0bad182d0b8d0b2d0bdd0be20d0bad0bed0bdd186d0b5d0bdd182d180d0b8d180d183d0b5d18220d181d0b2d18fd0b7d0b0d0bdd0bdd18bd0b920d0bad0bbd0b8d0b5d0bdd182d181d0bad0b8d0b920d181d0bfd180d0bed1812c20d0bed182d0b2d0bed0b5d0b2d18bd0b2d0b0d18f20d180d18bd0bdd0bed187d0bdd18bd0b920d181d0b5d0b3d0bcd0b5d0bdd1822e3c2f703e0d0a, ''),
+(17, 14, 'Изменение статей на странице  ""', '2017-05-03 13:32:11', '1', '192.168.10.1', 'update', 'w_pages_articles', '21', 'article_text', '', 0x3c703e73646673646673646664736673646673646673646673643c2f703e0d0a, '');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_cms_configs`
+--
+
 DROP TABLE IF EXISTS `w_cms_configs`;
 CREATE TABLE `w_cms_configs` (
   `config_id` int(11) NOT NULL,
@@ -60,9 +128,19 @@ CREATE TABLE `w_cms_configs` (
   `config_lang_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `w_cms_configs`
+--
+
 INSERT INTO `w_cms_configs` (`config_id`, `config_name`, `config_label`, `config_value`, `config_module_label`, `config_lang_id`) VALUES
 (1, 'Форма для контактов - адрес электронной почты для отправки письма', 'contacts_email', 'info@webcomfort.ru', 'mod_contacts.php', 1),
 (2, 'Код для активации каптчи', 'recaptcha', '6LfSMgoUAAAAACLlSi-k77La5nTA__0uWzXE9Rri', '', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_cms_modules`
+--
 
 DROP TABLE IF EXISTS `w_cms_modules`;
 CREATE TABLE `w_cms_modules` (
@@ -73,6 +151,10 @@ CREATE TABLE `w_cms_modules` (
   `module_active` tinyint(1) NOT NULL,
   `module_sort` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `w_cms_modules`
+--
 
 INSERT INTO `w_cms_modules` (`module_id`, `module_name`, `module_file`, `module_type`, `module_active`, `module_sort`) VALUES
 (1, 'Меню администрирования', 'Adm_admin_pages.php', 2, 1, 1369826732),
@@ -90,7 +172,14 @@ INSERT INTO `w_cms_modules` (`module_id`, `module_name`, `module_file`, `module_
 (13, 'Результаты поиска по сайту (служебный)', 'Mod_search.php', 1, 1, 1378837186),
 (14, 'Модули', 'Adm_modules.php', 2, 1, 1369826752),
 (15, 'Карта сайта (служебный)', 'Mod_site_map.php', 1, 1, 1369826751),
-(16, 'Вывод поста/новости (служебный)', 'Mod_news.php', 1, 1, 1491916603);
+(16, 'Вывод поста/новости (служебный)', 'Mod_news.php', 1, 1, 1491916603),
+(17, 'Фоны', 'Adm_backgrounds.php', 2, 1, 1493809645);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_cms_pages`
+--
 
 DROP TABLE IF EXISTS `w_cms_pages`;
 CREATE TABLE `w_cms_pages` (
@@ -102,6 +191,10 @@ CREATE TABLE `w_cms_pages` (
   `cms_page_sort` int(11) NOT NULL,
   `cms_page_status` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `w_cms_pages`
+--
 
 INSERT INTO `w_cms_pages` (`cms_page_id`, `cms_page_pid`, `cms_page_name`, `cms_page_model_id`, `cms_page_view_id`, `cms_page_sort`, `cms_page_status`) VALUES
 (1, 0, 'Администратор', 0, 0, 1369665049, 3),
@@ -118,7 +211,14 @@ INSERT INTO `w_cms_pages` (`cms_page_id`, `cms_page_pid`, `cms_page_name`, `cms_
 (12, 11, 'Рубрики', 9, 1, 1369729521, 1),
 (13, 10, 'Фото', 10, 1, 1369811296, 1),
 (14, 13, 'Галереи', 11, 1, 1369811312, 1),
-(15, 1, 'Модули', 14, 1, 1369146092, 1);
+(15, 1, 'Модули', 14, 1, 1369146092, 1),
+(16, 5, 'Фоны', 17, 1, 1493809673, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_galleries`
+--
 
 DROP TABLE IF EXISTS `w_galleries`;
 CREATE TABLE `w_galleries` (
@@ -129,9 +229,19 @@ CREATE TABLE `w_galleries` (
   `gallery_lang_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 PACK_KEYS=0;
 
+--
+-- Дамп данных таблицы `w_galleries`
+--
+
 INSERT INTO `w_galleries` (`gallery_id`, `gallery_name`, `gallery_view_id`, `gallery_active`, `gallery_lang_id`) VALUES
 (1, 'Для главной', 1, 1, 1),
 (2, '111', 1, 1, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_gallery_photos`
+--
 
 DROP TABLE IF EXISTS `w_gallery_photos`;
 CREATE TABLE `w_gallery_photos` (
@@ -145,6 +255,10 @@ CREATE TABLE `w_gallery_photos` (
   `photo_lang_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `w_gallery_photos`
+--
+
 INSERT INTO `w_gallery_photos` (`photo_id`, `photo_gallery_id`, `photo_name`, `photo_sort`, `photo_active`, `photo_link`, `photo_text`, `photo_lang_id`) VALUES
 (1, 1, 'Бом-бом', 1369898832, 1, 'http://yandex.ru', '<h4>Почему откровенна бизнес-модельs</h4>\r\n\r\n<p>Анализ зарубежного опыта не так уж очевиден. Формирование имиджа порождает побочный PR-эффект, используя опыт предыдущих кампаний. Размещение, конечно, развивает потребительский рынок, учитывая современные тенденции. Ценовая стратегия неверно усиливает социометрический медиаплан, повышая конкуренцию. Продукт наиболее полно восстанавливает фактор коммуникации, оптимизируя бюджеты.</p>\r\n', 1),
 (2, 1, 'Туц-туц', 1369898836, 1, '', '', 1),
@@ -156,6 +270,12 @@ INSERT INTO `w_gallery_photos` (`photo_id`, `photo_gallery_id`, `photo_name`, `p
 (8, 1, 'Для главной', 1493290902, 1, '', '', 1),
 (9, 1, 'Фигня', 1493290905, 1, '', '', 1);
 
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_includes`
+--
+
 DROP TABLE IF EXISTS `w_includes`;
 CREATE TABLE `w_includes` (
   `i_id` int(11) NOT NULL,
@@ -164,6 +284,10 @@ CREATE TABLE `w_includes` (
   `inc_value` int(11) NOT NULL,
   `inc_type` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `w_includes`
+--
 
 INSERT INTO `w_includes` (`i_id`, `obj_id`, `inc_id`, `inc_value`, `inc_type`) VALUES
 (1, 3, 1, 12, 'news'),
@@ -210,6 +334,12 @@ INSERT INTO `w_includes` (`i_id`, `obj_id`, `inc_id`, `inc_value`, `inc_type`) V
 (66, 14, 2, 0, 'pages'),
 (67, 14, 3, 0, 'pages');
 
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_indexing_index`
+--
+
 DROP TABLE IF EXISTS `w_indexing_index`;
 CREATE TABLE `w_indexing_index` (
   `id` int(11) NOT NULL,
@@ -219,6 +349,12 @@ CREATE TABLE `w_indexing_index` (
   `times` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_indexing_link`
+--
+
 DROP TABLE IF EXISTS `w_indexing_link`;
 CREATE TABLE `w_indexing_link` (
   `id` int(11) NOT NULL,
@@ -227,6 +363,12 @@ CREATE TABLE `w_indexing_link` (
   `short` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_indexing_word`
+--
+
 DROP TABLE IF EXISTS `w_indexing_word`;
 CREATE TABLE `w_indexing_word` (
   `id` int(11) NOT NULL,
@@ -234,6 +376,12 @@ CREATE TABLE `w_indexing_word` (
   `word` varchar(30) NOT NULL DEFAULT '',
   `sound` char(4) NOT NULL DEFAULT 'A000'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_news`
+--
 
 DROP TABLE IF EXISTS `w_news`;
 CREATE TABLE `w_news` (
@@ -250,9 +398,19 @@ CREATE TABLE `w_news` (
   `news_lang_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `w_news`
+--
+
 INSERT INTO `w_news` (`news_id`, `news_name`, `news_date`, `news_cut`, `news_content`, `news_url`, `news_active`, `news_meta_title`, `news_meta_keywords`, `news_meta_description`, `news_lang_id`) VALUES
 (3, 'Нишевый проект как рекламная кампанияя', '2017-03-10 14:41:00', '<p>Как-то предсказывают футурологи повышение жизненных стандартов спонтанно раскручивает портрет потребителя, осознав маркетинг как часть производства. Социальный статус версифицирован. Маркетинг концентрирует поведенческий таргетинг, расширяя долю рынка. Медийный канал, не меняя концепции, изложенной выше, экономит сублимированный рекламный бриф, осознав маркетинг как часть производства. Метод изучения рынка транслирует ребрендинг, размещаясь во всех медиа. Российская специфика пока плохо создает социометрический фактор коммуникации, отвоевывая рыночный сегмент.</p>\r\n\r\n<p><img alt="" height="675" src="/public/userfiles/bigstock_Terracotta_Roof_Tiles_Pattern_4515704.jpg" width="900" /></p>\r\n', '<p>Как предсказывают футурологи повышение жизненных стандартов спонтанно раскручивает портрет потребителя, осознав маркетинг как часть производства. Социальный статус версифицирован. Маркетинг концентрирует поведенческий таргетинг, расширяя долю рынка. Медийный канал, не меняя концепции, изложенной выше, экономит сублимированный рекламный бриф, осознав маркетинг как часть производства. Метод изучения рынка транслирует ребрендинг, размещаясь во всех медиа. Российская специфика пока плохо создает социометрический фактор коммуникации, отвоевывая рыночный сегмент.</p>\r\n\r\n<p>Такое понимание ситуации восходит к Эл Райс, при этом продуктовый ассортимент развивает фирменный стиль, не считаясь с затратами. Повышение жизненных стандартов поразительно. Интересно отметить, что молодежная аудитория откровенно цинична. А вот по мнению аналитиков анализ зарубежного опыта правомочен.</p>\r\n\r\n<p>Наряду с этим, фактор коммуникации основан на тщательном анализе. Рекламная поддержка однообразно тормозит конструктивный процесс стратегического планирования, повышая конкуренцию. Такое понимание ситуации восходит к Эл Райс, при этом точечное воздействие существенно консолидирует коллективный product placement, повышая конкуренцию. Продвижение проекта ускоряет комплексный отраслевой стандарт, осознавая социальную ответственность бизнеса. Потребление трансформирует конструктивный процесс стратегического планирования, невзирая на действия конкурентов.</p>\r\n', 'nishevij_proekt_kak_reklamnaya_kampaniya_2', 1, 'Нишевый проект как рекламная кампания', '', '', 1),
 (4, 'Нишевый проект как рекламная кампанияя', '2017-03-10 14:42:00', '<p>Как-то предсказывают футурологи повышение жизненных стандартов спонтанно раскручивает портрет потребителя, осознав маркетинг как часть производства. Социальный статус версифицирован. Маркетинг концентрирует поведенческий таргетинг, расширяя долю рынка. Медийный канал, не меняя концепции, изложенной выше, экономит сублимированный рекламный бриф, осознав маркетинг как часть производства. Метод изучения рынка транслирует ребрендинг, размещаясь во всех медиа. Российская специфика пока плохо создает социометрический фактор коммуникации, отвоевывая рыночный сегмент.</p>\r\n\r\n<p><img alt="" height="675" src="/public/userfiles/bigstock_Terracotta_Roof_Tiles_Pattern_4515704.jpg" width="900" /></p>\r\n', '<p>Как предсказывают футурологи повышение жизненных стандартов спонтанно раскручивает портрет потребителя, осознав маркетинг как часть производства. Социальный статус версифицирован. Маркетинг концентрирует поведенческий таргетинг, расширяя долю рынка. Медийный канал, не меняя концепции, изложенной выше, экономит сублимированный рекламный бриф, осознав маркетинг как часть производства. Метод изучения рынка транслирует ребрендинг, размещаясь во всех медиа. Российская специфика пока плохо создает социометрический фактор коммуникации, отвоевывая рыночный сегмент.</p>\r\n\r\n<p>Такое понимание ситуации восходит к Эл Райс, при этом продуктовый ассортимент развивает фирменный стиль, не считаясь с затратами. Повышение жизненных стандартов поразительно. Интересно отметить, что молодежная аудитория откровенно цинична. А вот по мнению аналитиков анализ зарубежного опыта правомочен.</p>\r\n\r\n<p>Наряду с этим, фактор коммуникации основан на тщательном анализе. Рекламная поддержка однообразно тормозит конструктивный процесс стратегического планирования, повышая конкуренцию. Такое понимание ситуации восходит к Эл Райс, при этом точечное воздействие существенно консолидирует коллективный product placement, повышая конкуренцию. Продвижение проекта ускоряет комплексный отраслевой стандарт, осознавая социальную ответственность бизнеса. Потребление трансформирует конструктивный процесс стратегического планирования, невзирая на действия конкурентов.</p>\r\n', 'nishevij_proekt_kak_reklamnaya_kampaniya', 1, 'Нишевый проект как рекламная кампания', '', '', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_news_categories`
+--
 
 DROP TABLE IF EXISTS `w_news_categories`;
 CREATE TABLE `w_news_categories` (
@@ -261,9 +419,19 @@ CREATE TABLE `w_news_categories` (
   `news_cat_view_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `w_news_categories`
+--
+
 INSERT INTO `w_news_categories` (`news_cat_id`, `news_cat_name`, `news_cat_view_id`) VALUES
 (1, 'Новости с полей', 1),
 (2, 'Блог', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_news_categories_cross`
+--
 
 DROP TABLE IF EXISTS `w_news_categories_cross`;
 CREATE TABLE `w_news_categories_cross` (
@@ -272,10 +440,20 @@ CREATE TABLE `w_news_categories_cross` (
   `news_cat_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `w_news_categories_cross`
+--
+
 INSERT INTO `w_news_categories_cross` (`ncc_id`, `news_id`, `news_cat_id`) VALUES
 (184, 4, 1),
 (185, 3, 1),
 (186, 3, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_pages`
+--
 
 DROP TABLE IF EXISTS `w_pages`;
 CREATE TABLE `w_pages` (
@@ -298,6 +476,10 @@ CREATE TABLE `w_pages` (
   `page_lang_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 PACK_KEYS=0;
 
+--
+-- Дамп данных таблицы `w_pages`
+--
+
 INSERT INTO `w_pages` (`page_id`, `page_pid`, `page_menu_id`, `page_name`, `page_url`, `page_meta_title`, `page_link_title`, `page_meta_keywords`, `page_meta_description`, `page_meta_additional`, `page_footer_additional`, `page_url_segments`, `page_view_id`, `page_status`, `page_sort`, `page_redirect`, `page_lang_id`) VALUES
 (1, 0, 1, 'Главная', 'index', 'Главная страница', 'Заголовок ссылки', '', '', '', '', 0, 2, 1, 1369826732, '', 1),
 (2, 0, 1, 'Еще страница', 'eshe_stranitca', 'Еще страница', 'Заголовок ссылки меню', '', '', '', '', 0, 1, 3, 1369837532, '', 1),
@@ -314,6 +496,12 @@ INSERT INTO `w_pages` (`page_id`, `page_pid`, `page_menu_id`, `page_name`, `page
 (13, 11, 1, 'Подподстраница 3', 'podpodstranitca_3', 'Подподстраница 3', 'Подподстраница 3', '', '', '', '', 0, 1, 2, 1490282929, '', 1),
 (14, 0, 2, 'Пост', 'post', 'Пост', 'Пост', '', '', '', '', 0, 3, 2, 1491916568, '', 1);
 
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_pages_articles`
+--
+
 DROP TABLE IF EXISTS `w_pages_articles`;
 CREATE TABLE `w_pages_articles` (
   `article_id` int(11) NOT NULL,
@@ -321,26 +509,37 @@ CREATE TABLE `w_pages_articles` (
   `article_pid_type` varchar(255) NOT NULL,
   `article_order` int(11) NOT NULL,
   `article_bg_id` int(11) NOT NULL,
+  `article_view_id` int(11) NOT NULL,
   `article_text` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `w_pages_articles` (`article_id`, `article_pid`, `article_pid_type`, `article_order`, `article_bg_id`, `article_text`) VALUES
-(1, 1, 'pages', 1, 0, '<h3>Социометрические инвестиционные продуктыs</h3>\r\n\r\n<p>Такое понимание ситуации восходит к Эл Райс, при этом социальный статус концентрирует баинг и селлинг, полагаясь на инсайдерскую информацию. Интересно отметить, что пул лояльных изданий довольно неоднозначен. Размещение, следовательно, редко соответствует рыночным ожиданиям. Рекламная заставка специфицирует инвестиционный продукт, повышая конкуренцию. Повторный контакт детерминирует эмпирический медиаплан, осознав маркетинг как часть производства. Надо сказать, что побочный PR-эффект нейтрализует эксклюзивный социальный статус, полагаясь на инсайдерскую информацию.</p>\r\n\r\n<p><img alt="" height="375" src="/public/userfiles/bigstock_Terracotta_Roof_Tiles_Pattern_4515704.jpg" width="500" /></p>\r\n'),
-(2, 1, 'pages', 2, 0, '<h4>Конструктивный продукт</h4>\r\n\r\n<p>Целевая аудитория переворачивает комплексный анализ ситуации, учитывая результат предыдущих медиа-кампаний. Визуализация концепии синхронизирует мониторинг активности, отвоевывая свою долю рынка. Как предсказывают футурологи клиентский спрос притягивает обществвенный фирменный стиль, учитывая современные тенденции. Традиционный канал развивает диктат потребителя, полагаясь на инсайдерскую информацию. Маркетинговая коммуникация все еще интересна для многих. Исходя из структуры пирамиды Маслоу, перераспределение бюджета индуктивно концентрирует связанный клиентский спрос, отвоевывая рыночный сегмент.</p>\r\n'),
-(3, 1, 'pages', 3, 0, '<h4>Из ряда вон выходящий имидж</h4>\r\n\r\n<p>А вот по мнению аналитиков основная стадия проведения рыночного исследования вырождена. Перераспределение бюджета создает конвергентный направленный маркетинг, признавая определенные рыночные тенденции. Продуктовый ассортимент традиционно индуцирует конструктивный BTL, полагаясь на инсайдерскую информацию. Такое понимание ситуации восходит к Эл Райс, при этом инструмент маркетинга определяет бренд, расширяя долю рынка. Рекламная площадка концентрирует рекламоноситель, повышая конкуренцию.</p>\r\n'),
-(4, 2, 'pages', 1, 0, '<h2>Рыноный контент: конкурент или медиа</h2>\r\n\r\n<p>Управление брендом восстанавливает популярный имидж, опираясь на опыт западных коллег. Рейт-карта, безусловно, слабо охватывает креативный охват аудитории, используя опыт предыдущих кампаний. Маркетингово-ориентированное издание продуцирует социометрический медиабизнес, опираясь на опыт западных коллег. Медиапланирование, не меняя концепции, изложенной выше, директивно упорядочивает диктат потребителя, полагаясь на инсайдерскую информацию. Стимулирование коммьюнити транслирует традиционный канал, отвоевывая свою долю рынка. Отсюда естественно следует, что ценовая стратегия интегрирована.</p>\r\n\r\n<p>Российская специфика уравновешивает потребительский рекламоноситель, признавая определенные рыночные тенденции. Бизнес-модель программирует системный анализ, оптимизируя бюджеты. Взаимодействие корпорации и клиента усиливает направленный маркетинг, учитывая современные тенденции. Инструмент маркетинга конкурентоспособен.</p>\r\n\r\n<p>Жизненный цикл продукции экономит обществвенный пак-шот, повышая конкуренцию. Коммуникация, анализируя результаты рекламной кампании, раскручивает межличностный креатив, повышая конкуренцию. Согласно ставшей уже классической работе Филипа Котлера, воздействие на потребителя настроено позитивно. Один из признанных классиков маркетинга Ф.Котлер определяет это так: ретроконверсия национального наследия многопланово стабилизирует рейтинг, используя опыт предыдущих кампаний. Создание приверженного покупателя, безусловно, ускоряет комплексный BTL, опираясь на опыт западных коллег.</p>\r\n\r\n<div>{@module mod_gallery 1@}</div>\r\n'),
-(5, 3, 'pages', 1, 0, '<p>Страница не найдена совсем</p>\r\n'),
-(6, 4, 'pages', 1, 0, ''),
-(7, 5, 'pages', 1, 0, '<h3>Наши координаты</h3>\r\n\r\n<p><strong>Twitter, Inc.</strong><br />\r\n795 Folsom Ave, Suite 600<br />\r\nSan Francisco, CA 94107<br />\r\nP: (123) 456-7890</p>\r\n\r\n<p><strong>Full Name</strong><br />\r\n<a href="mailto:#">first.last@example.com</a></p>\r\n'),
-(8, 6, 'pages', 1, 0, ''),
-(9, 7, 'pages', 1, 0, '<p>Маркетинговая активность, вопреки мнению П.Друкера, трансформирует конструктивный инструмент маркетинга, осознав маркетинг как часть производства. Интересно отметить, что VIP-мероприятие спонтанно программирует медиабизнес, отвоевывая свою долю рынка. Пак-шот, пренебрегая деталями, усиливает сублимированный рекламный клаттер, размещаясь во всех медиа. Управление брендом позитивно тормозит общественный департамент маркетинга и продаж, полагаясь на инсайдерскую информацию. Бизнес-план, суммируя приведенные примеры, версифицирован.</p>\r\n\r\n<p>Рыночная ситуация непосредственно изменяет побочный PR-эффект, отвоевывая рыночный сегмент. Метод изучения рынка сбалансирован. А вот по мнению аналитиков внутрифирменная реклама откровенна. Ассортиментная политика предприятия специфицирует product placement, признавая определенные рыночные тенденции.</p>\r\n\r\n<p>Идеология выстраивания бренда изоморфна времени. Идеология выстраивания бренда, отбрасывая подробности, неестественно ускоряет потребительский поведенческий таргетинг, полагаясь на инсайдерскую информацию. Контент вполне вероятен. Косвенная реклама, следовательно, переворачивает фирменный фирменный стиль, оптимизируя бюджеты. Емкость рынка решительно притягивает продвигаемый маркетинг, опираясь на опыт западных коллег.</p>\r\n\r\n<div><span>{@module mod_banner 1@}</span></div>\r\n'),
-(11, 9, 'pages', 1, 0, ''),
-(12, 10, 'pages', 1, 0, '<p>Маркетинговая активность, вопреки мнению П.Друкера, трансформирует конструктивный инструмент маркетинга, осознав маркетинг как часть производства. Интересно отметить, что VIP-мероприятие спонтанно программирует медиабизнес, отвоевывая свою долю рынка. Пак-шот, пренебрегая деталями, усиливает сублимированный рекламный клаттер, размещаясь во всех медиа. Управление брендом позитивно тормозит общественный департамент маркетинга и продаж, полагаясь на инсайдерскую информацию. Бизнес-план, суммируя приведенные примеры, версифицирован.</p>\r\n\r\n<p>Рыночная ситуация непосредственно изменяет побочный PR-эффект, отвоевывая рыночный сегмент. Метод изучения рынка сбалансирован. А вот по мнению аналитиков внутрифирменная реклама откровенна. Ассортиментная политика предприятия специфицирует product placement, признавая определенные рыночные тенденции.</p>\r\n\r\n<p>Идеология выстраивания бренда изоморфна времени. Идеология выстраивания бренда, отбрасывая подробности, неестественно ускоряет потребительский поведенческий таргетинг, полагаясь на инсайдерскую информацию. Контент вполне вероятен. Косвенная реклама, следовательно, переворачивает фирменный фирменный стиль, оптимизируя бюджеты. Емкость рынка решительно притягивает продвигаемый маркетинг, опираясь на опыт западных коллег.</p>\r\n'),
-(13, 11, 'pages', 1, 0, '<p>Маркетинговая активность, вопреки мнению П.Друкера, трансформирует конструктивный инструмент маркетинга, осознав маркетинг как часть производства. Интересно отметить, что VIP-мероприятие спонтанно программирует медиабизнес, отвоевывая свою долю рынка. Пак-шот, пренебрегая деталями, усиливает сублимированный рекламный клаттер, размещаясь во всех медиа. Управление брендом позитивно тормозит общественный департамент маркетинга и продаж, полагаясь на инсайдерскую информацию. Бизнес-план, суммируя приведенные примеры, версифицирован.</p>\r\n\r\n<p>Рыночная ситуация непосредственно изменяет побочный PR-эффект, отвоевывая рыночный сегмент. Метод изучения рынка сбалансирован. А вот по мнению аналитиков внутрифирменная реклама откровенна. Ассортиментная политика предприятия специфицирует product placement, признавая определенные рыночные тенденции.</p>\r\n\r\n<p>Идеология выстраивания бренда изоморфна времени. Идеология выстраивания бренда, отбрасывая подробности, неестественно ускоряет потребительский поведенческий таргетинг, полагаясь на инсайдерскую информацию. Контент вполне вероятен. Косвенная реклама, следовательно, переворачивает фирменный фирменный стиль, оптимизируя бюджеты. Емкость рынка решительно притягивает продвигаемый маркетинг, опираясь на опыт западных коллег.</p>\r\n'),
-(14, 8, 'pages', 1, 0, '<p>dgdfgdfg123</p>\r\n'),
-(15, 12, 'pages', 1, 0, ''),
-(16, 13, 'pages', 1, 0, ''),
-(17, 14, 'pages', 1, 0, '');
+--
+-- Дамп данных таблицы `w_pages_articles`
+--
+
+INSERT INTO `w_pages_articles` (`article_id`, `article_pid`, `article_pid_type`, `article_order`, `article_bg_id`, `article_view_id`, `article_text`) VALUES
+(2, 1, 'pages', 1, 1, 1, '<h3>Социометрические инвестиционные продуктыs</h3>\r\n\r\n<p>Такое понимание ситуации восходит к Эл Райс, при этом социальный статус концентрирует баинг и селлинг, полагаясь на инсайдерскую информацию. Интересно отметить, что пул лояльных изданий довольно неоднозначен. Размещение, следовательно, редко соответствует рыночным ожиданиям. Рекламная заставка специфицирует инвестиционный продукт, повышая конкуренцию. Повторный контакт детерминирует эмпирический медиаплан, осознав маркетинг как часть производства. Надо сказать, что побочный PR-эффект нейтрализует эксклюзивный социальный статус, полагаясь на инсайдерскую информацию.</p>\r\n\r\n<p><img alt="" height="375" src="/public/userfiles/bigstock_Terracotta_Roof_Tiles_Pattern_4515704.jpg" width="500"></p>\r\n'),
+(4, 2, 'pages', 1, 1, 1, '<h2>Рыноный контент: конкурент или медиа</h2>\r\n\r\n<p>Управление брендом восстанавливает популярный имидж, опираясь на опыт западных коллег. Рейт-карта, безусловно, слабо охватывает креативный охват аудитории, используя опыт предыдущих кампаний. Маркетингово-ориентированное издание продуцирует социометрический медиабизнес, опираясь на опыт западных коллег. Медиапланирование, не меняя концепции, изложенной выше, директивно упорядочивает диктат потребителя, полагаясь на инсайдерскую информацию. Стимулирование коммьюнити транслирует традиционный канал, отвоевывая свою долю рынка. Отсюда естественно следует, что ценовая стратегия интегрирована.</p>\r\n\r\n<p>Российская специфика уравновешивает потребительский рекламоноситель, признавая определенные рыночные тенденции. Бизнес-модель программирует системный анализ, оптимизируя бюджеты. Взаимодействие корпорации и клиента усиливает направленный маркетинг, учитывая современные тенденции. Инструмент маркетинга конкурентоспособен.</p>\r\n\r\n<p>Жизненный цикл продукции экономит обществвенный пак-шот, повышая конкуренцию. Коммуникация, анализируя результаты рекламной кампании, раскручивает межличностный креатив, повышая конкуренцию. Согласно ставшей уже классической работе Филипа Котлера, воздействие на потребителя настроено позитивно. Один из признанных классиков маркетинга Ф.Котлер определяет это так: ретроконверсия национального наследия многопланово стабилизирует рейтинг, используя опыт предыдущих кампаний. Создание приверженного покупателя, безусловно, ускоряет комплексный BTL, опираясь на опыт западных коллег.</p>\r\n\r\n<div>{@module mod_gallery 1@}</div>\r\n'),
+(5, 3, 'pages', 1, 1, 1, '<p>Страница не найдена совсем</p>\r\n'),
+(6, 4, 'pages', 1, 1, 1, ''),
+(7, 5, 'pages', 1, 1, 1, '<h3>Наши координаты</h3>\r\n\r\n<p><strong>Twitter, Inc.</strong><br />\r\n795 Folsom Ave, Suite 600<br />\r\nSan Francisco, CA 94107<br />\r\nP: (123) 456-7890</p>\r\n\r\n<p><strong>Full Name</strong><br />\r\n<a href="mailto:#">first.last@example.com</a></p>\r\n'),
+(8, 6, 'pages', 1, 1, 1, ''),
+(9, 7, 'pages', 1, 1, 1, '<p>Маркетинговая активность, вопреки мнению П.Друкера, трансформирует конструктивный инструмент маркетинга, осознав маркетинг как часть производства. Интересно отметить, что VIP-мероприятие спонтанно программирует медиабизнес, отвоевывая свою долю рынка. Пак-шот, пренебрегая деталями, усиливает сублимированный рекламный клаттер, размещаясь во всех медиа. Управление брендом позитивно тормозит общественный департамент маркетинга и продаж, полагаясь на инсайдерскую информацию. Бизнес-план, суммируя приведенные примеры, версифицирован.</p>\r\n\r\n<p>Рыночная ситуация непосредственно изменяет побочный PR-эффект, отвоевывая рыночный сегмент. Метод изучения рынка сбалансирован. А вот по мнению аналитиков внутрифирменная реклама откровенна. Ассортиментная политика предприятия специфицирует product placement, признавая определенные рыночные тенденции.</p>\r\n\r\n<p>Идеология выстраивания бренда изоморфна времени. Идеология выстраивания бренда, отбрасывая подробности, неестественно ускоряет потребительский поведенческий таргетинг, полагаясь на инсайдерскую информацию. Контент вполне вероятен. Косвенная реклама, следовательно, переворачивает фирменный фирменный стиль, оптимизируя бюджеты. Емкость рынка решительно притягивает продвигаемый маркетинг, опираясь на опыт западных коллег.</p>\r\n\r\n<div><span>{@module mod_banner 1@}</span></div>\r\n'),
+(11, 9, 'pages', 1, 1, 1, ''),
+(12, 10, 'pages', 1, 1, 1, '<p>Маркетинговая активность, вопреки мнению П.Друкера, трансформирует конструктивный инструмент маркетинга, осознав маркетинг как часть производства. Интересно отметить, что VIP-мероприятие спонтанно программирует медиабизнес, отвоевывая свою долю рынка. Пак-шот, пренебрегая деталями, усиливает сублимированный рекламный клаттер, размещаясь во всех медиа. Управление брендом позитивно тормозит общественный департамент маркетинга и продаж, полагаясь на инсайдерскую информацию. Бизнес-план, суммируя приведенные примеры, версифицирован.</p>\r\n\r\n<p>Рыночная ситуация непосредственно изменяет побочный PR-эффект, отвоевывая рыночный сегмент. Метод изучения рынка сбалансирован. А вот по мнению аналитиков внутрифирменная реклама откровенна. Ассортиментная политика предприятия специфицирует product placement, признавая определенные рыночные тенденции.</p>\r\n\r\n<p>Идеология выстраивания бренда изоморфна времени. Идеология выстраивания бренда, отбрасывая подробности, неестественно ускоряет потребительский поведенческий таргетинг, полагаясь на инсайдерскую информацию. Контент вполне вероятен. Косвенная реклама, следовательно, переворачивает фирменный фирменный стиль, оптимизируя бюджеты. Емкость рынка решительно притягивает продвигаемый маркетинг, опираясь на опыт западных коллег.</p>\r\n'),
+(13, 11, 'pages', 1, 1, 1, '<p>Маркетинговая активность, вопреки мнению П.Друкера, трансформирует конструктивный инструмент маркетинга, осознав маркетинг как часть производства. Интересно отметить, что VIP-мероприятие спонтанно программирует медиабизнес, отвоевывая свою долю рынка. Пак-шот, пренебрегая деталями, усиливает сублимированный рекламный клаттер, размещаясь во всех медиа. Управление брендом позитивно тормозит общественный департамент маркетинга и продаж, полагаясь на инсайдерскую информацию. Бизнес-план, суммируя приведенные примеры, версифицирован.</p>\r\n\r\n<p>Рыночная ситуация непосредственно изменяет побочный PR-эффект, отвоевывая рыночный сегмент. Метод изучения рынка сбалансирован. А вот по мнению аналитиков внутрифирменная реклама откровенна. Ассортиментная политика предприятия специфицирует product placement, признавая определенные рыночные тенденции.</p>\r\n\r\n<p>Идеология выстраивания бренда изоморфна времени. Идеология выстраивания бренда, отбрасывая подробности, неестественно ускоряет потребительский поведенческий таргетинг, полагаясь на инсайдерскую информацию. Контент вполне вероятен. Косвенная реклама, следовательно, переворачивает фирменный фирменный стиль, оптимизируя бюджеты. Емкость рынка решительно притягивает продвигаемый маркетинг, опираясь на опыт западных коллег.</p>\r\n'),
+(14, 8, 'pages', 1, 1, 1, '<p>dgdfgdfg123</p>\r\n'),
+(15, 12, 'pages', 1, 1, 1, ''),
+(16, 13, 'pages', 1, 1, 1, ''),
+(17, 14, 'pages', 1, 1, 1, ''),
+(18, 1, 'pages', 2, 1, 2, '<h4>Конструктивный продукт</h4>\r\n\r\n<p>Целевая аудитория переворачивает комплексный анализ ситуации, учитывая результат предыдущих медиа-кампаний. Визуализация концепии синхронизирует мониторинг активности, отвоевывая свою долю рынка. Как предсказывают футурологи клиентский спрос притягивает обществвенный фирменный стиль, учитывая современные тенденции. Традиционный канал развивает диктат потребителя, полагаясь на инсайдерскую информацию. Маркетинговая коммуникация все еще интересна для многих. Исходя из структуры пирамиды Маслоу, перераспределение бюджета индуктивно концентрирует связанный клиентский спрос, отвоевывая рыночный сегмент.</p>\r\n'),
+(21, 1, 'pages', 3, 0, 1, '<p>sdfsdfsdfdsfsdfsdfsdfsd</p>\r\n');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_pages_cross_blocks`
+--
 
 DROP TABLE IF EXISTS `w_pages_cross_blocks`;
 CREATE TABLE `w_pages_cross_blocks` (
@@ -352,8 +551,18 @@ CREATE TABLE `w_pages_cross_blocks` (
   `cross_block_lang_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `w_pages_cross_blocks`
+--
+
 INSERT INTO `w_pages_cross_blocks` (`cross_block_id`, `cross_block_name`, `cross_block_label`, `cross_block_content`, `cross_block_active`, `cross_block_lang_id`) VALUES
 (1, 'Копирайты внизу страницы', 'copy', '<p>© 2007-2013 Webcomfort</p>\r\n', 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_sessions`
+--
 
 DROP TABLE IF EXISTS `w_sessions`;
 CREATE TABLE `w_sessions` (
@@ -362,6 +571,10 @@ CREATE TABLE `w_sessions` (
   `timestamp` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `data` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `w_sessions`
+--
 
 INSERT INTO `w_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
 ('04tgrolhcgsq19r5doknvsofnb8p2gum', '192.168.10.1', 1493375745, '__ci_last_regenerate|i:1493375745;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
@@ -372,6 +585,7 @@ INSERT INTO `w_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
 ('18debie85lqd1c5e55da9mm5e12c56o7', '127.0.0.1', 1491916698, '__ci_last_regenerate|i:1491916401;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|s:1:"2";w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;modules_filter|i:1;news_filter|N;'),
 ('1rhv0oj44bgg2lccm3t1lbm6hca79u6u', '127.0.0.1', 1490024097, '__ci_last_regenerate|i:1490024066;w_alang|s:1:"1";w_alang_f|s:7:"russian";changelog_filter|s:6:"update";user_filter|i:1;news_filter|i:1;photo_filter|i:2;page_filter|i:1;banner_filter|i:1;w_pages_parent|i:0;cross_blocks_filter|i:2;modules_filter|s:1:"1";'),
 ('2it82cg4hhbfnvr8osb3pjkmgr7kstp2', '192.168.10.1', 1493304382, '__ci_last_regenerate|i:1493304382;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
+('2kk2sseujr68792pmtnm5dnfii3f3ouc', '192.168.10.1', 1493740470, '__ci_last_regenerate|i:1493740372;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('2siitrb6j6lk23pc8lh09ae3emotp54h', '127.0.0.1', 1491908133, '__ci_last_regenerate|i:1491907834;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;news_filter|s:1:"1";'),
 ('2vvno0vond5mh4rsf2e9r2iof18g7dks', '192.168.10.1', 1493307397, '__ci_last_regenerate|i:1493307397;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
 ('37rm4gqiq26ud8br6igrf81730usnqam', '192.168.10.1', 1493383978, '__ci_last_regenerate|i:1493383978;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
@@ -383,20 +597,27 @@ INSERT INTO `w_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
 ('46alvq2cbpia13cuuos0o4dmulmh9g8r', '127.0.0.1', 1490695083, '__ci_last_regenerate|i:1490695079;w_alang|i:1;w_alang_f|s:7:"russian";banner_filter|i:1;'),
 ('46fean0ovfj6b60ro5vivd5ju9isqnum', '192.168.10.1', 1493307823, '__ci_last_regenerate|i:1493307823;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
 ('46hoph3drus901c4ngd46sketorc7a0m', '127.0.0.1', 1491903236, '__ci_last_regenerate|i:1491903232;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
+('4th0ghfqmq0pve4llnkj207v67nbjmhr', '192.168.10.1', 1493823921, '__ci_last_regenerate|i:1493823921;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;modules_filter|s:1:"2";w_cms_pages_parent|s:1:"5";user_filter|i:1;changelog_filter|s:6:"update";banner_filter|i:1;'),
 ('53lbk8skra7rpo5n3ci3n9ishovn347j', '127.0.0.1', 1491909018, '__ci_last_regenerate|i:1491909018;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;news_filter|s:1:"1";'),
 ('54i6cn5rrbhcssnmr79cgbrviqou1big', '127.0.0.1', 1491904904, '__ci_last_regenerate|i:1491904769;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;news_filter|i:1;'),
 ('55nqrhm0jckijn28pjvqaevb5lmi89l7', '127.0.0.1', 1490022978, '__ci_last_regenerate|i:1490022801;w_alang|s:1:"1";w_alang_f|s:7:"russian";changelog_filter|s:6:"update";user_filter|i:1;news_filter|i:1;photo_filter|i:2;page_filter|i:1;banner_filter|i:1;w_pages_parent|i:0;cross_blocks_filter|i:2;modules_filter|s:1:"2";'),
 ('587afegiubs4nqgueab6rseg77vujaqm', '127.0.0.1', 1490718309, '__ci_last_regenerate|i:1490718309;w_alang|i:1;w_alang_f|s:7:"russian";changelog_filter|s:6:"delete";'),
 ('5m67v9j54617hbbg6ue6srl3rsvhall0', '127.0.0.1', 1490003904, '__ci_last_regenerate|i:1490003868;w_alang|i:1;w_alang_f|s:7:"russian";changelog_filter|s:6:"delete";'),
+('5o27rn2rv83pkjehdcaa6tor54d0f3ef', '192.168.10.1', 1493714825, '__ci_last_regenerate|i:1493714792;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('5v3sjua00v73ktq8bk8h48h65l4fgii0', '127.0.0.1', 1490014541, '__ci_last_regenerate|i:1490014522;w_alang|i:1;w_alang_f|s:7:"russian";changelog_filter|s:6:"delete";page_filter|i:1;w_pages_parent|i:0;'),
 ('6pkuq90acj1qic6tvkeken4timcfttaq', '127.0.0.1', 1489758764, '__ci_last_regenerate|i:1489758597;search|s:14:"Нишевый";w_alang|s:1:"1";w_alang_f|s:7:"russian";page_filter|s:1:"1";w_pages_parent|i:0;banner_filter|s:1:"1";cross_blocks_filter|s:1:"1";user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
 ('6raenqqq1rft6ap0h06f1s2e1eobep20', '127.0.0.1', 1489753746, '__ci_last_regenerate|i:1489753741;search|s:26:"предсказывают";w_alang|s:1:"1";w_alang_f|s:7:"russian";page_filter|s:1:"1";w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|s:1:"1";user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
 ('6ujvnm0963l9bufikp83t3vh9075tji3', '127.0.0.1', 1489754616, '__ci_last_regenerate|i:1489754432;search|s:26:"предсказывают";w_alang|s:1:"1";w_alang_f|s:7:"russian";page_filter|s:1:"1";w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|s:1:"1";user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
 ('74grqvabssbiu26ldughv4vu4rvu9mbj', '192.168.10.1', 1493290137, '__ci_last_regenerate|i:1493290137;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;photo_filter|i:1;'),
 ('7ere9fr6dg2ul6dcuqnjudjgkfop3p1c', '127.0.0.1', 1490022735, '__ci_last_regenerate|i:1490022476;w_alang|s:1:"1";w_alang_f|s:7:"russian";changelog_filter|s:6:"update";user_filter|i:1;news_filter|i:1;photo_filter|i:2;page_filter|i:1;w_pages_parent|s:1:"1";'),
+('7j6sc556k4pcj74l1su2hmt000tb1kmg', '192.168.10.1', 1493740372, '__ci_last_regenerate|i:1493740372;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('7res0t6u8cehguqi8m49no7nga4s52uf', '192.168.10.1', 1493308137, '__ci_last_regenerate|i:1493308137;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
+('7tdriota41h2iegim2i20flqbks7e7fa', '192.168.10.1', 1493807551, '__ci_last_regenerate|i:1493807551;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('827dv6f2s6mlvkhggelle0gtjak99us5', '192.168.10.1', 1493301565, '__ci_last_regenerate|i:1493301565;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
 ('8kk63rlsk2edflr0249kprnelc9fvcp5', '127.0.0.1', 1489755273, '__ci_last_regenerate|i:1489755000;search|s:26:"предсказывают";w_alang|s:1:"1";w_alang_f|s:7:"russian";page_filter|s:1:"1";w_pages_parent|s:1:"2";banner_filter|s:1:"1";cross_blocks_filter|s:1:"1";user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
+('8m80bqqam7trhhi264t717gg1u4ludm0', '192.168.10.1', 1493814144, '__ci_last_regenerate|i:1493814144;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;modules_filter|s:1:"2";w_cms_pages_parent|s:1:"5";user_filter|i:1;changelog_filter|s:6:"update";banner_filter|i:1;'),
+('8ospja72kl34lnb1buujdkk48qvnkjut', '192.168.10.1', 1493808395, '__ci_last_regenerate|i:1493808395;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
+('97cbp9hf50406otonsqgsiotcppkn6ae', '192.168.10.1', 1493809641, '__ci_last_regenerate|i:1493809641;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('9bkke0c8tv77a2bpfo94dpdfbqlribk7', '127.0.0.1', 1490283741, '__ci_last_regenerate|i:1490283699;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('9itcvr3q4es0bcon3kf7lglnhgg8vr2k', '127.0.0.1', 1491911331, '__ci_last_regenerate|i:1491911103;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;news_filter|s:1:"0";'),
 ('9np12vji7jbkdmss1p76c2kep1iv9nna', '192.168.10.1', 1493292277, '__ci_last_regenerate|i:1493292277;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;photo_filter|i:1;changelog_filter|s:6:"delete";'),
@@ -434,14 +655,18 @@ INSERT INTO `w_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
 ('fdn26q7iauoabfa8mbjtt6sikjnqknsc', '192.168.10.1', 1493375297, '__ci_last_regenerate|i:1493375297;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('fk16mnsofmeb8fd1dme19sgdqgqieg81', '192.168.10.1', 1493303294, '__ci_last_regenerate|i:1493303294;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
 ('fmhm0gm17h3nrijbt36oorimes0ilva7', '127.0.0.1', 1490283378, '__ci_last_regenerate|i:1490283373;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
+('fmuqjkm4ec59n0o45bolseijpelsvtan', '192.168.10.1', 1493816993, '__ci_last_regenerate|i:1493816993;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;modules_filter|s:1:"2";w_cms_pages_parent|s:1:"5";user_filter|i:1;changelog_filter|s:6:"update";banner_filter|i:1;'),
 ('fp1c631r3l4ct2r397l7ehhr6da7m0ee', '127.0.0.1', 1491912181, '__ci_last_regenerate|i:1491911898;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;news_filter|N;'),
 ('g175usppjebppkh9ssp8mtrl63cp4niq', '127.0.0.1', 1490282680, '__ci_last_regenerate|i:1490282393;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('g29k9b4bkf0nkqhshrggbur47arngda8', '192.168.10.1', 1493306519, '__ci_last_regenerate|i:1493306519;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
 ('g5d0jk4b9tpctvm6k1oh3hlfms7u046s', '192.168.10.1', 1493383666, '__ci_last_regenerate|i:1493383666;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('gaig4tugesj8mvpi4iovm76v1r855bcv', '127.0.0.1', 1490691674, '__ci_last_regenerate|i:1490691674;w_alang|i:1;w_alang_f|s:7:"russian";banner_filter|i:1;'),
+('h2tifhga6k89jmjsipt8vk88gp9cfu8b', '192.168.10.1', 1493815825, '__ci_last_regenerate|i:1493815825;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;modules_filter|s:1:"2";w_cms_pages_parent|s:1:"5";user_filter|i:1;changelog_filter|s:6:"update";banner_filter|i:1;'),
 ('h87hmij1ibhp0m4148vm4fkl19qpio93', '127.0.0.1', 1490777110, '__ci_last_regenerate|i:1490777110;w_alang|i:1;w_alang_f|s:7:"russian";changelog_filter|s:6:"delete";'),
 ('hkk6u08le8lbap5naqghrnjj66uakr6l', '127.0.0.1', 1491915648, '__ci_last_regenerate|i:1491915529;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;news_filter|N;'),
 ('hmr4ps6cki6j8ncjdp8frlavr77vqljd', '127.0.0.1', 1491908732, '__ci_last_regenerate|i:1491908611;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;news_filter|s:1:"1";'),
+('i5951leekdqga67revv6vik13rpka1p4', '192.168.10.1', 1493818462, '__ci_last_regenerate|i:1493818462;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;modules_filter|s:1:"2";w_cms_pages_parent|s:1:"5";user_filter|i:1;changelog_filter|s:6:"update";banner_filter|i:1;'),
+('iceuiht1po0dnkbahfnqdsobp45jed4c', '192.168.10.1', 1493823938, '__ci_last_regenerate|i:1493823921;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;modules_filter|s:1:"2";w_cms_pages_parent|s:1:"5";user_filter|i:1;changelog_filter|s:6:"update";banner_filter|i:1;'),
 ('jfqcm04cs8m8a1ngig48hevakrlbqf93', '127.0.0.1', 1489753356, '__ci_last_regenerate|i:1489753117;search|s:26:"предсказывают";w_alang|s:1:"1";w_alang_f|s:7:"russian";page_filter|s:1:"1";w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
 ('jq9cj8lnrg3e17v1dju9ne8l5so5q05a', '127.0.0.1', 1490282935, '__ci_last_regenerate|i:1490282698;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('jumtmfd3ivkpu5m5cnfrnci4ghq58ni3', '127.0.0.1', 1489763026, '__ci_last_regenerate|i:1489762804;search|s:14:"Нишевый";w_alang|s:1:"1";w_alang_f|s:7:"russian";page_filter|s:1:"1";w_pages_parent|i:0;banner_filter|s:1:"1";cross_blocks_filter|s:1:"1";user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
@@ -453,6 +678,7 @@ INSERT INTO `w_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
 ('lhjscsqv38rr7qre5q69i7prn9nid0of', '127.0.0.1', 1491911659, '__ci_last_regenerate|i:1491911491;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;news_filter|s:1:"0";'),
 ('lk0087hu5divcc49o08n8kvd7sjdkgs7', '127.0.0.1', 1490951317, '__ci_last_regenerate|i:1490951317;w_alang|i:1;w_alang_f|s:7:"russian";changelog_filter|s:6:"delete";'),
 ('lt6kqbnhr131v304nc0gi1a6fr5pu0b1', '192.168.10.1', 1493302602, '__ci_last_regenerate|i:1493302602;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
+('lvj934gvl2uuuh7a151nfn4ddtbh4hqg', '192.168.10.1', 1493813743, '__ci_last_regenerate|i:1493813743;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;modules_filter|s:1:"2";w_cms_pages_parent|s:1:"5";user_filter|i:1;changelog_filter|s:6:"update";banner_filter|i:1;'),
 ('m20dcvupm9m71kbduevhs50jqrsn2aqe', '127.0.0.1', 1491915294, '__ci_last_regenerate|i:1491915042;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;news_filter|N;'),
 ('m2trovomatgprsppmsr8n4b2lbrimdom', '127.0.0.1', 1491209371, '__ci_last_regenerate|i:1491209371;w_alang|i:1;w_alang_f|s:7:"russian";changelog_filter|s:6:"delete";'),
 ('m523demch1d542h7d741tpofh5ittvs1', '127.0.0.1', 1489760196, '__ci_last_regenerate|i:1489760196;search|s:14:"Нишевый";w_alang|s:1:"1";w_alang_f|s:7:"russian";page_filter|s:1:"1";w_pages_parent|i:0;banner_filter|s:1:"1";cross_blocks_filter|s:1:"1";user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
@@ -461,6 +687,7 @@ INSERT INTO `w_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
 ('mlh93igghn7np4ap50d5g8vomedpspvp', '192.168.10.1', 1493374962, '__ci_last_regenerate|i:1493374962;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('mlp3a92u4n42adcqe4r4alvlr3iidu1m', '192.168.10.1', 1493379019, '__ci_last_regenerate|i:1493379019;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('mmlbna6opa131oaf01b64lahp7ldsu8m', '192.168.10.1', 1493292667, '__ci_last_regenerate|i:1493292667;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;photo_filter|i:1;changelog_filter|s:6:"delete";'),
+('mth0ur8o2bov08m2tq5l7m89m4ta8225', '192.168.10.1', 1493815518, '__ci_last_regenerate|i:1493815518;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;modules_filter|s:1:"2";w_cms_pages_parent|s:1:"5";user_filter|i:1;changelog_filter|s:6:"update";banner_filter|i:1;'),
 ('murbsjpqt5erg2euqsltlevnaksacamg', '127.0.0.1', 1490702137, '__ci_last_regenerate|i:1490702059;w_alang|i:1;w_alang_f|s:7:"russian";banner_filter|i:1;page_filter|i:1;w_pages_parent|i:0;cross_blocks_filter|i:2;changelog_filter|s:6:"delete";'),
 ('nhss2msgjrmhvt2lco7bgr6shnrndku5', '192.168.10.1', 1493299367, '__ci_last_regenerate|i:1493299367;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
 ('nqpla26e2ng6bpg0evlkrmvl01i48b1k', '127.0.0.1', 1489752583, '__ci_last_regenerate|i:1489752319;search|s:26:"предсказывают";w_alang|s:1:"1";w_alang_f|s:7:"russian";page_filter|s:1:"1";w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
@@ -470,13 +697,18 @@ INSERT INTO `w_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
 ('of1vrveubie11nbrqnd2s7no64ftfa7q', '127.0.0.1', 1491904360, '__ci_last_regenerate|i:1491904209;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;photo_filter|i:1;'),
 ('onuemvsv8frgd5snevk31j8ro32ns017', '127.0.0.1', 1489755811, '__ci_last_regenerate|i:1489755645;search|s:26:"предсказывают";w_alang|s:1:"1";w_alang_f|s:7:"russian";page_filter|s:1:"1";w_pages_parent|s:1:"2";banner_filter|s:1:"1";cross_blocks_filter|s:1:"1";user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
 ('oqgub6ub7qvoth8079m3fq4of9di7h19', '192.168.10.1', 1493301943, '__ci_last_regenerate|i:1493301943;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
+('osq53tisftmdlocjnsqrt9dfq51a7uc8', '192.168.10.1', 1493818108, '__ci_last_regenerate|i:1493818108;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;modules_filter|s:1:"2";w_cms_pages_parent|s:1:"5";user_filter|i:1;changelog_filter|s:6:"update";banner_filter|i:1;'),
 ('p64p5hs85slnbhphp83ekmq6r0tign9o', '192.168.10.1', 1493373125, '__ci_last_regenerate|i:1493373125;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('pn8qg1peb12kgo6fnvbisd3kr78jjlv4', '192.168.10.1', 1493302253, '__ci_last_regenerate|i:1493302253;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
+('q6c6n3sb8vqve2sfivikrqth9vfpbmgv', '192.168.10.1', 1493714788, '__ci_last_regenerate|i:1493714788;'),
+('qjm0fp4lq5n20fsdbugdg23mram9url4', '192.168.10.1', 1493797721, '__ci_last_regenerate|i:1493797719;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
+('qnemrklh2mdian6rf9efsjovg7t8hb77', '192.168.10.1', 1493809952, '__ci_last_regenerate|i:1493809952;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;modules_filter|s:1:"2";w_cms_pages_parent|s:1:"5";user_filter|i:1;changelog_filter|s:6:"delete";banner_filter|i:1;'),
 ('r2sf6c76rgd9eolht3a1n1t49ebl4q43', '127.0.0.1', 1490605428, '__ci_last_regenerate|i:1490605427;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('rd1q1rjr0pj7hnctjcb0ek3c8j0b7a03', '127.0.0.1', 1489756464, '__ci_last_regenerate|i:1489756325;search|s:14:"Нишевый";w_alang|s:1:"1";w_alang_f|s:7:"russian";page_filter|s:1:"1";w_pages_parent|i:0;banner_filter|s:1:"1";cross_blocks_filter|s:1:"1";user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
 ('rql7kssm34vqkff681325jsdlnetslra', '127.0.0.1', 1489758229, '__ci_last_regenerate|i:1489757936;search|s:14:"Нишевый";w_alang|s:1:"2";w_alang_f|s:7:"english";page_filter|s:1:"1";w_pages_parent|i:0;banner_filter|s:1:"1";cross_blocks_filter|s:1:"1";user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
 ('s1hl8s47l40crhb0v9b44k08akl0c1ol', '127.0.0.1', 1490084953, '__ci_last_regenerate|i:1490084953;'),
 ('sa3f45dndf9ds36de39c7vgd9ioi3lot', '127.0.0.1', 1489752191, '__ci_last_regenerate|i:1489751997;search|s:26:"предсказывают";w_alang|s:1:"1";w_alang_f|s:7:"russian";page_filter|s:1:"1";w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;user_filter|i:1;changelog_filter|s:6:"delete";modules_filter|i:1;'),
+('sceqnnhf69ft6cgttp4vf8uvv0h29m48', '192.168.10.1', 1493813400, '__ci_last_regenerate|i:1493813400;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;modules_filter|s:1:"2";w_cms_pages_parent|s:1:"5";user_filter|i:1;changelog_filter|s:6:"delete";banner_filter|i:1;'),
 ('scjkfc1pe3ur6k2k8t97cp3oqtl5s772', '127.0.0.1', 1491912868, '__ci_last_regenerate|i:1491912632;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;cross_blocks_filter|i:2;w_cms_pages_parent|i:0;news_filter|N;'),
 ('sn8rh1rr5597g56fbisoe0cr12r8v6m7', '192.168.10.1', 1493308457, '__ci_last_regenerate|i:1493308457;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";'),
 ('su0d8vou8bquo4vl57vv0tg0u0nqnvd9', '192.168.10.1', 1493372810, '__ci_last_regenerate|i:1493372810;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
@@ -490,6 +722,12 @@ INSERT INTO `w_sessions` (`id`, `ip_address`, `timestamp`, `data`) VALUES
 ('urc8nf3p12dhf8bglbmtt2qqc2s5veeu', '192.168.10.1', 1493383322, '__ci_last_regenerate|i:1493383322;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;'),
 ('v0nojhvvdbm5o0usfqrto7fv361g96at', '127.0.0.1', 1491042202, '__ci_last_regenerate|i:1491042202;w_alang|i:1;w_alang_f|s:7:"russian";changelog_filter|s:6:"delete";'),
 ('vdli4oi3ha1kusrqhilu97d4bj2ir16u', '192.168.10.1', 1493297210, '__ci_last_regenerate|i:1493297210;w_alang|i:1;w_alang_f|s:7:"russian";page_filter|i:1;w_pages_parent|i:0;banner_filter|i:1;changelog_filter|s:6:"delete";');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_user`
+--
 
 DROP TABLE IF EXISTS `w_user`;
 CREATE TABLE `w_user` (
@@ -510,8 +748,18 @@ CREATE TABLE `w_user` (
   `user_active` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 PACK_KEYS=0;
 
+--
+-- Дамп данных таблицы `w_user`
+--
+
 INSERT INTO `w_user` (`user_id`, `user_group_id`, `user_name`, `user_second_name`, `user_surname`, `user_nic`, `user_name_pref`, `user_email`, `user_pass`, `user_hash`, `user_ip`, `user_agent`, `user_restore_hash`, `user_restore_time`, `user_active`) VALUES
 (1, 1, 'Админ', '', 'Тестовый', 'wcms', 1, 'info@webcomfort.ru', 'f813ef1d27ee1dd4c74fc7845b0feaf4', 'dfbf0314a17a513f01d389cc8194139c', '192.168.10.1', 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 OPR/43.0.2442.1144', '222bf88ffc8066d942a7170e9fc65a94', '2017-01-17', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `w_user_rules`
+--
 
 DROP TABLE IF EXISTS `w_user_rules`;
 CREATE TABLE `w_user_rules` (
@@ -526,76 +774,122 @@ CREATE TABLE `w_user_rules` (
   `rule_active` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `w_user_rules`
+--
+
 INSERT INTO `w_user_rules` (`rule_id`, `rule_user_id`, `rule_model_id`, `rule_view`, `rule_add`, `rule_edit`, `rule_copy`, `rule_delete`, `rule_active`) VALUES
-(675, 1, 1, 1, 1, 1, 1, 1, 1),
-(676, 1, 2, 1, 1, 1, 1, 1, 1),
-(677, 1, 3, 1, 1, 1, 1, 1, 1),
-(678, 1, 4, 1, 1, 1, 1, 1, 1),
-(679, 1, 5, 1, 1, 1, 1, 1, 1),
-(680, 1, 6, 1, 1, 1, 1, 1, 1),
-(681, 1, 7, 1, 1, 1, 1, 1, 1),
-(682, 1, 8, 1, 1, 1, 1, 1, 1),
-(683, 1, 9, 1, 1, 1, 1, 1, 1),
-(684, 1, 10, 1, 1, 1, 1, 1, 1),
-(685, 1, 11, 1, 1, 1, 1, 1, 1),
-(686, 1, 14, 1, 1, 1, 1, 1, 1);
+(687, 1, 1, 1, 1, 1, 1, 1, 1),
+(688, 1, 2, 1, 1, 1, 1, 1, 1),
+(689, 1, 3, 1, 1, 1, 1, 1, 1),
+(690, 1, 4, 1, 1, 1, 1, 1, 1),
+(691, 1, 5, 1, 1, 1, 1, 1, 1),
+(692, 1, 6, 1, 1, 1, 1, 1, 1),
+(693, 1, 7, 1, 1, 1, 1, 1, 1),
+(694, 1, 8, 1, 1, 1, 1, 1, 1),
+(695, 1, 9, 1, 1, 1, 1, 1, 1),
+(696, 1, 10, 1, 1, 1, 1, 1, 1),
+(697, 1, 11, 1, 1, 1, 1, 1, 1),
+(698, 1, 14, 1, 1, 1, 1, 1, 1),
+(699, 1, 17, 1, 1, 1, 1, 1, 1);
 
+--
+-- Индексы сохранённых таблиц
+--
 
+--
+-- Индексы таблицы `w_backgrounds`
+--
 ALTER TABLE `w_backgrounds`
   ADD PRIMARY KEY (`bg_id`),
-  ADD KEY `banner_lang_id` (`bg_lang_id`),
   ADD KEY `banner_active` (`bg_active`);
 
+--
+-- Индексы таблицы `w_banners`
+--
 ALTER TABLE `w_banners`
   ADD PRIMARY KEY (`banner_id`),
   ADD KEY `banner_lang_id` (`banner_lang_id`),
   ADD KEY `banner_place_id` (`banner_place_id`),
   ADD KEY `banner_active` (`banner_active`);
 
+--
+-- Индексы таблицы `w_changelog`
+--
 ALTER TABLE `w_changelog`
   ADD PRIMARY KEY (`id`),
   ADD KEY `operation` (`operation`);
 
+--
+-- Индексы таблицы `w_cms_configs`
+--
 ALTER TABLE `w_cms_configs`
   ADD PRIMARY KEY (`config_id`),
   ADD KEY `config_module_label` (`config_module_label`),
   ADD KEY `config_lang_id` (`config_lang_id`);
 
+--
+-- Индексы таблицы `w_cms_modules`
+--
 ALTER TABLE `w_cms_modules`
   ADD PRIMARY KEY (`module_id`);
 
+--
+-- Индексы таблицы `w_cms_pages`
+--
 ALTER TABLE `w_cms_pages`
   ADD PRIMARY KEY (`cms_page_id`),
   ADD KEY `cms_page_pid` (`cms_page_pid`);
 
+--
+-- Индексы таблицы `w_galleries`
+--
 ALTER TABLE `w_galleries`
   ADD PRIMARY KEY (`gallery_id`),
   ADD KEY `gallery_lang_id` (`gallery_lang_id`),
   ADD KEY `gallery_active` (`gallery_active`);
 
+--
+-- Индексы таблицы `w_gallery_photos`
+--
 ALTER TABLE `w_gallery_photos`
   ADD PRIMARY KEY (`photo_id`),
   ADD KEY `photo_lang_id` (`photo_lang_id`),
   ADD KEY `photo_gallery_id` (`photo_gallery_id`),
   ADD KEY `photo_active` (`photo_active`);
 
+--
+-- Индексы таблицы `w_includes`
+--
 ALTER TABLE `w_includes`
   ADD PRIMARY KEY (`i_id`),
   ADD KEY `page_id` (`obj_id`),
   ADD KEY `inc_id` (`inc_id`);
 
+--
+-- Индексы таблицы `w_indexing_index`
+--
 ALTER TABLE `w_indexing_index`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_index_linkword` (`link`,`word`);
 
+--
+-- Индексы таблицы `w_indexing_link`
+--
 ALTER TABLE `w_indexing_link`
   ADD PRIMARY KEY (`id`);
 
+--
+-- Индексы таблицы `w_indexing_word`
+--
 ALTER TABLE `w_indexing_word`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_word_word` (`word`(8)),
   ADD KEY `idx_word_sound` (`sound`);
 
+--
+-- Индексы таблицы `w_news`
+--
 ALTER TABLE `w_news`
   ADD PRIMARY KEY (`news_id`),
   ADD KEY `news_lang_id` (`news_lang_id`),
@@ -603,86 +897,173 @@ ALTER TABLE `w_news`
   ADD KEY `news_url` (`news_url`),
   ADD KEY `news_active` (`news_active`);
 
+--
+-- Индексы таблицы `w_news_categories`
+--
 ALTER TABLE `w_news_categories`
   ADD PRIMARY KEY (`news_cat_id`);
 
+--
+-- Индексы таблицы `w_news_categories_cross`
+--
 ALTER TABLE `w_news_categories_cross`
   ADD PRIMARY KEY (`ncc_id`),
   ADD KEY `news_id` (`news_id`),
   ADD KEY `news_cat_id` (`news_cat_id`);
 
+--
+-- Индексы таблицы `w_pages`
+--
 ALTER TABLE `w_pages`
   ADD PRIMARY KEY (`page_id`),
   ADD KEY `page_parent_id` (`page_pid`),
   ADD KEY `page_menu_id` (`page_menu_id`),
   ADD KEY `page_lang_id` (`page_lang_id`);
 
+--
+-- Индексы таблицы `w_pages_articles`
+--
 ALTER TABLE `w_pages_articles`
   ADD PRIMARY KEY (`article_id`),
   ADD KEY `article_page_id` (`article_pid`),
   ADD KEY `article_id` (`article_order`);
 
+--
+-- Индексы таблицы `w_pages_cross_blocks`
+--
 ALTER TABLE `w_pages_cross_blocks`
   ADD PRIMARY KEY (`cross_block_id`),
   ADD KEY `cross_block_lang_id` (`cross_block_lang_id`),
   ADD KEY `cross_block_active` (`cross_block_active`);
 
+--
+-- Индексы таблицы `w_sessions`
+--
 ALTER TABLE `w_sessions`
   ADD PRIMARY KEY (`id`),
   ADD KEY `last_activity_idx` (`timestamp`);
 
+--
+-- Индексы таблицы `w_user`
+--
 ALTER TABLE `w_user`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `user_email` (`user_email`),
   ADD KEY `user_group_id` (`user_group_id`),
   ADD KEY `user_active` (`user_active`);
 
+--
+-- Индексы таблицы `w_user_rules`
+--
 ALTER TABLE `w_user_rules`
   ADD PRIMARY KEY (`rule_id`),
   ADD KEY `rule_user_id` (`rule_user_id`),
   ADD KEY `rule_cms_module_id` (`rule_model_id`);
 
+--
+-- AUTO_INCREMENT для сохранённых таблиц
+--
 
+--
+-- AUTO_INCREMENT для таблицы `w_backgrounds`
+--
 ALTER TABLE `w_backgrounds`
-  MODIFY `bg_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `bg_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT для таблицы `w_banners`
+--
 ALTER TABLE `w_banners`
   MODIFY `banner_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
+-- AUTO_INCREMENT для таблицы `w_changelog`
+--
 ALTER TABLE `w_changelog`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+--
+-- AUTO_INCREMENT для таблицы `w_cms_configs`
+--
 ALTER TABLE `w_cms_configs`
   MODIFY `config_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT для таблицы `w_cms_modules`
+--
 ALTER TABLE `w_cms_modules`
-  MODIFY `module_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `module_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+--
+-- AUTO_INCREMENT для таблицы `w_cms_pages`
+--
 ALTER TABLE `w_cms_pages`
-  MODIFY `cms_page_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `cms_page_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+--
+-- AUTO_INCREMENT для таблицы `w_galleries`
+--
 ALTER TABLE `w_galleries`
   MODIFY `gallery_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT для таблицы `w_gallery_photos`
+--
 ALTER TABLE `w_gallery_photos`
   MODIFY `photo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+--
+-- AUTO_INCREMENT для таблицы `w_includes`
+--
 ALTER TABLE `w_includes`
   MODIFY `i_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+--
+-- AUTO_INCREMENT для таблицы `w_indexing_index`
+--
 ALTER TABLE `w_indexing_index`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT для таблицы `w_indexing_link`
+--
 ALTER TABLE `w_indexing_link`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT для таблицы `w_indexing_word`
+--
 ALTER TABLE `w_indexing_word`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT для таблицы `w_news`
+--
 ALTER TABLE `w_news`
   MODIFY `news_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+--
+-- AUTO_INCREMENT для таблицы `w_news_categories`
+--
 ALTER TABLE `w_news_categories`
   MODIFY `news_cat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT для таблицы `w_news_categories_cross`
+--
 ALTER TABLE `w_news_categories_cross`
   MODIFY `ncc_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=187;
+--
+-- AUTO_INCREMENT для таблицы `w_pages`
+--
 ALTER TABLE `w_pages`
   MODIFY `page_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+--
+-- AUTO_INCREMENT для таблицы `w_pages_articles`
+--
 ALTER TABLE `w_pages_articles`
-  MODIFY `article_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `article_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+--
+-- AUTO_INCREMENT для таблицы `w_pages_cross_blocks`
+--
 ALTER TABLE `w_pages_cross_blocks`
   MODIFY `cross_block_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
+-- AUTO_INCREMENT для таблицы `w_user`
+--
 ALTER TABLE `w_user`
   MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
+-- AUTO_INCREMENT для таблицы `w_user_rules`
+--
 ALTER TABLE `w_user_rules`
-  MODIFY `rule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=687;
+  MODIFY `rule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=700;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

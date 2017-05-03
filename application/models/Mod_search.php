@@ -14,7 +14,6 @@ class Mod_search extends CI_Model {
     {
         parent::__construct();
 
-        $this->lang->load('cms_search', LANGF);
         $this->load->helper(array('text','string'));
 
         if ($this->input->post('search')) $this->session->set_userdata(array('search'=>mysqli_real_escape_string($this->db->conn_id, $this->input->post('search', TRUE))));
@@ -122,7 +121,6 @@ class Mod_search extends CI_Model {
             $limit = 10;
             $start = (preg_int ($this->uri->segment(2))) ? $this->uri->segment(2) : 0;
 
-            $this->lang->load('cms_pagination', LANGF);
             $this->load->library('pagination');
             $config['base_url']     = '/'.$this->uri->segment(1).'/';
             $config['total_rows']   = $query_count->num_rows();

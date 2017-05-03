@@ -23,7 +23,6 @@ class Mod_contacts extends CI_Model {
      */
     function get_output($params = array())
     {
-        $this->lang->load('cms_contacts', $this->session->userdata('LANGF'));
         return $this->load->view('site/contacts', array(), true);
     }
 
@@ -31,7 +30,6 @@ class Mod_contacts extends CI_Model {
 
     function p_send()
     {
-        $this->lang->load('cms_contacts', $this->session->userdata('LANGF'));
         $this->load->model('Cms_page');
 
         $email  = $this->input->post('contacts_email', TRUE);

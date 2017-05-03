@@ -11,7 +11,6 @@ class Adm_news extends CI_Model {
         if($this->input->post('PME_sys_rec', TRUE) === '0' || $this->input->post('PME_sys_savecopy', TRUE) || $this->input->post('PME_sys_savedelete', TRUE)) header ('Location: /admin/'.$this->uri->segment(2));
         parent::__construct();
         $this->load->helper( array('string') );
-        $this->config->load('cms_news');
         $this->load->model('Cms_inclusions');
 		$this->load->model('Cms_news');
         $this->load->model('Cms_myedit');

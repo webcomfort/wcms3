@@ -105,7 +105,6 @@ class Mod_news extends CI_Model {
         $query_count = $this->db->get();
 		$count_rows = $query_count->num_rows();
 
-        $this->lang->load('cms_pagination', LANGF);
         $this->load->library('pagination');
         $config['base_url']     = '/'.$page_url;
         $config['total_rows']   = $query_count->num_rows();
