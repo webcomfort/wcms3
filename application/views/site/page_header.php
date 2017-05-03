@@ -30,7 +30,7 @@
         
         <?php echo @$page_head; ?>
 
-        <script src="https://www.google.com/recaptcha/api.js?onload=CaptchaCallback&render=explicit" async defer></script>
+        <script src='https://www.google.com/recaptcha/api.js'></script>
     </head>
 
     <body>
@@ -39,7 +39,7 @@
 
         <div class="row mt10 mb10">
             <div class="col-xs-8"><h3><a href="/">Webcomfort CMS</a></h3></div>
-            <div class="col-xs-4 pt10"><?php echo @view('search_form', array(), 'cms_search', 'site/'); ?></div>
+            <div class="col-xs-4 pt10"><?php echo @view('search_form', array(), false, 'site/'); ?></div>
         </div>
 		
 		<div class="row mt20">

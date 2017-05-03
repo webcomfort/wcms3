@@ -1,9 +1,8 @@
 /************************************************
  ------- Contacts
  *************************************************/
-$('#contacts_form').on('submit', function (e) {
-    e.preventDefault();
-    var formData = $(this).serialize();
+function onSubmit(token) {
+    var formData = $('#contacts_form').serialize();
     $.ajax({
         type: "POST",
         url: "/mod_contacts/p_send/",
@@ -19,7 +18,7 @@ $('#contacts_form').on('submit', function (e) {
             alert('SYSTEM ERROR, TRY LATER AGAIN');
         }
     });
-});
+}
 
 /************************************************
  ------- Replace all SVG images with inline SVG

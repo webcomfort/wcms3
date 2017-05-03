@@ -9,6 +9,7 @@ class Mod_contacts extends CI_Model {
 
     function __construct()
     {
+        $this->lang->load('cms', $this->session->userdata('LANGF'));
         parent::__construct();
     }
 
