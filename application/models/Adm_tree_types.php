@@ -142,7 +142,8 @@ class Adm_tree_types extends CI_Model {
             if (count($forest) > 0) $plus = true;
         }
 
-        return '<a data-toggle="collapse" href="#collapseExample'.$key.'" aria-expanded="false" aria-controls="collapseExample'.$key.'">'.$value.(($plus) ? ' [+]' : '').'</a><div class="collapse" id="collapseExample'.$key.'">'.$this->_reformat_forest($forest).'</div>';
+        if ($plus) return '<a data-toggle="collapse" href="#collapseExample'.$key.'" aria-expanded="false" aria-controls="collapseExample'.$key.'">'.$value.' [+]'.'</a><div class="collapse" id="collapseExample'.$key.'">'.$this->_reformat_forest($forest).'</div>';
+        else return $value;
     }
 
     /**
