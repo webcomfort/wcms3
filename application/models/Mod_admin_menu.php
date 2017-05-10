@@ -38,6 +38,7 @@ class Mod_admin_menu extends CI_Model {
             $this->page_array = array_unique($this->page_array);
 
             $forest = $this->tree->get_tree('cms_page_id', 'cms_page_pid', $query->result_array(), 0);
+
             return get_bootstrap_menu ($forest, 'cms_page_id', 'cms_page_pid', 'cms_page_name', 'cms_page_id', '', $link = '/admin/', 'cms_page_status', 3, $this->uri->segment(2), 'active', '', 0, $this->page_array);
         }
     }

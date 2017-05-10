@@ -43,7 +43,7 @@ else
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url']	= 'http://wcms3.loc/';
+$config['base_url']	= 'http://museumtree.loc/';
 
 /*
 |--------------------------------------------------------------------------
