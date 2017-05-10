@@ -8,6 +8,7 @@ class Adm_tree_types extends CI_Model {
 
     private $forest = array();
     private $items_list = array();
+    private $crumbs = array();
 
     function __construct()
     {
@@ -169,6 +170,59 @@ class Adm_tree_types extends CI_Model {
         return $menu;
     }
 
+    /**
+     * Переформатирование дочерних элементов под вывод списка
+     *
+     * @access	private
+     * @param   array
+     * @param   array
+     * @return	array
+     */
+
+    function _get_crumbs ()
+    {
+        $crumbs = '<small>';
+        $this->set_crumbs($this->forest, 'type_id', 'type_pid', 'type_name', '/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/parent/', $this->session->userdata('w_type_parent'));
+        $this->tree->get_crumbs();
+        $this->crumbs = array_reverse($this->crumbs);
+        foreach ($this->crumbs as $value) $crumbs .= '<a href="'.$value['url'].'">'.$value['type_name'].'</a> &raquo; ';
+        $crumbs .= '</small>';
+        return $crumbs;
+    }
+
+    /**
+     * Формируем массив из связанных страниц
+     *
+     * @access  public
+     * @param   array
+     * @param   string
+     * @param   string
+     * @param   int
+     * @return  void
+     */
+    function set_crumbs ($forest, $id_name, $parent_name, $level_name, $link = '/', $active_id)
+    {
+        if (is_array($forest))
+        {
+            foreach ($forest as $tree)
+            {
+                if ($tree[$id_name] == $active_id)
+                {
+                    $this->crumbs[$tree[$id_name]][$id_name] = $tree[$id_name];
+                    $this->crumbs[$tree[$id_name]][$parent_name] = $tree[$parent_name];
+                    $this->crumbs[$tree[$id_name]][$level_name] = $tree[$level_name];
+                    $this->crumbs[$tree[$id_name]]['url'] = $link.$tree[$parent_name];
+
+                    if ($tree[$parent_name] != 0) $this->set_crumbs($this->forest, $id_name, $parent_name, $level_name, $link, $tree[$parent_name]);
+                }
+                else
+                {
+                    if(isset($tree['nodes'])) $this->set_crumbs($tree['nodes'], $id_name, $parent_name, $level_name, $link, $active_id);
+                }
+            }
+        }
+    }
+
     // ------------------------------------------------------------------------
 
 	/**
@@ -217,8 +271,6 @@ class Adm_tree_types extends CI_Model {
         if(!$this->session->userdata('w_type_parent')) {
             $this->session->set_userdata('w_type_parent', 0);
         }
-        $opts['parent_id']      = $this->_get_parent();
-        $opts['parent_sess_id'] = $this->session->userdata('w_type_parent');
 
         // Фильтрация вывода
         $opts['filters'] = array (
@@ -366,6 +418,10 @@ class Adm_tree_types extends CI_Model {
             'default'       => $this->session->userdata('w_alang'),
             'sort'          => false
         );
+
+        $opts['parent_id']      = $this->_get_parent();
+        $opts['parent_sess_id'] = $this->session->userdata('w_type_parent');
+        $opts['parent_crumbs']  = $this->_get_crumbs();
 
 		return $opts;
 	}
