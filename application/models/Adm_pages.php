@@ -299,6 +299,7 @@ class Adm_pages extends CI_Model {
     function get_child_pages($key, $value)
     {
         $this->load->helper('html');
+        $plus = false;
 
         $this->db->select('page_id, page_pid, page_name')
             ->where('page_lang_id', $this->session->userdata('w_alang'))
@@ -307,9 +308,10 @@ class Adm_pages extends CI_Model {
 
         if ($query->num_rows() > 0) {
             $forest = $this->tree->get_tree('page_id', 'page_pid', $query->result_array(), $key);
+            if (count($forest) > 0) $plus = true;
         }
 
-        return $value . $this->_reformat_forest($forest);
+        return '<a data-toggle="collapse" href="#collapseExample'.$key.'" aria-expanded="false" aria-controls="collapseExample'.$key.'">'.$value.(($plus) ? ' [+]' : '').'</a><div class="collapse" id="collapseExample'.$key.'">'.$this->_reformat_forest($forest).'</div>';
     }
     
     // ------------------------------------------------------------------------

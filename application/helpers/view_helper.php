@@ -14,7 +14,7 @@ if ( ! function_exists('module'))
 	{
 		$CI =& get_instance();
 
-		if(is_file(APPPATH.'models/'.$model.'.php'))
+		if(is_file(APPPATH.'models/'.ucfirst($model).'.php'))
         {
             $CI->load->model($model);
             return $CI->$model->get_output($params);

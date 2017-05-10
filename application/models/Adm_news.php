@@ -129,7 +129,7 @@ class Adm_news extends CI_Model {
             $this->session->set_userdata(array('news_filter' => 0));
         }
 
-        if($this->input->post('news_filter', true) !== FALSE && preg_int($this->input->post('news_filter', true)))
+        if(($this->input->post('news_filter', true) || $this->input->post('news_filter', true) == '0') && preg_int($this->input->post('news_filter', true)))
         {
             $this->session->set_userdata(array('news_filter' => $this->input->post('news_filter', true)));
         }
