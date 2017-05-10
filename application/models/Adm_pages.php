@@ -18,11 +18,11 @@ class Adm_pages extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Функция, отдающая дополнительные параметры в <head>
-	 *
-	 * @access	public
-	 * @return	string
-	 */
+     * Функция, отдающая дополнительные параметры в <head>
+     *
+     * @access	public
+     * @return	string
+     */
     function get_meta()
     {
         $meta = '<script>
@@ -87,11 +87,11 @@ class Adm_pages extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Функция, отдающая фильтры
-	 *
-	 * @access	public
-	 * @return	string
-	 */
+     * Функция, отдающая фильтры
+     *
+     * @access	public
+     * @return	string
+     */
     function get_filters()
     {
         // Получаем данные
@@ -126,7 +126,7 @@ class Adm_pages extends CI_Model {
         $filters = '
         <div class="row">
             <div class="col-xs-12"><div class="p20 ui-block">'.
-                $this->load->view('admin/filter_default', $data, true)
+            $this->load->view('admin/filter_default', $data, true)
             .'</div></div>
         </div>
         ';
@@ -137,11 +137,11 @@ class Adm_pages extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Функция, отдающая основной интерфейс
-	 *
-	 * @access	public
-	 * @return	string
-	 */
+     * Функция, отдающая основной интерфейс
+     *
+     * @access	public
+     * @return	string
+     */
     function get_output()
     {
         $this->load->library('myedit', $this->_get_crud_model());
@@ -218,11 +218,11 @@ class Adm_pages extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Возврат id родительской страницы
-	 *
-	 * @access	private
-	 * @return	int
-	 */
+     * Возврат id родительской страницы
+     *
+     * @access	private
+     * @return	int
+     */
 
     function _get_parent()
     {
@@ -241,11 +241,11 @@ class Adm_pages extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Массив страниц для формирования выпадающего списка
-	 *
-	 * @access	private
-	 * @return	array
-	 */
+     * Массив страниц для формирования выпадающего списка
+     *
+     * @access	private
+     * @return	array
+     */
 
     function _get_parent_list()
     {
@@ -256,7 +256,7 @@ class Adm_pages extends CI_Model {
 
         $query = $this->db->get('w_pages');
 
-		foreach ($query->result() as $row)
+        foreach ($query->result() as $row)
         {
             $val_arr[$row->id] = $row->name;
         }
@@ -267,11 +267,11 @@ class Adm_pages extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Массив макетов для формирования выпадающего списка
-	 *
-	 * @access	private
-	 * @return	array
-	 */
+     * Массив макетов для формирования выпадающего списка
+     *
+     * @access	private
+     * @return	array
+     */
 
     function _get_view_list()
     {
@@ -284,7 +284,7 @@ class Adm_pages extends CI_Model {
 
         return $val_arr;
     }
-    
+
     // ------------------------------------------------------------------------
 
     /**
@@ -299,6 +299,7 @@ class Adm_pages extends CI_Model {
     function get_child_pages($key, $value)
     {
         $this->load->helper('html');
+        $plus = false;
 
         $this->db->select('page_id, page_pid, page_name')
             ->where('page_lang_id', $this->session->userdata('w_alang'))
@@ -307,11 +308,12 @@ class Adm_pages extends CI_Model {
 
         if ($query->num_rows() > 0) {
             $forest = $this->tree->get_tree('page_id', 'page_pid', $query->result_array(), $key);
+            if (count($forest) > 0) $plus = true;
         }
 
-        return $value . $this->_reformat_forest($forest);
+        return '<a data-toggle="collapse" href="#collapseExample'.$key.'" aria-expanded="false" aria-controls="collapseExample'.$key.'">'.$value.(($plus) ? ' [+]' : '').'</a><div class="collapse" id="collapseExample'.$key.'">'.$this->_reformat_forest($forest).'</div>';
     }
-    
+
     // ------------------------------------------------------------------------
 
     /**
@@ -322,7 +324,7 @@ class Adm_pages extends CI_Model {
      * @param   array
      * @return	array
      */
-    
+
     function _reformat_forest ($forest, $menu = '')
     {
         $menu .= '<ul>';
@@ -340,25 +342,25 @@ class Adm_pages extends CI_Model {
     }
 
     // ------------------------------------------------------------------------
-	
-	/**
-	 * Параметры phpMyEdit
-	 *
-	 * @access	private
-	 * @return	array
-	 */
-	function _get_crud_model ()
-	{
-		// Массив переменных из урла
+
+    /**
+     * Параметры phpMyEdit
+     *
+     * @access	private
+     * @return	array
+     */
+    function _get_crud_model ()
+    {
+        // Массив переменных из урла
         $uri_assoc_array = $this->uri->uri_to_assoc(1);
 
         // Получаем базовые настройки
         $this->load->model('Cms_myedit');
         $opts = $this->Cms_myedit->get_base_opts();
-		
-		// Переопределяем кнопки
-		$opts['buttons']['L']['up'] = array('add','save','<<','<','>','>>','goto_combo');
-		$opts['buttons']['L']['down'] = $opts['buttons']['L']['up'];
+
+        // Переопределяем кнопки
+        $opts['buttons']['L']['up'] = array('add','save','<<','<','>','>>','goto_combo');
+        $opts['buttons']['L']['down'] = $opts['buttons']['L']['up'];
         $opts['buttons']['F']['up'] = $opts['buttons']['L']['up'];
         $opts['buttons']['F']['down'] = $opts['buttons']['L']['up'];
 
@@ -382,8 +384,8 @@ class Adm_pages extends CI_Model {
         // A - добавление,  C - изменение, P - копирование, V - просмотр, D - удаление,
         // F - фильтры (всегда активно), I - начальная сортировка (всегда активно)
         $publish = $this->cms_user->get_user_rights();
-		$publish = $publish[basename(__FILE__)]['active'];
-		$rights = $this->cms_user->get_user_myedit_rights();
+        $publish = $publish[basename(__FILE__)]['active'];
+        $rights = $this->cms_user->get_user_myedit_rights();
         $opts['options'] = $rights[basename(__FILE__)];
 
         // Активизируем родительский режим и управляем сессиями
@@ -406,12 +408,12 @@ class Adm_pages extends CI_Model {
         );
 
         // Триггеры
-		// $this->opts['triggers']['insert']['after'] = '';
-		// $this->opts['triggers']['update']['after'] = '';
-		// $this->opts['triggers']['delete']['before'] = '';
+        // $this->opts['triggers']['insert']['after'] = '';
+        // $this->opts['triggers']['update']['after'] = '';
+        // $this->opts['triggers']['delete']['before'] = '';
         $opts['triggers']['insert']['after']  = APPPATH.'triggers/pages_insert_after.php';
         $opts['triggers']['update']['after']  = APPPATH.'triggers/pages_update_after.php';
-		$opts['triggers']['delete']['after']  = APPPATH.'triggers/pages_delete_after.php';
+        $opts['triggers']['delete']['after']  = APPPATH.'triggers/pages_delete_after.php';
 
         // Логирование: общее название класса и поле где хранится название объекта
         $opts['logtable_title'] = 'Страница сайта';
@@ -533,7 +535,7 @@ class Adm_pages extends CI_Model {
             'sort'          => true,
             'help'          => 'Введите сюда слово на английском, которое будет выведено в URL. Разрешены латинские буквы, цифры, минус и символ подчеркивания. Во время ввода будет проведена автоматическая проверка данных.'
         );
-		$opts['fdd']['page_meta_title'] = array(
+        $opts['fdd']['page_meta_title'] = array(
             'name'          => 'Заголовок страницы',
             'options'       => 'ACPDV',
             'select'        => 'T',
@@ -552,7 +554,7 @@ class Adm_pages extends CI_Model {
             'sort'          => true,
             'help'          => 'Выберите из списка макет для отображения этой страницы'
         );
-		$opts['fdd']['page_articles'] = array(
+        $opts['fdd']['page_articles'] = array(
             'name'          => 'Тексты',
             'nodb'          => true,
             'options'       => 'ACP',
@@ -562,22 +564,22 @@ class Adm_pages extends CI_Model {
             'help'          => 'Заполните поля требуемыми текстами. На сайт они будут выводится по следующему порядку: справа-налево и сверху-вниз.'
         );
         if($publish)
-		{
-			$opts['fdd']['page_status'] = array(
-				'name'          => 'Статус',
-				'select'        => 'D',
-				'options'       => 'LACPDV',
-				'values2'       => array (
-					'1'         => 'Активна и открыта',
-					'2'         => 'Активна и невидима',
-					'0'         => 'Неактивна',
-					'3'         => 'Переход на уровень ниже'
-				),
-				'save'          => true,
-				'default'       => 2,
-				'help'          => 'Поведение страницы'
-			);
-		}
+        {
+            $opts['fdd']['page_status'] = array(
+                'name'          => 'Статус',
+                'select'        => 'D',
+                'options'       => 'LACPDV',
+                'values2'       => array (
+                    '1'         => 'Активна и открыта',
+                    '2'         => 'Активна и невидима',
+                    '0'         => 'Неактивна',
+                    '3'         => 'Переход на уровень ниже'
+                ),
+                'save'          => true,
+                'default'       => 2,
+                'help'          => 'Поведение страницы'
+            );
+        }
 
         // ------------------------------------------------------------------------
 
@@ -608,14 +610,14 @@ class Adm_pages extends CI_Model {
 
         // ------------------------------------------------------------------------
 
-		$opts['fdd']['page_link_title'] = array(
+        $opts['fdd']['page_link_title'] = array(
             'name'          => 'Заголовок ссылки меню',
             'options'       => 'ACPDV',
             'select'        => 'T',
             'maxlen'        => 65535,
             'required'      => false,
             'sort'          => true,
-			'tab'           => 'Мета-информация',
+            'tab'           => 'Мета-информация',
             'help'          => 'Введите сюда заголовок для ссылки в меню, т.е. атрибут title тега &lt;a&gt;.'
         );
         $opts['fdd']['page_meta_keywords'] = array(
@@ -660,7 +662,7 @@ class Adm_pages extends CI_Model {
             'escape'        => false,
             'help'          => 'Сюда можно добавить дополнительные инструкции для этой страницы. Они будут размещены между тегами &lt;head&gt;&lt;/head&gt;!'
         );
-		$opts['fdd']['page_footer_additional'] = array(
+        $opts['fdd']['page_footer_additional'] = array(
             'name'          => 'Дополнительный код в подвал',
             'select'        => 'T',
             'options'       => 'ACPDV',
@@ -721,6 +723,6 @@ class Adm_pages extends CI_Model {
 
         // ------------------------------------------------------------------------
 
-		return $opts;
-	}
+        return $opts;
+    }
 }

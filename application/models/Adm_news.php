@@ -12,7 +12,7 @@ class Adm_news extends CI_Model {
         parent::__construct();
         $this->load->helper( array('string') );
         $this->load->model('Cms_inclusions');
-		$this->load->model('Cms_news');
+        $this->load->model('Cms_news');
         $this->load->model('Cms_myedit');
 
         // Сработает при наличи в POST полей news_rubrics
@@ -22,11 +22,11 @@ class Adm_news extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Функция, отдающая дополнительные параметры в <head>
-	 *
-	 * @access	public
-	 * @return	string
-	 */
+     * Функция, отдающая дополнительные параметры в <head>
+     *
+     * @access	public
+     * @return	string
+     */
     function get_meta()
     {
         if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
@@ -96,11 +96,11 @@ class Adm_news extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Функция, отдающая фильтры
-	 *
-	 * @access	public
-	 * @return	string
-	 */
+     * Функция, отдающая фильтры
+     *
+     * @access	public
+     * @return	string
+     */
     function get_filters()
     {
         $filter_values = array();
@@ -129,7 +129,7 @@ class Adm_news extends CI_Model {
             $this->session->set_userdata(array('news_filter' => 0));
         }
 
-        if($this->input->post('news_filter', true) !== FALSE && preg_int($this->input->post('news_filter', true)))
+        if(($this->input->post('news_filter', true) || $this->input->post('news_filter', true) == '0') && preg_int($this->input->post('news_filter', true)))
         {
             $this->session->set_userdata(array('news_filter' => $this->input->post('news_filter', true)));
         }
@@ -147,7 +147,7 @@ class Adm_news extends CI_Model {
         $filters = '
         <div class="row">
             <div class="col-xs-12"><div class="p20 ui-block">'.
-                $this->load->view('admin/filter_default', $data, true)
+            $this->load->view('admin/filter_default', $data, true)
             .'</div></div>
         </div>
         ';
@@ -158,11 +158,11 @@ class Adm_news extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Функция, отдающая основной интерфейс
-	 *
-	 * @access	public
-	 * @return	string
-	 */
+     * Функция, отдающая основной интерфейс
+     *
+     * @access	public
+     * @return	string
+     */
     function get_output()
     {
         $this->load->library('myedit', $this->_get_crud_model());
@@ -329,28 +329,28 @@ class Adm_news extends CI_Model {
 
     // ------------------------------------------------------------------------
 
-	/**
-	 * Параметры phpMyEdit
-	 *
-	 * @access	private
-	 * @return	array
-	 */
-	function _get_crud_model ()
-	{
+    /**
+     * Параметры phpMyEdit
+     *
+     * @access	private
+     * @return	array
+     */
+    function _get_crud_model ()
+    {
         // $id текущей записи
         if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
         elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
         else $id = 0;
 
-	    // Массив переменных из урла
+        // Массив переменных из урла
         $uri_assoc_array = $this->uri->uri_to_assoc(1);
 
         // Получаем базовые настройки
         $opts = $this->Cms_myedit->get_base_opts();
-		
-		// Переопределяем кнопки
-		$opts['buttons']['L']['up'] = array('add','save','<<','<','>','>>','goto_combo');
-		$opts['buttons']['L']['down'] = $opts['buttons']['L']['up'];
+
+        // Переопределяем кнопки
+        $opts['buttons']['L']['up'] = array('add','save','<<','<','>','>>','goto_combo');
+        $opts['buttons']['L']['down'] = $opts['buttons']['L']['up'];
         $opts['buttons']['F']['up'] = $opts['buttons']['L']['up'];
         $opts['buttons']['F']['down'] = $opts['buttons']['L']['up'];
 
@@ -374,8 +374,8 @@ class Adm_news extends CI_Model {
         // A - добавление,  C - изменение, P - копирование, V - просмотр, D - удаление,
         // F - фильтры (всегда активно), I - начальная сортировка (всегда активно)
         $publish = $this->cms_user->get_user_rights();
-		$publish = $publish[basename(__FILE__)]['active'];
-		$rights = $this->cms_user->get_user_myedit_rights();
+        $publish = $publish[basename(__FILE__)]['active'];
+        $rights = $this->cms_user->get_user_myedit_rights();
         $opts['options'] = $rights[basename(__FILE__)];
 
         // ------------------------------------------------------------------------
@@ -442,12 +442,12 @@ class Adm_news extends CI_Model {
         // ------------------------------------------------------------------------
 
         // Триггеры
-		// $this->opts['triggers']['insert']['after'] = '';
-		// $this->opts['triggers']['update']['after'] = '';
-		// $this->opts['triggers']['delete']['before'] = '';
+        // $this->opts['triggers']['insert']['after'] = '';
+        // $this->opts['triggers']['update']['after'] = '';
+        // $this->opts['triggers']['delete']['before'] = '';
         $opts['triggers']['insert']['after']  = APPPATH.'triggers/news_insert_after.php';
         $opts['triggers']['update']['after']  = APPPATH.'triggers/news_update_after.php';
-		$opts['triggers']['delete']['after']  = APPPATH.'triggers/news_delete_after.php';
+        $opts['triggers']['delete']['after']  = APPPATH.'triggers/news_delete_after.php';
 
         // Логирование: общее название класса и поле где хранится название объекта
         $opts['logtable_title'] = 'Новость';
@@ -533,7 +533,7 @@ class Adm_news extends CI_Model {
                 'name'      => 'Основные параметры',
                 'default'   => true,
             ),
-			'save'          => true,
+            'save'          => true,
             'default'       => date('Y-m-d H:i', time()),
             'help'          => 'Дата вводится следующего вида <b>ГГГГ-ММ-ДД ЧЧ:ММ</b> (2004-03-31 12:21). При заведении новой новости по умолчанию ставится текущая дата и время.'
         );
@@ -549,7 +549,7 @@ class Adm_news extends CI_Model {
         $opts['fdd']['news_url'] = array(
             'name'          => 'URL страницы',
             'options'       => 'LACPDV',
-			'URL'           => '/post/$value',
+            'URL'           => '/post/$value',
             'URLdisp'       => 'Посмотреть',
             'URLtarget'     => '_blank',
             'select'        => 'T',
@@ -617,21 +617,21 @@ class Adm_news extends CI_Model {
             'help'     => 'Выберите из списка рубрики, в которых будет располагаться новость. Одна и та же новость может быть размещена в разных рубриках.'
         );
         if($publish)
-		{
-			$opts['fdd']['news_active'] = array(
-				'name'          => 'Статус',
-				'select'        => 'D',
-				'options'       => 'LACPDV',
-				'values2'       => array (
-					'1'         => 'Активна',
-					'2'         => 'Активна и невидима',
-					'0'         => 'Неактивна'
-				),
-				'save'          => true,
-				'default'       => 2,
-				'help'          => 'Статус новости на сайте. Если вы хотите, чтобы новость не была видна на сайте - сделайте ее неактивной, т.е. совсем не обязательно удалять новость, чтобы ее скрыть.'
-			);
-		}
+        {
+            $opts['fdd']['news_active'] = array(
+                'name'          => 'Статус',
+                'select'        => 'D',
+                'options'       => 'LACPDV',
+                'values2'       => array (
+                    '1'         => 'Активна',
+                    '2'         => 'Активна и невидима',
+                    '0'         => 'Неактивна'
+                ),
+                'save'          => true,
+                'default'       => 2,
+                'help'          => 'Статус новости на сайте. Если вы хотите, чтобы новость не была видна на сайте - сделайте ее неактивной, т.е. совсем не обязательно удалять новость, чтобы ее скрыть.'
+            );
+        }
 
         // ------------------------------------------------------------------------
 
@@ -692,6 +692,6 @@ class Adm_news extends CI_Model {
 
         // ------------------------------------------------------------------------
 
-		return $opts;
-	}
+        return $opts;
+    }
 }
