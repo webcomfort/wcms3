@@ -3,17 +3,19 @@ Webcomfort CMS
 ##############
 
 Webcomfort CMS - это простая система управления контентом.
+
 Компоненты:
---   Codeigniter (базовый фреймворк)
---   PhpMyEdit (CRUD-генератор)
---   PhpMorphy (полнотекстовый поиск)
---   CkEditor (редактор статей)
---   ElFinder (файловый менеджер)
---   Bootstrap 3 (CSS-фреймворк)
---   FontAwesome (иконки)
---   JQuery + JQuery UI (JS-фреймворк)
---   JsTree (генерация деревьев на JS)
---   Select2 (замена стандартных полей Select)
+
+- Codeigniter (базовый фреймворк)
+- PhpMyEdit (CRUD-генератор)
+- PhpMorphy (полнотекстовый поиск)
+- CkEditor (редактор статей)
+- ElFinder (файловый менеджер)
+- Bootstrap 3 (CSS-фреймворк)
+- FontAwesome (иконки)
+- JQuery + JQuery UI (JS-фреймворк)
+- JsTree (генерация деревьев на JS)
+- Select2 (замена стандартных полей Select)
 
 
 ******
