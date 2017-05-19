@@ -132,6 +132,9 @@ class Migration_Add_cms extends CI_Migration {
             'files' => array(
                 'type' => 'blob'
             ),
+            'oldval' => array(
+                'type' => 'blob'
+            ),
             'newval' => array(
                 'type' => 'blob'
             ),
