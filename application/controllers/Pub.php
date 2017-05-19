@@ -7,6 +7,10 @@ class Pub extends CI_Controller {
 
     function index()
     {
+        // Функции работы с пользователями и сессии
+        $this->load->model('cms_user');
+        $this->load->library('session');
+
         if (
 			preg_match("/^[-a-zA-Z0-9_]*$/",$this->uri->segment(1)) &&
 			preg_match("/^p_([-a-zA-Z0-9_])*$/",$this->uri->segment(2))

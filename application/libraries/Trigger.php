@@ -27,14 +27,15 @@ class Trigger {
      * @param	string
 	 * @return	void
 	 */
-	function delete_child ($forest, $pid, $table, $id_name, $title, $title_value)
+	function delete_child ($forest, $pid, $table, $id_name, $title, $title_value, $model=false, $func=false)
     {
         foreach ($forest as $tree)
         {
+            if($model && $func) $this->CI->$model->$func($tree[$id_name], $pid);
             $this->delete_relative($tree[$id_name], $pid, $table, $id_name, $title, $title_value);
 
             if (isset($tree['nodes'])) {
-                $this->delete_child($tree['nodes'], $pid, $table, $id_name, $title, $title_value);
+                $this->delete_child($tree['nodes'], $pid, $table, $id_name, $title, $title_value, $add_func);
             }
         }
     }

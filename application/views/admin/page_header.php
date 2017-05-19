@@ -12,6 +12,8 @@
         <link href="/public/admin/third_party/jquery-ui/jquery-ui.min.css" rel="stylesheet">
         <!-- Chosen CSS -->
         <link href="/public/admin/third_party/select2/css/select2.min.css" rel="stylesheet" />
+        <!-- JsTree CSS -->
+        <link href="/public/admin/third_party/jstree/dist/themes/default/style.min.css" rel="stylesheet" />
         <!-- Font Awesome -->
         <link href="/public/admin/third_party/font-awesome/css/font-awesome.min.css" rel="stylesheet">
         <!-- Custom developer CSS -->

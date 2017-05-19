@@ -19,7 +19,7 @@ if ($query->num_rows() > 0)
     foreach ($query->result() as $row)
     {
         $this->CI->trigger->change_relative($row->news_id, $last_basket_element, 'w_news', 'news_id', 'news_main_cat', 'Новость', '');
-        $data = array( 'news_main_cat' => '99999' );
+        $data = array( 'news_main_cat' => '999999999' );
         $this->CI->db->update('w_news', $data, "news_id = '".$row->news_id."'");
     }
 }

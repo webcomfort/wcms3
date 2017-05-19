@@ -190,10 +190,10 @@ class Cms_inclusions extends CI_Model {
      * @return  void
      */
 
-    function admin_inclusions_delete($id, $type)
+    function admin_inclusions_delete($id, $type, $last_basket_element = false)
     {
         $query = $this->db->get_where('w_includes', array('obj_id' => $id,'inc_type' => $type));
-        $last_basket_element = $this->trigger->get_last_basket_element();
+        if($last_basket_element === false) $last_basket_element = $this->trigger->get_last_basket_element();
 
         if ($query->num_rows() > 0)
         {

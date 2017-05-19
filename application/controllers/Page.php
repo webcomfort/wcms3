@@ -10,6 +10,10 @@ class Page extends CI_Controller {
         // Профилирование
         if ($this->config->item('cms_site_profiling')) $this->output->enable_profiler(TRUE);
 
+        // Функции работы с пользователями и сессии
+        $this->load->model('cms_user');
+        $this->load->library('session');
+
         // ------------------------------------------------------------------------
 
         // Страница

@@ -1,70 +1,70 @@
-###################
-What is CodeIgniter
-###################
+###################################################
+Webcomfort CMS версия 3.1.3 (по версии Codeigniter)
+###################################################
 
-CodeIgniter is an Application Development Framework - a toolkit - for people
-who build web sites using PHP. Its goal is to enable you to develop projects
-much faster than you could if you were writing code from scratch, by providing
-a rich set of libraries for commonly needed tasks, as well as a simple
-interface and logical structure to access these libraries. CodeIgniter lets
-you creatively focus on your project by minimizing the amount of code needed
-for a given task.
+Webcomfort CMS - это простая система управления контентом. Компоненты:
+- Codeigniter (базовый фреймворк)
+- PhpMyEdit (CRUD-генератор)
+- PhpMorphy (полнотекстовый поиск)
+- CkEditor (редактор статей)
+- ElFinder (файловый менеджер)
+- Bootstrap 3 (CSS-фреймворк)
+- FontAwesome (иконки)
+- JQuery + JQuery UI (JS-фреймворк)
+- JsTree (генерация деревьев на JS)
+- Select2 (замена стандартных полей Select)
 
-*******************
-Release Information
-*******************
 
-This repo contains in-development code for future releases. To download the
-latest stable release please visit the `CodeIgniter Downloads
-<https://codeigniter.com/download>`_ page.
+******
+Версия
+******
 
-**************************
-Changelog and New Features
-**************************
-
-You can find a list of all changes for each release in the `user
-guide change log <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/changelog.rst>`_.
-
-*******************
-Server Requirements
-*******************
-
-PHP version 5.6 or newer is recommended.
-
-It should work on 5.3.7 as well, but we strongly advise you NOT to run
-such old versions of PHP, because of potential security and performance
-issues, as well as missing features.
-
-************
-Installation
-************
-
-Please see the `installation section <https://codeigniter.com/user_guide/installation/index.html>`_
-of the CodeIgniter User Guide.
-
-*******
-License
-*******
-
-Please see the `license
-agreement <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/license.rst>`_.
+3.1.3 (по версии Codeigniter)
 
 *********
-Resources
+Установка
 *********
 
--  `User Guide <https://codeigniter.com/docs>`_
--  `Language File Translations <https://github.com/bcit-ci/codeigniter3-translations>`_
--  `Community Forums <http://forum.codeigniter.com/>`_
--  `Community Wiki <https://github.com/bcit-ci/CodeIgniter/wiki>`_
--  `Community IRC <https://webchat.freenode.net/?channels=%23codeigniter>`_
+1. Скопируйте все папки и файлы к себе на сервер.
+2. Поменяйте значение $config['base_url'] и $config['encryption_key'] на свои в файле
+   /application/config/config.php
+3. Поменяйте значения переменных для БД в файле /application/config/database.php
+4. Поменяйте значение $config['cms_admin_email'] на свой email в файле /application/config/cms.php
+5. Перейдите по адресу http://ваш-сайт/admin/migrate и запустите миграцию.
+   Будет создана БД, в которую будет внесен новый администратор с эл. почтой, указанной на
+   предыдущем шаге.
+6. Если все прошло гладко, то после миграции вас перебросит по адресу http://ваш-сайт/admin
+   где вам необходимо воспользоваться функцией восстановления пароля - система сгенерирует вам новый пароль
+7. Используя ваш email и новый пароль вы можете войти в администраторскую часть
+   и начать работать с сайтом.
 
-Report security issues to our `Security Panel <mailto:security@codeigniter.com>`_
-or via our `page on HackerOne <https://hackerone.com/codeigniter>`_, thank you.
+************************
+Краткое описание системы
+************************
 
-***************
-Acknowledgement
-***************
-
-The CodeIgniter team would like to thank EllisLab, all the
-contributors to the CodeIgniter project and you, the CodeIgniter user.
+1. Вся маршрутизация завязана на три контроллера: admin, page, pub и sitemap.
+   admin - вывод администраторской части
+   page  - вывод страниц сайта
+   pub   - для прямого вызова функций из моделей. Прямой http доступ разрешен только к функциям
+           моделей с префиксом 'p_'. (прим. http://ваш-сайт/имя_модели/p_функция).
+   sitemap - вернет sitemap.xml
+2. За функциональную часть целиком отвечают модели. Их три вида:
+   'adm_' - модели (модули) для административной части
+   'mod_' - модели (модули) для страниц сайта
+   'cms_' - модели со вспомогательной функциональностью или системные
+   Включено автокэширование, поэтому, если хотите его избежать, то не забудьте перед вашим запросом
+   его отключить: $this->db->cache_off(); а потом включить обратно $this->db->cache_on();
+3. За вывод отвечают стандартные виды в папке views. Особенности:
+   Из вида может быть вызван модуль (т.е модель):
+   Напр. <?php echo @module('имя_модели', array(массив параметров)); ?>
+   Из вида может быть вызван другой вид:
+   <?php echo @view('имя_вида', array(массив параметров, типа data), 'имя языкового файла', 'путь к файлу внутри папки view'); ?>
+4. Так же как и в видах, вызов модуля может быть вставлен прямо в текст статьи или новости через админ и CkEditor.
+   Напр. {@module имя_модели параметр параметр параметр@}
+5. Все настройки сайта, требующиеся сборщику вынесены в конфигурационный файл cms.php
+   Администраторская часть целиком отдана во владение редакторам.
+6. Все файлы, доступные через http размещены в папке /public. Любые файлы вне этой папки - закрыты.
+   Доступ к ним можно дать только через .htaccess или разместив их в /public.
+7. В данный момент в системе присутствует функциональность: страницы и меню, баннеры, фоны, сквозные блоки,
+   языковые версии сайта, поиск с учетом морфологии, форма для контактов, новости и рубрики, фото и
+   галереи, пользователи и группы, генератор администраторского интерфейса и корзина-лог.

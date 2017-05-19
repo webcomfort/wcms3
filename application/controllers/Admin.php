@@ -9,6 +9,21 @@ class Admin extends CI_Controller {
 
     function index()
     {
+        // Миграция
+        if($this->uri->segment(2) == 'migrate')
+        {
+            $this->load->library('migration');
+
+            if ($this->migration->current() === FALSE)
+            {
+                show_error($this->migration->error_string());
+            }
+        }
+
+        // Функции работы с пользователями и сессии
+        $this->load->model('cms_user');
+        $this->load->library('session');
+
         // Профилирование
         if ($this->config->item('cms_admin_profiling')) $this->output->enable_profiler(TRUE);
 

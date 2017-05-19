@@ -8,6 +8,12 @@ application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
 
+public/upload/backgrounds/*
+public/upload/gallery/*
+public/upload/news/*
+public/upload/special/*
+public/userfiles/*
+
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
 user_guide_src/cilexer/dist/*

@@ -6,10 +6,15 @@
 
 class Adm_admin_pages extends CI_Model {
 
+    private $forest = array();
+    private $items_list = array();
+    private $crumbs = array();
+
     function __construct()
     {
         if($this->input->post('PME_sys_rec', TRUE) === '0' || $this->input->post('PME_sys_savecopy', TRUE) || $this->input->post('PME_sys_savedelete', TRUE)) header ('Location: /admin/'.$this->uri->segment(2));
         parent::__construct();
+        $this->_get_parent_list();
     }
 
     // ------------------------------------------------------------------------
@@ -81,27 +86,40 @@ class Adm_admin_pages extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Массив страниц для формирования выпадающего списка
-	 *
-	 * @access	private
-	 * @return	array
-	 */
+     * Массив страниц для формирования выпадающего списка
+     *
+     * @access	private
+     * @return	array
+     */
 
     function _get_parent_list()
     {
         $val_arr[0] = 'Верхний уровень';
 
-        $this->db->select('cms_page_id AS id, cms_page_name AS name')
+        $this->db->select('cms_page_id, cms_page_pid, cms_page_name')
             ->order_by('cms_page_pid, cms_page_sort');
 
         $query = $this->db->get('w_cms_pages');
 
-		foreach ($query->result() as $row)
-        {
-            $val_arr[$row->id] = $row->name;
+        if ($query->num_rows() > 0) {
+            @$this->forest =& $this->tree->get_tree('cms_page_id', 'cms_page_pid', $query->result_array(), 0);
+            $this->_get_items_array ($this->forest, 'cms_page_id', 'cms_page_pid', 'cms_page_name', '');
         }
+    }
 
-        return $val_arr;
+    /**
+     * Преобразование массива в дерево с отступами
+     *
+     * @access	private
+     * @return	array
+     */
+    function _get_items_array ($forest, $id_name, $parent_name, $level_name, $dash='')
+    {
+        foreach ($forest as $tree)
+        {
+            $this->items_list[$tree[$id_name]] = $dash.' '.$tree[$level_name];
+            if (isset($tree['nodes'])) $this->_get_items_array($tree['nodes'], $id_name, $parent_name, $level_name, $dash.' -');
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -171,6 +189,7 @@ class Adm_admin_pages extends CI_Model {
     function get_child_pages($key, $value)
     {
         $this->load->helper('html');
+        $plus = false;
 
         $this->db->select('cms_page_id, cms_page_pid, cms_page_name')
             ->order_by('cms_page_pid, cms_page_name');
@@ -178,9 +197,11 @@ class Adm_admin_pages extends CI_Model {
 
         if ($query->num_rows() > 0) {
             $forest = $this->tree->get_tree('cms_page_id', 'cms_page_pid', $query->result_array(), $key);
+            if (count($forest) > 0) $plus = true;
         }
 
-        return $value . $this->_reformat_forest($forest);
+        if ($plus) return '<a data-toggle="collapse" href="#collapseExample'.$key.'" aria-expanded="false" aria-controls="collapseExample'.$key.'">'.$value.' [+]'.'</a><div class="collapse" id="collapseExample'.$key.'"><div class="jstree">'.$this->_reformat_forest($forest).'</div></div>';
+        else return $value;
     }
 
     // ------------------------------------------------------------------------
@@ -208,6 +229,62 @@ class Adm_admin_pages extends CI_Model {
         $menu .= '</ul>';
 
         return $menu;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Переформатирование дочерних элементов под вывод списка
+     *
+     * @access	private
+     * @param   array
+     * @param   array
+     * @return	array
+     */
+
+    function _get_crumbs ()
+    {
+        $crumbs = '<small>';
+        $this->set_crumbs($this->forest, 'cms_page_id', 'cms_page_pid', 'cms_page_name', '/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/parent/', $this->session->userdata('w_cms_pages_parent'));
+        $this->crumbs = array_reverse($this->crumbs);
+        foreach ($this->crumbs as $value) $crumbs .= '<a href="'.$value['url'].'">'.$value['cms_page_name'].'</a> &raquo; ';
+        $crumbs .= '</small>';
+        return $crumbs;
+    }
+
+    /**
+     * Формируем массив из связанных страниц
+     *
+     * @access  public
+     * @param   array
+     * @param   string
+     * @param   string
+     * @param   string
+     * @param   string
+     * @param   int
+     * @return  void
+     */
+    function set_crumbs ($forest, $id_name, $parent_name, $level_name, $link = '/', $active_id)
+    {
+        if (is_array($forest))
+        {
+            foreach ($forest as $tree)
+            {
+                if ($tree[$id_name] == $active_id)
+                {
+                    $this->crumbs[$tree[$id_name]][$id_name] = $tree[$id_name];
+                    $this->crumbs[$tree[$id_name]][$parent_name] = $tree[$parent_name];
+                    $this->crumbs[$tree[$id_name]][$level_name] = $tree[$level_name];
+                    $this->crumbs[$tree[$id_name]]['url'] = $link.$tree[$parent_name];
+
+                    if ($tree[$parent_name] != 0) $this->set_crumbs($this->forest, $id_name, $parent_name, $level_name, $link, $tree[$parent_name]);
+                }
+                else
+                {
+                    if(isset($tree['nodes'])) $this->set_crumbs($tree['nodes'], $id_name, $parent_name, $level_name, $link, $active_id);
+                }
+            }
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -256,8 +333,6 @@ class Adm_admin_pages extends CI_Model {
         if(!$this->session->userdata('w_cms_pages_parent')) {
             $this->session->set_userdata('w_cms_pages_parent', 0);
         }
-        $opts['parent_id']      = $this->_get_parent();
-        $opts['parent_sess_id'] = $this->session->userdata('w_cms_pages_parent');
 
         // Фильтрация вывода
         $opts['filters'] = array (
@@ -362,7 +437,7 @@ class Adm_admin_pages extends CI_Model {
             'name'          => 'Родительский раздел',
             'select'        => 'D',
             'options'       => 'ACPD',
-            'values2'       => $this->_get_parent_list(),
+            'values2'       => $this->items_list,
             'default'       => $this->session->userdata('w_cms_pages_parent'),
             'required'      => true,
             'sort'          => true,
@@ -422,6 +497,10 @@ class Adm_admin_pages extends CI_Model {
             'default'       => 1,
             'help'          => 'Поведение страницы'
         );
+
+        $opts['parent_id']      = $this->_get_parent();
+        $opts['parent_sess_id'] = $this->session->userdata('w_cms_pages_parent');
+        $opts['parent_crumbs']  = $this->_get_crumbs();
 
         // ------------------------------------------------------------------------
 

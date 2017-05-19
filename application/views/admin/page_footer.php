@@ -11,6 +11,8 @@
     <!-- Select2 -->
     <script src="/public/admin/third_party/select2/js/select2.full.min.js"></script>
     <script src="/public/admin/third_party/select2/js/i18n/ru.js"></script>
+    <!-- JsTree -->
+    <script src="/public/admin/third_party/jstree/dist/jstree.min.js"></script>
     <!-- CKeditor -->
     <script src="/public/admin/third_party/ckeditor/ckeditor.js"></script>
     <!-- CKeditor JQuery adapter -->

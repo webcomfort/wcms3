@@ -7,6 +7,10 @@ class Sitemap extends CI_Controller {
 
     function index()
     {
+        // Функции работы с пользователями и сессии
+        $this->load->model('cms_user');
+        $this->load->library('session');
+
         $menues = $this->config->item('cms_site_menues');
         $output = array();
 
