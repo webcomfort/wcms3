@@ -29,7 +29,14 @@ $(document).ready(function () {
     });
 
     //JsTree
-    $(".jstree").jstree();
+    $(".jstree").jstree().bind('select_node.jstree', function(e,data) {
+        var href = data.node.a_attr.href;
+        var target = data.node.a_attr.target;
+        if(href !== '#'){
+            if (target === '_blank') window.open(href,target);
+            else window.open(href,'_self');
+        }
+    });
 
     // ------------------------------------------------------------------------
     //                               Articles
@@ -39,7 +46,9 @@ $(document).ready(function () {
             return false;
         }
         else {
+            var n = $( ".article-div" ).length;
             container.find('button:disabled').prop('disabled', false);
+            if(n === 1) container.find('button.article-button-remove:first').prop('disabled', true);
             container.find('button.article-button-up:first').prop('disabled', true);
             container.find('button.article-button-down:last').prop('disabled', true);
         }

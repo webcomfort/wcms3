@@ -90,7 +90,8 @@ class Mod_banner extends CI_Model {
      */
     function _get_banner_code($banner_id, $link)
     {
-        $url = $this->config->item('cms_banners_dir');
+        $iid = ceil(intval($banner_id)/1000);
+        $url = $this->config->item('cms_banners_dir').$iid.'/';
         $path = FCPATH.substr($url, 1);
 
         if ($handle = opendir($path))

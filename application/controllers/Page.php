@@ -56,16 +56,7 @@ class Page extends CI_Controller {
             if ($query->num_rows() > 0)
             {
                 $row = $query->row();
-
-                if($this->_check_segments($row->page_url_segments))
-                {
-                    return $row;
-                }
-                else
-                {
-                    return $this->_e_404();
-                }
-
+                return $row;
             }
             else
             {
@@ -95,21 +86,6 @@ class Page extends CI_Controller {
                 show_error('This site has no index page!', 404);
             }
         }
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Segments
-     *
-     * @access  private
-     * @param   int
-     * @return  bool
-     */
-    function _check_segments($amount)
-    {
-        if($amount != 0 && $this->uri->total_segments() > $amount) return false;
-        else return true;
     }
 
     // ------------------------------------------------------------------------

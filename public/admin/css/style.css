@@ -124,6 +124,7 @@ td.pme-tab-selected a { text-decoration: none; }
 .control-group .file-value { padding-left: 10px; }
 
 /*----------  2.6. Select2  ----------*/
+.select2-container { min-width: 200px !important; width: 94% !important; }
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove { margin-right: 7px; float: left; }
 .select2-result-repository { padding-top: 4px; padding-bottom: 3px; display: inline-block; width: 100%; }
 .select2-result-repository__avatar { float: left; width: 20%; margin-right: 10px; }

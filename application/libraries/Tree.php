@@ -57,6 +57,53 @@ class Tree {
         return $tree;
     }
 
+    /**
+     * Преобразует одномерный массив, содержащий ключи родительских элементов, в многомерный
+     * древовидный массив, отсортированный по эти ключам. Может быть полезно для генерации меню.
+     * Включает главного родителя.
+     *
+     * @access   public
+     * @param    string  - ключ массива, где хранится id элемента, напр. "page_id"
+     * @param    string  - ключ массива, где хранится id род. элемента, напр. "page_parent_id"
+     * @param    array   - входящий одномерный массив с данными, обычно это результат запроса к БД
+     * @param    int     - номер ветки. Если 0 - все дерево, если не 0, то только ветки от этого id
+     * @return   array
+     */
+    function get_full_tree($id, $pid, $result_array, $start=0){
+
+        $tree = array();
+
+        if (! is_array($result_array) ) return $tree;
+
+        $nodes = array();
+        $keys = array();
+
+        foreach ($result_array as $node)
+        {
+            $nodes[$node[$id]] =& $node;
+            $keys[] = $node[$id];
+            unset($node);
+        }
+
+        foreach ($keys as $key)
+        {
+            if ($nodes[$key][$id] == $start) $tree[] =& $nodes[$key];
+
+            else
+            {
+                if (isset($nodes[ $nodes[$key][$pid] ]))
+                {
+                    if (! isset($nodes[ $nodes[$key][$pid] ]['nodes']))
+                        $nodes[ $nodes[$key][$pid] ]['nodes'] = array();
+
+                    $nodes[ $nodes[$key][$pid] ]['nodes'][] =& $nodes[$key];
+                }
+            }
+        }
+
+        return $tree;
+    }
+
     // ------------------------------------------------------------------------
 
     /**

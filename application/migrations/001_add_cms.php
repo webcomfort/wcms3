@@ -585,11 +585,6 @@ class Migration_Add_cms extends CI_Migration {
             'page_footer_additional' => array(
                 'type' => 'text',
             ),
-            'page_url_segments' => array(
-                'type' => 'int',
-                'constraint' => 11,
-                'default' => '0',
-            ),
             'page_view_id' => array(
                 'type' => 'int',
                 'constraint' => 11,

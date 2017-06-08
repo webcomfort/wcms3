@@ -140,7 +140,7 @@ class Adm_admin_pages extends CI_Model {
         $this->db->from('w_cms_modules');
         $this->db->where('module_active', 1);
         $this->db->where('module_type', 2);
-        $this->db->order_by('module_sort', 'asc');
+        $this->db->order_by('module_name', 'asc');
         $query = $this->db->get();
 
         if ($query->num_rows() > 0)
@@ -188,20 +188,13 @@ class Adm_admin_pages extends CI_Model {
 
     function get_child_pages($key, $value)
     {
-        $this->load->helper('html');
-        $plus = false;
-
         $this->db->select('cms_page_id, cms_page_pid, cms_page_name')
             ->order_by('cms_page_pid, cms_page_name');
         $query = $this->db->get('w_cms_pages');
 
-        if ($query->num_rows() > 0) {
-            $forest = $this->tree->get_tree('cms_page_id', 'cms_page_pid', $query->result_array(), $key);
-            if (count($forest) > 0) $plus = true;
-        }
+        if ($query->num_rows() > 0)$forest = $this->tree->get_full_tree('cms_page_id', 'cms_page_pid', $query->result_array(), $key);
 
-        if ($plus) return '<a data-toggle="collapse" href="#collapseExample'.$key.'" aria-expanded="false" aria-controls="collapseExample'.$key.'">'.$value.' [+]'.'</a><div class="collapse" id="collapseExample'.$key.'"><div class="jstree">'.$this->_reformat_forest($forest).'</div></div>';
-        else return $value;
+        return '<div class="jstree">' . $this->_reformat_forest($forest) . '</div>';
     }
 
     // ------------------------------------------------------------------------
@@ -221,7 +214,9 @@ class Adm_admin_pages extends CI_Model {
         foreach ($forest as $tree)
         {
             $menu .= '<li>';
+            $menu .= '<a href="/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/parent/'.$tree['cms_page_id'].'">';
             $menu .= $tree['cms_page_name'];
+            $menu .= '</a>';
             if (isset($tree['nodes'])) $menu = $this->_reformat_forest($tree['nodes'], $menu);
             $menu .= '</li>';
 
@@ -409,14 +404,6 @@ class Adm_admin_pages extends CI_Model {
         // F - присутствует в фильтрах
         // ------------------------------------------------------------------------
 
-        $opts['fdd']['go'] = array(
-            'name'          => '',
-            'css'           => array('postfix'=>'nav'),
-            'nodb'          => true,
-            'options'       => 'L',
-            'cell_display'   => '<a href="'.$opts['page_name'].'/parent/$key" class="btn btn-sm btn-warning" rel="tooltip" title="Подуровни"><i class="glyphicon glyphicon-folder-open icon-white"></i></a>',
-            'sort'          => false,
-        );
         $opts['fdd']['go2'] = array(
             'name'          => '',
             'css'           => array('postfix'=>'nav'),
@@ -441,6 +428,7 @@ class Adm_admin_pages extends CI_Model {
             'default'       => $this->session->userdata('w_cms_pages_parent'),
             'required'      => true,
             'sort'          => true,
+            'addcss'        => 'select2',
             'help'          => 'Проставляется автоматически при заведении страницы. Можно использовать, когда требуется перенести страницу в другой раздел.'
         );
         $opts['fdd']['cms_page_name'] = array(

@@ -29,6 +29,7 @@ class Mod_news_latest extends CI_Model {
         $view       = (isset($params[2])) ? $params[2] : false;
         $cat        = $this->Cms_news->get_cat_params($id);
         $cat_name   = $cat['name'];
+        $page_url   = $this->Cms_news->get_news_page($id);
 
         // Новости
         $this->db->select('w_news.news_id, news_name, news_date, news_cut, news_url');
@@ -47,7 +48,6 @@ class Mod_news_latest extends CI_Model {
         if ($query->num_rows() > 0)
 		{
             $this->load->helper(array('date','text'));
-            $thumbs = $this->config->item('cms_news_images');
             $news   = array();
 
             foreach ($query->result() as $row)

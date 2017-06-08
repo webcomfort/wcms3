@@ -99,6 +99,7 @@ class phpMyEdit
     private $user;	    // User id
     private $parent_id;	// Parent id
     private $parent_sess_id; // Parent sess id
+    private $parent_crumbs; // Parent crumbs
     private $ui_sort_field; // Sort field
     private $uri; // uri array
     private $logtable_title; // logtable description
@@ -553,7 +554,7 @@ class phpMyEdit
 			} elseif (0 && $this->fdd[$this->fds[$field]]['values']['column'] && ! $dont_cols) {
 				$ret = $this->sd.'PMEjoin'.$field.$this->ed.'.'.$this->fdd[$this->fds[$field]]['values']['column'];
 			} else {
-				$ret = $this->sd.'PMEtable0'.$this->ed.'.'.$this->sd.$this->fds[$field].$this->ed;
+				if($this->fds[$field]) $ret = $this->sd.'PMEtable0'.$this->ed.'.'.$this->sd.$this->fds[$field].$this->ed;
 			}
 			// TODO: not neccessary, remove me!
 			if (is_array($this->fdd[$this->fds[$field]]['values2'])) {
@@ -2555,7 +2556,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
                     } else {
                         $sort_field_w .= ' '.$this->labels['ascending'];
                     }
-                    $sort_fields[]   = $sort_field;
+                    if($sort_field) $sort_fields[]   = $sort_field;
                     $sort_fields_w[] = $sort_field_w;
                 }
 			}
@@ -2714,7 +2715,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		}
 
         if(isset($this->parent_sess_id) && $this->parent_sess_id != 0){
-            echo '<tr class="'.$this->getCSSclass('row', null, 'next').'"><td class="'.$this->getCSSclass('cell', null, true, $css_postfix).'"></td><td class="'.$this->getCSSclass('cell', null, true, $css_postfix).'" colspan="'.$this->num_fields_displayed.'"><a href="/'.$this->CI->uri->segment(1).'/'.$this->CI->uri->segment(2).'/parent/0/" class="btn btn-xs btn-warning"><i class="glyphicon glyphicon-eject icon-white"></i></a>&nbsp;&nbsp;<a href="/'.$this->CI->uri->segment(1).'/'.$this->CI->uri->segment(2).'/parent/'.$this->parent_id.'/" class="btn btn-xs btn-warning" ><i class="glyphicon glyphicon-backward icon-white"></i></a></td></tr>';
+            echo '<tr class="'.$this->getCSSclass('row', null, 'next').'"><td class="'.$this->getCSSclass('cell', null, true, $css_postfix).'"></td><td class="'.$this->getCSSclass('cell', null, true, $css_postfix).'" colspan="'.$this->num_fields_displayed.'"><a href="/'.$this->CI->uri->segment(1).'/'.$this->CI->uri->segment(2).'/parent/0/" class="btn btn-xs btn-warning"><i class="glyphicon glyphicon-eject icon-white"></i></a>&nbsp;&nbsp;<a href="/'.$this->CI->uri->segment(1).'/'.$this->CI->uri->segment(2).'/parent/'.$this->parent_id.'/" class="btn btn-xs btn-warning" ><i class="glyphicon glyphicon-backward icon-white"></i></a>&nbsp;&nbsp;&nbsp;'.$this->parent_crumbs.'</td></tr>';
 		}
 
 		if ($this->nav_text_links() || $this->nav_graphic_links() || $this->nav_bootstrap_links()) {
@@ -3653,6 +3654,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
         $this->user             = $opts['user'];
         $this->parent_id        = @$opts['parent_id'];
         $this->parent_sess_id   = @$opts['parent_sess_id'];
+        $this->parent_crumbs    = @$opts['parent_crumbs'];
         $this->ui_sort_field    = @$opts['ui_sort_field'];
         $this->uri              = $this->CI->uri->uri_to_assoc(1);
         $this->logtable_title   = @$opts['logtable_title'];

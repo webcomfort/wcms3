@@ -13,5 +13,3 @@
     <hr>
 
 <?php } ?>
-
-<p><a class="btn btn-default" href="<?php echo $news_latest_url; ?>" title="<?php echo lang('news_latest_link'); ?>"><?php echo lang('news_latest_link'); ?> &raquo;</a></p>
