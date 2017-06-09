@@ -7,6 +7,9 @@ application/cache/*
 application/logs/*
 !application/logs/index.html
 
+public/upload/*
+!public/upload/thumb.jpg
+
 # IDE Files
 #-------------------------
 .idea/*
