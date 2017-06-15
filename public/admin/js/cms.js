@@ -1,3 +1,8 @@
+// Login form submit
+function onSubmit(token) {
+    document.getElementById("login_form").submit();
+}
+
 $(document).ready(function () {
 
     // Bootstrap tooltip activation

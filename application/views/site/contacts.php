@@ -26,7 +26,7 @@
                     <textarea class="inputbox none field-message" name="contacts_message" placeholder="<?php echo lang('contacts_message'); ?>"></textarea>
                 </div>
                 <div class="form-group">
-                    <button class="g-recaptcha" class="button btn btn-default" data-sitekey="6LeuzR8UAAAAAPsYA8oTTfyyxW4AYFHXL3vnJ2Wn" data-callback="onSubmit"><?php echo lang('contacts_submit'); ?></button>
+                    <button class="g-recaptcha button btn btn-default" data-sitekey="<?php echo @conf('recaptcha'); ?>" data-callback="onSubmit"><?php echo lang('contacts_submit'); ?></button>
                 </div>
             </div>
 

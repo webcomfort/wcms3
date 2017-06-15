@@ -39,6 +39,8 @@
 
         <!-- Admin meta -->
         <?php echo @$admin_meta; ?>
+
+        <script src='https://www.google.com/recaptcha/api.js'></script>
     </head>
 
     <body>

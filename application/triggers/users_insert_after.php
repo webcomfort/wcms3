@@ -57,16 +57,5 @@ if ($query->num_rows() > 0)
 
 // ------------------------------------------------------------------------
 
-// Генерация нового пароля и отправка его по email
-
-unset($data);
-
-// Генерируем новый хэш, чтобы вызвать функцию модели cms_user
-$hash = md5(uniqid().time());
-$data['user_restore_hash'] = $hash;
-$data['user_restore_time'] = date('Y-m-d');
-
-$this->CI->db->where('user_email', $newvals['user_email']);
-$this->CI->db->update('w_user', $data);
-
-$this->CI->cms_user->password_reset($hash);
+// Генерируем хэш и отправляем письмо с возможностью задать/изменить пароль
+$this->CI->cms_user->remember_confirmation($newvals['user_email']);

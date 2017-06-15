@@ -44,3 +44,20 @@ if ( ! function_exists('view'))
         }
     }
 }
+
+/**
+ * Загрузка параметра конфигурации в шаблоне
+ *
+ * @access   public
+ * @param    string
+ * @return   string
+ */
+if ( ! function_exists('conf'))
+{
+    function conf($label)
+    {
+        $CI =& get_instance();
+        $CI->load->model('cms_page');
+        return $CI->cms_page->get_config($label);
+    }
+}

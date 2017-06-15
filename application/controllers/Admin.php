@@ -44,6 +44,7 @@ class Admin extends CI_Controller {
 
             $this->form_validation->set_rules('w_login', lang('cms_user_form_1'), 'trim|required|valid_email');
             $this->form_validation->set_rules('w_pass', lang('cms_user_form_2'), 'trim|required|alpha_dash');
+            $this->form_validation->set_rules('g-recaptcha-response', lang('cms_user_form_12'),'callback_recaptcha');
 
             $this->form_validation->set_message('required', lang('cms_user_error_9'));
             $this->form_validation->set_message('valid_email', lang('cms_user_error_2'));
@@ -78,9 +79,9 @@ class Admin extends CI_Controller {
         {
             if($this->uri->segment(3) && preg_hash($this->uri->segment(3)))
             {
-                if($this->cms_user->password_reset($this->uri->segment(3)))
+                if($this->cms_user->check_hash($this->uri->segment(3)))
                 {
-                    $this->_get_login_form(3,8);
+                    $this->_get_login_form(4,0, $this->uri->segment(3));
                 }
                 else
                 {
@@ -93,6 +94,7 @@ class Admin extends CI_Controller {
                 $this->load->library('form_validation');
 
                 $this->form_validation->set_rules('w_email', lang('cms_user_form_1'), 'trim|required|valid_email');
+                $this->form_validation->set_rules('g-recaptcha-response', lang('cms_user_form_12'),'callback_recaptcha');
 
                 $this->form_validation->set_message('required', lang('cms_user_error_9'));
                 $this->form_validation->set_message('valid_email', lang('cms_user_error_2'));
@@ -112,6 +114,37 @@ class Admin extends CI_Controller {
                         $this->_get_login_form(2,6);
                     }
                 }
+            }
+        }
+
+        // ------------------------------------------------------------------------
+
+        // Изменить пароль
+        if($this->uri->segment(2) == 'change')
+        {
+            $this->load->library('form_validation');
+
+            $this->form_validation->set_rules('w_pass_new', lang('cms_user_form_2'), 'trim|required|alpha_dash|min_length[6]',
+                array(
+                    'required'      => lang('cms_user_error_9'),
+                    'alpha_dash'    => lang('cms_user_error_3'),
+                    'min_length'    => lang('cms_user_error_14')
+                ));
+            $this->form_validation->set_rules('w_pass_confirm', lang('cms_user_form_2'), 'trim|matches[w_pass_new]',
+                array(
+                    'matches'       => lang('cms_user_error_13')
+                ));
+            $this->form_validation->set_rules('g-recaptcha-response', lang('cms_user_form_12'),'callback_recaptcha');
+
+            if ($this->form_validation->run() == FALSE)
+            {
+                if($this->input->post('w_hash') && preg_hash($this->input->post('w_hash')) && $this->cms_user->check_hash($this->input->post('w_hash'))) $this->_get_login_form(4,0, $this->input->post('w_hash'));
+                else header ('Location: /admin/');
+            }
+            else
+            {
+                if($this->cms_user->password_change($this->input->post('w_hash'), $this->input->post('w_pass_new'))) $this->_get_login_form(3,12);
+                else $this->_get_login_form(4,15, $this->input->post('w_hash'));
             }
         }
 
@@ -153,7 +186,7 @@ class Admin extends CI_Controller {
         // ------------------------------------------------------------------------
 
         // Если ничего из вышеуказанного не подходит
-        if (!preg_int($this->uri->segment(2)) && $this->uri->segment(2) != 'exit' && $this->uri->segment(2) != 'remember')
+        if (!preg_int($this->uri->segment(2)) && $this->uri->segment(2) != 'exit' && $this->uri->segment(2) != 'remember' && $this->uri->segment(2) != 'change')
         {
             if($this->cms_user->get_user_id() && $this->cms_user->get_group_admin() && $this->cms_user->get_user_rights())
             {
@@ -279,11 +312,12 @@ class Admin extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-    function _get_login_form($mode,$error=0)
+    function _get_login_form($mode,$error=0,$hash='')
     {
         $data = array(
-            'mode' => $mode,
-            'error' => $error
+            'mode'  => $mode,
+            'error' => $error,
+            'hash'  => $hash
         );
 
         $this->load->view('admin/page_header', $data);
@@ -350,5 +384,27 @@ class Admin extends CI_Controller {
         reset($this->lang_array);
         if (array_key_exists($id, $this->lang_array)) return true;
         else return false;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Проверяем капчу
+     *
+     * @access	private
+     * @param   string
+     * @return	bool
+     */
+    function recaptcha($str='')
+    {
+        if($this->cms_user->recaptcha($str))
+        {
+            return true;
+        }
+        else
+        {
+            $this->form_validation->set_message('recaptcha', lang('cms_user_error_16'));
+            return false;
+        }
     }
 }

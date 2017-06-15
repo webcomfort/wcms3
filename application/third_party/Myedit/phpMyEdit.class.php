@@ -1001,7 +1001,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		}
 
 		if ($this->display['form']) {
-            echo '<div class="row"><div class="col-xs-12"><div class="ui-block my20 px20 py10">',form_open_multipart($page_name, array('class' => $this->getCSSclass('form'), 'name' => $this->cgi['prefix']['sys'].'form')),"\n";
+            echo '<div class="row"><div class="col-xs-12"><div class="ui-block">',form_open_multipart($page_name, array('class' => $this->getCSSclass('form'), 'name' => $this->cgi['prefix']['sys'].'form')),"\n";
 		}
 		return true;
 	} /* }}} */
@@ -1045,7 +1045,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 				echo '</table>',"\n";
 				echo '</div>',"\n";
 				echo '<div id="'.$this->dhtml['prefix'].'tab',$tab,'">',"\n";
-				echo '<table class="',$this->getCSSclass('main'),' table table-hover ui-table" summary="',$this->tb,'">',"\n";
+				echo '<table class="',$this->getCSSclass('main'),' table table-hover table-responsive ui-table" summary="',$this->tb,'">',"\n";
 			}
 			if (! $this->displayed[$k]) {
 				continue;
@@ -1173,7 +1173,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 				echo '</table>',"\n";
 				echo '</div>',"\n";
 				echo '<div id="'.$this->dhtml['prefix'].'tab',$tab,'">',"\n";
-				echo '<table class="',$this->getCSSclass('main'),' table table-hover ui-table" summary="',$this->tb,'">',"\n";
+				echo '<table class="',$this->getCSSclass('main'),' table table-hover table-responsive ui-table" summary="',$this->tb,'">',"\n";
 			}
 			if (! $this->displayed[$k]) {
 				continue;
@@ -1655,7 +1655,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
                                 $value = '<object width="' . $xsize . '" height="' . $ysize . '" type="application/x-shockwave-flash" data="' . $this->fdd[$k]['file']['url'] . $int_dir . '/' . $key_rec . '.swf"> <param name="movie" value="' . $this->fdd[$k]['file']['url'] . $int_dir . '/' . $key_rec . '.swf"> </object>';
                             }
                             else {
-                                $value = '<a href="' . $this->fdd[$k]['file']['url'] . $int_dir . '/' . $file . '" target="_blank"><img src="' . $this->fdd[$k]['file']['url'] . $int_dir . '/' . $key_rec . $this->fdd[$k]['file']['tn'] . '.' . $ext . '?' . rand() . '" border="0" /></a>';
+                                $value = '<a href="' . $this->fdd[$k]['file']['url'] . $int_dir . '/' . $file . '" target="_blank"><img src="' . $this->fdd[$k]['file']['url'] . $int_dir . '/' . $key_rec . $this->fdd[$k]['file']['tn'] . '.' . $ext . '?' . rand() . '" class="img-responsive" border="0" /></a>';
                             }
                         }
                         else {
@@ -1980,7 +1980,8 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 			}
 			$strip_tags && $value = strip_tags($value);
 			$escape     && $value = htmlspecialchars($value);
-			$ret .= '>'.$value.'</label></div>'."\n";
+            $ret .= ($css != '') ? ' class="'.$css.'"' : '';
+            $ret .= '>'.$value.'</label></div>'."\n";
 		}
 		return $ret;
 	} /* }}} */
@@ -2239,7 +2240,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 	{
 		if (($but_str = $this->display_buttons($position)) === null)
 			return;
-		echo '<table summary="navigation" class="',$this->getCSSclass('navigation', $position),' table table-hover ui-table">',"\n";
+		echo '<table summary="navigation" class="',$this->getCSSclass('navigation', $position),' table table-hover table-responsive ui-table">',"\n";
 		echo '<tr class="',$this->getCSSclass('navigation', $position),'">',"\n";
 		echo '<td class="',$this->getCSSclass('buttons', $position),'">',"\n";
 		echo $but_str,'</td>',"\n";
@@ -2275,7 +2276,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		if ($position == 'down') {
 			if ($this->tabs_enabled()) $this->display_tab_labels('down');
 		}
-		echo '<table summary="navigation" class="',$this->getCSSclass('navigation', $position),' table table-hover ui-table">',"\n";
+		echo '<table summary="navigation" class="',$this->getCSSclass('navigation', $position),' table table-hover table-responsive ui-table">',"\n";
 		echo '<tr class="',$this->getCSSclass('navigation', $position),'">',"\n";
 		echo '<td class="',$this->getCSSclass('buttons', $position),'">',"\n";
 		echo $but_str,'</td>',"\n";
@@ -2467,7 +2468,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		}
 		echo $this->htmlHiddenSys('qfn', $this->qfn);
 		echo $this->htmlHiddenSys('fm', $this->fm);
-		echo '<table class="',$this->getCSSclass('main'),' table table-hover ui-table" summary="',$this->tb,'">',"\n";
+		echo '<table class="',$this->getCSSclass('main'),' table table-hover table-responsive ui-table" summary="',$this->tb,'">',"\n";
 		echo '<tr class="',$this->getCSSclass('header'),'">',"\n";
 		/*
 		 * System (navigation, selection) columns counting
@@ -2929,7 +2930,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		if ($this->tabs_enabled()) {
 			echo '<div id="'.$this->dhtml['prefix'].'tab0">',"\n";
 		}
-		echo '<table class="',$this->getCSSclass('main'),' table table-hover ui-table" summary="',$this->tb,'">',"\n";
+		echo '<table class="',$this->getCSSclass('main'),' table table-hover table-responsive ui-table" summary="',$this->tb,'">',"\n";
 		if ($this->add_operation()) {
 			$this->display_add_record();
 		} else {

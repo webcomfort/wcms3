@@ -53,21 +53,3 @@ if ($query->num_rows() > 0)
     }
   }
 }
-
-// ------------------------------------------------------------------------
-
-// Генерация нового пароля при изменении email
-
-if($newvals['user_email'] != $oldvals['user_email'])
-{
-    unset($data);
-    // Генерируем новый хэш, чтобы вызвать функцию модели cms_user
-    $hash = md5(uniqid().time());
-    $data['user_restore_hash'] = $hash;
-    $data['user_restore_time'] = date('Y-m-d');
-
-    $this->CI->db->where('user_email', $newvals['user_email']);
-    $this->CI->db->update('w_user', $data);
-
-    $this->CI->cms_user->password_reset($hash);
-}

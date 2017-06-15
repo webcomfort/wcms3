@@ -51,10 +51,3 @@ jQuery('.svg').each(function(){
     }, 'xml');
 
 });
-
-/************************************************
- -------  Recaptcha
- *************************************************/
-var CaptchaCallback = function() {
-    if ($("#RecaptchaField1").length > 0) { grecaptcha.render('RecaptchaField1', {'sitekey' : '6LfSMgoUAAAAAJcEkDtFdzOSJ4imc5_8zmDeI9Yv'}); }
-};

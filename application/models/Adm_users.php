@@ -32,6 +32,15 @@ class Adm_users extends CI_Model {
                 $(\'#PME_data_user_nic\').keyup(function(){
                     checkAvailability2();
                 });
+                
+                $(\'.select_all\').change(function() {
+                var checkboxes = $(this).closest(\'form\').find(\':checkbox\');
+                if($(this).is(\':checked\')) {
+                    checkboxes.prop(\'checked\', true);
+                } else {
+                    checkboxes.prop(\'checked\', false);
+                }
+            });
             });
 
             function checkAvailability() {
@@ -171,8 +180,6 @@ class Adm_users extends CI_Model {
 
         if ($groups[$this->session->userdata('user_filter')]['admin'])
         {
-            $i = 0;
-
             // Если это операции с существующим пользователем
             if($this->input->get('PME_sys_rec', TRUE))
             {
@@ -191,6 +198,20 @@ class Adm_users extends CI_Model {
                     $rights[$row->rule_model_id] = $right;					
                 }
             }
+
+            $opts['fdd']['check'] = array(
+                'name'          => 'Все',
+                'nodb'          => true,
+                'addcss'        => 'select_all',
+                'select'        => 'C',
+                'options'       => 'ACP',
+                'values2'       => array (
+                    '1'         => 'Выделить все'
+                ),
+                'default'       => '1',
+                'tab'           => 'Права пользователя',
+                'help'          => 'Возможность быстро снять выделение со всех'
+            );
 
             // Получаем данные по модулям
             $this->db->select('module_id, module_name');
@@ -222,9 +243,6 @@ class Adm_users extends CI_Model {
                     );
 
                     if(count($rights) && isset($rights[$row->module_id])) $opts['fdd']['mod'.$row->module_id]['fdefault'] = $rights[$row->module_id];
-                    if($i == 0) $opts['fdd']['mod'.$row->module_id]['tab'] = 'Права пользователя';
-
-                    $i++;
                 }
             }
         }

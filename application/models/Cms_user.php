@@ -283,56 +283,51 @@ class Cms_user extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-     * Отсылает письмо с данными для входа в систему
+     * Проверяет валидность хэша
      *
      * @access	public
      * @param	string
      * @return	bool
      */
-    function password_reset($hash)
+    function check_hash($hash)
     {
-        $this->db->select('user_id, user_email');
+        $this->db->select('user_id');
         $this->db->from('w_user');
         $this->db->where('user_restore_hash', $hash);
         $this->db->where('user_restore_time', date('Y-m-d'));
         $this->db->where('user_active', 1);
         $query = $this->db->get();
 
-        if ($query->num_rows() > 0)
-		{
-	    	$row = $query->row();
+        if ($query->num_rows() > 0) return true;
+        else return false;
+    }
 
-            $this->load->helper('string');
-            $this->load->library('email');
+    // ------------------------------------------------------------------------
 
-			$this->email->from('postmaster@'.$_SERVER["HTTP_HOST"], $_SERVER["HTTP_HOST"].' postmaster');
-			$this->email->to($row->user_email);
-			$this->email->subject(lang('cms_user_pass_subj'));
+    /**
+     * Меняет пароль
+     *
+     * @access	public
+     * @param	string
+     * @return	bool
+     */
+    function password_change($hash, $pass)
+    {
+        if ($this->check_hash($hash))
+        {
+            $data['user_pass'] = md5(md5($pass));
+            $data['user_restore_hash'] = '';
+            $data['user_restore_time'] = '0000-00-00';
 
-            $pass = random_string('alnum', 8);
-			$message = sprintf(lang('cms_user_pass_mess'), $row->user_email, $pass);
-			$this->email->message($message);
+            $this->db->where('user_restore_hash', $hash);
+            $this->db->update('w_user', $data);
 
-			if ($this->email->send())
-			{
-				$data['user_pass'] = md5(md5($pass));
-                $data['user_restore_hash'] = '';
-                $data['user_restore_time'] = '0000-00-00';
-
-                $this->db->where('user_id', $row->user_id);
-                $this->db->update('w_user', $data);
-
-                return true;
-			}
-	    	else
-			{
-	    		return false;
-	    	}
-	    }
-		else
-		{
-	    	return false;
-	    }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -537,6 +532,43 @@ class Cms_user extends CI_Model {
         else
         {
             echo '0';
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Функция для проверки капчи
+     *
+     * @access	public
+     * @param   string
+     * @return	bool
+     */
+    function recaptcha($response='')
+    {
+        $this->load->model('cms_page');
+        $google_url = "https://www.google.com/recaptcha/api/siteverify";
+        $secret = $this->cms_page->get_config('recaptcha_secret');
+        $ip = $this->input->ip_address();
+        $url = $google_url."?secret=".$secret."&response=".$response."&remoteip=".$ip;
+
+        // POST
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+        curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.16) Gecko/20110319 Firefox/3.6.16");
+        $res = curl_exec($curl);
+        curl_close($curl);
+
+        $res= json_decode($res, true);
+        if($res['success'])
+        {
+            return TRUE;
+        }
+        else
+        {
+            return FALSE;
         }
     }
 }

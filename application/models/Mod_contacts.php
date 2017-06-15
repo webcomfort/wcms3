@@ -40,7 +40,7 @@ class Mod_contacts extends CI_Model {
 
         if ($this->input->post('g-recaptcha-response', TRUE))
         {
-            if ($this->_recaptcha($this->input->post('g-recaptcha-response', TRUE)))
+            if ($this->Cms_user->recaptcha($this->input->post('g-recaptcha-response', TRUE)))
             {
                 if ($email != '' && preg_match('/^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})*$/', $email))
                 {
@@ -75,7 +75,6 @@ class Mod_contacts extends CI_Model {
             }
             else {
                 $response['error_code'] = 1;
-                //$response['error'] = '<div class="alert alert-danger" role="alert">' . $this->lang->line('contacts_captcha_error') . '</div>';
                 $response['error'] = $this->input->post('g-recaptcha-response', TRUE);
                 echo json_encode($response);
             }
@@ -84,33 +83,6 @@ class Mod_contacts extends CI_Model {
             $response['error_code'] = 1;
             $response['error'] = '<div class="alert alert-danger" role="alert">' . $this->lang->line('contacts_captcha_error') . '</div>';
             echo json_encode($response);
-        }
-    }
-
-    function _recaptcha($response='')
-    {
-        $google_url = "https://www.google.com/recaptcha/api/siteverify";
-        $secret = $this->Cms_page->get_config('recaptcha');
-        $ip = $this->input->ip_address();
-        $url = $google_url."?secret=".$secret."&response=".$response."&remoteip=".$ip;
-
-        // POST
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-        curl_setopt($curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.16) Gecko/20110319 Firefox/3.6.16");
-        $res = curl_exec($curl);
-        curl_close($curl);
-
-        $res= json_decode($res, true);
-        if($res['success'])
-        {
-            return TRUE;
-        }
-        else
-        {
-            return FALSE;
         }
     }
 }

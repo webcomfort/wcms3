@@ -65,6 +65,11 @@ $lang['cms_user_form_4'] = 'Remember me on this computer';
 $lang['cms_user_form_5'] = 'Enter';
 $lang['cms_user_form_6'] = 'Reset your password';
 $lang['cms_user_form_7'] = 'Back to entrance';
+$lang['cms_user_form_8'] = 'Enter new password';
+$lang['cms_user_form_9'] = 'Confirm new password';
+$lang['cms_user_form_10'] = 'Change password';
+$lang['cms_user_form_11'] = 'Verification code';
+$lang['cms_user_form_12'] = 'Captcha';
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +88,11 @@ $lang['cms_user_error_8'] = 'Your password was sent to you via email.';
 $lang['cms_user_error_9'] = 'Field %s is required';
 $lang['cms_user_error_10'] = 'Please check your email.';
 $lang['cms_user_error_11'] = 'Incorrect access code.';
+$lang['cms_user_error_12'] = 'Your password was successfully changed.';
+$lang['cms_user_error_13'] = 'Passwords differ.';
+$lang['cms_user_error_14'] = 'Password must be at least 6 characters long.';
+$lang['cms_user_error_15'] = 'Password change failed';
+$lang['cms_user_error_16'] = 'May be you are robot!';
 
 /*
 |--------------------------------------------------------------------------

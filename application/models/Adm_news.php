@@ -524,7 +524,7 @@ class Adm_news extends CI_Model {
         $opts['fdd']['news_date'] = array(
             'name'          => 'Дата',
             'options'       => 'LACPDV',
-            'addcss'        => 'datepicker',
+            'addcss'        => 'datepicker w100',
             'select'        => 'T',
             'maxlen'        => 65535,
             'required'      => true,
