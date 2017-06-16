@@ -648,6 +648,10 @@ class Migration_Add_cms extends CI_Migration {
                 'type' => 'int',
                 'constraint' => 11,
             ),
+            'article_place_id' => array(
+                'type' => 'int',
+                'constraint' => 11,
+            ),
             'article_text' => array(
                 'type' => 'text',
             ),

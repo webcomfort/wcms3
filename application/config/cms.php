@@ -27,7 +27,7 @@ $config['cms_admin_profiling'] = false;
 | Индексирование
 |--------------------------------------------------------------------------
 */
-$config['cms_site_indexing'] = false;
+$config['cms_site_indexing'] = true;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +89,9 @@ $config['cms_site_views'] = array(
         'footer'    => 'page_footer'
     )
 );
+
+// Возможные места статей
+$config['cms_article_places'] = array('Основной блок','Сайдбар');
 
 // Макеты статей
 $config['cms_article_views'] = array(

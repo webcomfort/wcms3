@@ -215,7 +215,9 @@ class Adm_pages extends CI_Model {
             elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
             else $id = 0;
 
-            return $this->Cms_articles->get_article_editors($id, 'pages');
+            $views  = $this->config->item('cms_site_views');
+
+            return $this->Cms_articles->get_article_editors($id, 'pages', $views);
         }
     }
 

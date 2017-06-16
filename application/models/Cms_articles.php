@@ -24,7 +24,7 @@ class Cms_articles extends CI_Model {
      * @param   int - номер вида
      * @return  string
      */
-    function p_get_html($id=false, $article='', $bg=0, $view=0)
+    function p_get_html($id=false, $article='', $bg=0, $view=1, $place=0)
     {
         if($this->input->get('id', TRUE)) $id = $this->input->get('id', TRUE);
 
@@ -35,6 +35,7 @@ class Cms_articles extends CI_Model {
             $response['selects'] = '<div class="article-selects-div">
             '.form_dropdown('page_article_view_'.$id, $this->_get_article_views(), $view).'
             '.form_dropdown('page_article_bg_'.$id, $this->_get_article_bg(), $bg).'
+            '.form_dropdown('page_article_place_'.$id, $this->_get_article_places(), $place).'
             </div>';
 
             $response['buttons'] = '<div class="article-buttons-div">
@@ -65,7 +66,7 @@ class Cms_articles extends CI_Model {
         $i = 1;
         $fields = '';
 
-        $this->db->select('article_text, article_bg_id, article_view_id');
+        $this->db->select('article_text, article_bg_id, article_view_id, article_place_id');
         $this->db->where('article_pid', $id);
         $this->db->where('article_pid_type', $type);
         $this->db->order_by('article_order', 'ASC');
@@ -75,7 +76,7 @@ class Cms_articles extends CI_Model {
         {
             foreach ($query->result() as $row)
             {
-                $html = $this->p_get_html($i, $row->article_text, $row->article_bg_id, $row->article_view_id);
+                $html = $this->p_get_html($i, $row->article_text, $row->article_bg_id, $row->article_view_id, $row->article_place_id);
 
                 $fields .= $html['div'];
                 $fields .= $html['selects'];
@@ -122,6 +123,25 @@ class Cms_articles extends CI_Model {
     }
 
     /**
+     * Массив мест статей для формирования выпадающего списка
+     *
+     * @access	private
+     * @return	array
+     */
+
+    function _get_article_places()
+    {
+        $places  = $this->config->item('cms_article_places');
+
+        foreach ($places as $key => $value)
+        {
+            $val_arr[$key] = $value;
+        }
+
+        return $val_arr;
+    }
+
+    /**
      * Массив фонов для формирования выпадающего списка
      *
      * @access	private
@@ -157,12 +177,13 @@ class Cms_articles extends CI_Model {
      */
     function get_articles($id, $type='pages')
     {
-        $articles = '';
+        $articles = array();
         $views = $this->config->item('cms_article_views');
 
-        $this->db->select('article_id, article_bg_id, article_view_id, article_text');
+        $this->db->select('article_id, article_bg_id, article_view_id, article_place_id, article_text');
         $this->db->where('article_pid', $id);
         $this->db->where('article_pid_type', $type);
+        $this->db->order_by('article_place_id', 'asc');
         $this->db->order_by('article_order', 'asc');
         $query = $this->db->get('w_pages_articles');
 
@@ -176,7 +197,7 @@ class Cms_articles extends CI_Model {
                 $view = $views[$row->article_view_id]['file'];
                 $data['article_text'] = $text;
                 $data['article_bg'] = $this->_get_bg($row->article_bg_id);
-                if ($view) $articles .= $this->load->view('site/'.$view, $data, true);
+                if ($view) $articles[$row->article_place_id][] = $this->load->view('site/'.$view, $data, true);
             }
 
             return $articles;
