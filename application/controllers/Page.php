@@ -162,13 +162,11 @@ class Page extends CI_Controller {
         $this->Cms_page->set_head($params->page_meta_additional);
 		$this->Cms_page->set_foot($params->page_footer_additional);
 		$this->Cms_page->set_canonical($this->uri->uri_string());
+        $this->Cms_page->set_articles($this->Cms_articles->get_articles($params->page_id, 'pages'));
 
         $this->db->cache_on();
 
         $data['page_name'] = $params->page_name;
-
-        // Тексты
-        $data['page_articles'] = $this->Cms_articles->get_articles($params->page_id, 'pages');
 
         // Подключения
         $data = array_merge_recursive((array)$data, (array)$this->Cms_inclusions->get_inclusions($params->page_id, 'pages'));
@@ -180,6 +178,7 @@ class Page extends CI_Controller {
         $data['page_head']         = $this->Cms_page->get_head();
 		$data['page_foot']         = $this->Cms_page->get_foot();
 		$data['page_canonical']    = $this->Cms_page->get_canonical();
+        $data['page_articles']     = $this->Cms_page->get_articles();
 
         $this->load->view('site/'.$view['header'], $data);
         $this->load->view('site/'.$view['file'], $data);

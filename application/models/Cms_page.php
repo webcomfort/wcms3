@@ -14,6 +14,7 @@ class Cms_page extends CI_Model {
 	private $link_title		= '';
 	private $foot			= '';
 	private $canonical  	= '';
+    private $articles  	    = array();
 
     function __construct()
     {
@@ -63,6 +64,7 @@ class Cms_page extends CI_Model {
     function set_head($value)           { $this->head           = $value; }
 	function set_foot($value)           { $this->foot           = $value; }
 	function set_canonical($value)      { $this->canonical      = $value; }
+    function set_articles($value)       { $this->articles       = $value; }
 	
 	// ------------------------------------------------------------------------
 
@@ -80,6 +82,7 @@ class Cms_page extends CI_Model {
     function add_head($value)           { $this->head          .= $value; }
 	function add_foot($value)           { $this->foot          .= $value; }
 	function add_canonical($value)      { $this->canonical     .= $value; }
+    function add_articles($value)       { $this->articles      .= $value; }
 
     // ------------------------------------------------------------------------
 
@@ -96,4 +99,5 @@ class Cms_page extends CI_Model {
     function get_head()           { return $this->head; }
 	function get_foot()           { return $this->foot; }
 	function get_canonical()      { return $this->canonical; }
+    function get_articles()       { return $this->articles; }
 }

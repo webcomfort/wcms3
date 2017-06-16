@@ -79,7 +79,7 @@ class Cms_news extends CI_Model {
      * @param   string
      * @return  array
      */
-    function get_img($id, $name)
+    function get_img($id, $name, $css='')
     {
         $thumbs = $this->config->item('cms_news_images');
         $images = array();
@@ -101,7 +101,8 @@ class Cms_news extends CI_Model {
                     'alt'       => $name,
                     'width'     => $width,
                     'height'    => $height,
-                    'title'     => $name
+                    'title'     => $name,
+                    'class'     => $css
                 );
 
                 $images[$key] = img($image_properties);

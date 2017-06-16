@@ -152,7 +152,7 @@ class Mod_news extends CI_Model {
                     'news_url'  => '/post/'.$row->news_url,
                     'news_date' => date_format_rus ( $row->news_date, 'date' ),
                     'news_cut'  => $row->news_cut,
-                    'news_img'  => $this->Cms_news->get_img($row->news_id, $row->news_name)
+                    'news_img'  => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-responsive')
                 );
             }
 
@@ -209,14 +209,19 @@ class Mod_news extends CI_Model {
             if($row->news_meta_description != '') $this->Cms_page->set_description($row->news_meta_description);
 
             // Тексты
-            $data['news_articles'] = $this->Cms_articles->get_articles($row->news_id, 'news');
+            $articles = $this->Cms_articles->get_articles($row->news_id, 'news');
+            $sidebar  = '';
+
+            if(isset($articles) && is_array($articles) && isset($articles[1])){
+                $this->Cms_page->set_articles(array(0 => array(), 1 => $articles[1]));
+            }
 
             $data = array(
                 'news_id'       => $row->news_id,
                 'news_name'     => $row->news_name,
                 'news_date'     => date_format_rus ( $row->news_date, 'date' ),
-                'news_articles' => $this->Cms_articles->get_articles($row->news_id, 'news'),
-                'news_img'      => $this->Cms_news->get_img($row->news_id, $row->news_name)
+                'news_articles' => $articles,
+                'news_img'      => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-responsive')
             );
 
             // Подключения
