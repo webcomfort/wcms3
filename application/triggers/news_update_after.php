@@ -8,6 +8,8 @@
  */
 
 $id = $this->rec;
+$articles = '';
+$this->CI->load->library('trigger');
 $this->CI->db->cache_delete_all();
 
 // ------------------------------------------------------------------------
@@ -48,53 +50,129 @@ if(is_array($this->CI->input->post('news_rubrics_'.$id, TRUE))) {
 
 // ------------------------------------------------------------------------
 
-// Индексирование текстов
+// Пустой пункт в корзину для статей
+$data = array(
+    'id'			=> '',
+    'pid'			=> 0,
+    'description'	=> 'Изменение статей новости '.$newvals['news_name'],
+    'updated'		=> date('Y-m-d H:i:s'),
+    'user'			=> $this->CI->cms_user->get_user_id(),
+    'host'			=> $this->CI->input->ip_address(),
+    'operation'		=> 'update',
+    'tab'			=> 'w_news',
+    'rowkey'		=> $id,
+    'col'			=> '',
+    'files'		    => '',
+    'oldval'		=> '',
+    'newval'		=> ''
+);
+
+$this->CI->db->insert('w_changelog', $data);
+
+$last_basket_element = $this->CI->trigger->get_last_basket_element();
+
+// --------------------------------------------------------------------
+// Статьи
+
+$this->CI->db->select('article_id');
+$this->CI->db->where('article_pid', $id);
+$this->CI->db->where('article_pid_type', 'pages');
+$query = $this->CI->db->get('w_pages_articles');
+$total = $query->num_rows();
+$i = 0;
+
+foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
+{
+    unset($data);
+
+    if (preg_match("/^page_article_order_([1-9][0-9]*)$/", $key, $matches))
+    {
+        $this->CI->db->select('article_id');
+        $this->CI->db->where('article_pid', $id);
+        $this->CI->db->where('article_pid_type', 'news');
+        $this->CI->db->where('article_order', $value);
+        $query = $this->CI->db->get('w_pages_articles');
+
+        if ($query->num_rows() > 0)
+        {
+            $row = $query->row();
+
+            $this->CI->trigger->change_relative ($row->article_id, $last_basket_element, 'w_pages_articles', 'article_id', 'article_text', 'Изменение статей новости ', $oldvals['news_name']);
+
+            $data = array(
+                'article_order'     => $value,
+                'article_bg_id'     => $this->CI->input->post('page_article_bg_'.$matches[1]),
+                'article_view_id'   => $this->CI->input->post('page_article_view_'.$matches[1]),
+                'article_place_id'  => $this->CI->input->post('page_article_place_'.$matches[1]),
+                'article_text'      => $this->CI->input->post('page_article_'.$matches[1])
+            );
+            $this->CI->db->where('article_id', $row->article_id);
+            $this->CI->db->update('w_pages_articles', $data);
+        }
+        else
+        {
+            $data = array(
+                'article_id' 		=> '',
+                'article_pid'	    => $id,
+                'article_pid_type'  => 'news',
+                'article_order' 	=> $value,
+                'article_bg_id'     => $this->CI->input->post('page_article_bg_'.$matches[1]),
+                'article_view_id'   => $this->CI->input->post('page_article_view_'.$matches[1]),
+                'article_place_id'  => $this->CI->input->post('page_article_place_'.$matches[1]),
+                'article_text' 		=> $this->CI->input->post('page_article_'.$matches[1])
+            );
+
+            $this->CI->db->insert('w_pages_articles', $data);
+        }
+
+        // Индексирование статей
+        if($this->CI->config->item('cms_site_indexing'))
+        {
+            $articles .= $this->CI->input->post('page_article_'.$matches[1]);
+        }
+
+        $i++;
+    }
+}
+
+// Если общее число статей уменьшилось
+if ($total > $i) {
+    for ($j = $i+1; $j <= $total; $j++) {
+        // Удаление лишних статей
+        $query = $this->CI->db->get_where('w_pages_articles', array('article_pid' => $id, 'article_pid_type' => 'news'));
+
+        if ($query->num_rows() > 0)
+        {
+            foreach ($query->result() as $row)
+            {
+                if($row->article_order == $j) $this->CI->trigger->delete_relative($row->article_id, $last_basket_element, 'w_pages_articles', 'article_id', 'Статья', '');
+            }
+        }
+    }
+}
+
+// ------------------------------------------------------------------------
+
+// Индексирование статей
 if($this->CI->config->item('cms_site_indexing'))
 {
-	$inclusions = $this->CI->config->item('cms_site_inclusions');
+    $this->CI->load->library('search');
+    $this->CI->load->helper('text');
 
-    foreach ($inclusions as $key => $value)
-    {
-        if($value['file'] == 'mod_news') $inclusion_key = $key;
+    if ($newvals['news_url'] != $oldvals['news_url'] || $newvals['news_active'] == 0) $this->CI->search->index_delete('/post/'.$oldvals['news_url']);
+
+    if($newvals['news_active']) {
+        $url = '/post/' . $newvals['news_url'];
+        $title = $newvals['news_name'];
+        $article_words = text2words(html_entity_decode($articles));
+        $title_words = text2words($title);
+        $short = word_limiter($article_words, 50);
+        $lang_array = $this->CI->config->item('cms_lang');
+        $lang = $lang_array[$this->CI->session->userdata('w_alang')]['search'];
+
+        $words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
+        $this->CI->search->index_insert($url, $title, $short, $words_array);
     }
-
-    if(isset($inclusion_key))
-    {
-	    $this->CI->db->select('w_pages.page_url AS url');
-		$this->CI->db->from('w_includes');
-		$this->CI->db->join('w_pages', 'w_includes.obj_id = w_pages.page_id');
-		$this->CI->db->where('inc_id', $inclusion_key);
-		$this->CI->db->where('inc_value', $newvals['news_main_cat']);
-		$this->CI->db->where('inc_type', 'pages');
-		$this->CI->db->limit(1);
-
-		$query = $this->CI->db->get();
-
-		if ($query->num_rows() > 0)
-		{
-			$row = $query->row();
-
-			$this->CI->load->library('search');
-			$this->CI->load->helper('text');
-
-			// ------------------------------------------------------------------------
-
-			$this->CI->db->cache_delete($row->url, $oldvals['news_url']);
-
-			// ------------------------------------------------------------------------
-
-			$url 			= '/'.$row->url.'/'.$newvals['news_url'];
-			$title 			= $newvals['news_name'];
-			$article_words 	= text2words(html_entity_decode($newvals['news_content']));
-			$title_words 	= text2words($title);
-			$short 			= word_limiter($article_words, 50);
-			$lang_array 	= $this->CI->config->item('cms_lang');
-			$lang			= $lang_array[$this->CI->session->userdata('w_alang')]['search'];
-
-			$words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
-			$this->CI->search->index_insert($url, $title, $short, $words_array);
-		}
-	}
 }
 
 // ------------------------------------------------------------------------

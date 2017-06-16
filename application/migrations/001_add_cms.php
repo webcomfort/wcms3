@@ -468,9 +468,6 @@ class Migration_Add_cms extends CI_Migration {
             'news_cut' => array(
                 'type' => 'text',
             ),
-            'news_content' => array(
-                'type' => 'text',
-            ),
             'news_url' => array(
                 'type' => 'varchar',
                 'constraint' => 255,

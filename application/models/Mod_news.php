@@ -186,10 +186,11 @@ class Mod_news extends CI_Model {
      */
     function _get_news($id, $news)
     {
+        $this->load->model('Cms_articles');
         $statuses   = array(1, 2);
 		
 		// Новость
-        $this->db->select('news_id, news_name, news_date, news_content, news_url, news_meta_title, news_meta_keywords, news_meta_description');
+        $this->db->select('news_id, news_name, news_date, news_url, news_meta_title, news_meta_keywords, news_meta_description');
         $this->db->from('w_news');
         $this->db->where('news_url', $news);
         $this->db->where_in('news_active', $statuses);
@@ -207,11 +208,14 @@ class Mod_news extends CI_Model {
             if($row->news_meta_keywords != '') $this->Cms_page->set_keywords($row->news_meta_keywords);
             if($row->news_meta_description != '') $this->Cms_page->set_description($row->news_meta_description);
 
+            // Тексты
+            $data['news_articles'] = $this->Cms_articles->get_articles($row->news_id, 'news');
+
             $data = array(
                 'news_id'       => $row->news_id,
                 'news_name'     => $row->news_name,
                 'news_date'     => date_format_rus ( $row->news_date, 'date' ),
-                'news_content'  => $this->parser->parse_modules($row->news_content),
+                'news_articles' => $this->Cms_articles->get_articles($row->news_id, 'news'),
                 'news_img'      => $this->Cms_news->get_img($row->news_id, $row->news_name)
             );
 

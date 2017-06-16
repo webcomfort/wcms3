@@ -46,47 +46,58 @@ if(is_array($this->CI->input->post('news_rubrics_0', TRUE))) {
 
 // ------------------------------------------------------------------------
 
-// Индексирование текстов
-if($this->CI->config->item('cms_site_indexing'))
+foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 {
-	$inclusions = $this->CI->config->item('cms_site_inclusions');
+    unset($data);
 
-    foreach ($inclusions as $key => $value)
+    // --------------------------------------------------------------------
+    // Статьи
+
+    if (preg_match("/^page_article_order_([1-9][0-9]*)$/", $key, $matches))
     {
-        if($value['file'] == 'mod_news') $inclusion_key = $key;
+        $this->CI->db->where('article_pid', $id);
+        $this->CI->db->where('article_pid_type', 'news');
+        $this->CI->db->delete('w_pages_articles');
+
+        $data = array(
+            'article_id' 		=> '',
+            'article_pid'	    => $id,
+            'article_pid_type'  => 'news',
+            'article_order' 	=> $value,
+            'article_bg_id'     => $this->CI->input->post('page_article_bg_'.$matches[1]),
+            'article_view_id'   => $this->CI->input->post('page_article_view_'.$matches[1]),
+            'article_place_id'  => $this->CI->input->post('page_article_place_'.$matches[1]),
+            'article_text' 		=> $this->CI->input->post('page_article_'.$matches[1])
+        );
+
+        $this->CI->db->insert('w_pages_articles', $data);
+
+        // Индексирование статей
+        if($this->CI->config->item('cms_site_indexing'))
+        {
+            $articles .= $this->CI->input->post('page_article_'.$matches[1]);
+        }
     }
+}
 
-    if(isset($inclusion_key))
-    {
-	    $this->CI->db->select('w_pages.page_url AS url');
-		$this->CI->db->from('w_includes');
-		$this->CI->db->join('w_pages', 'w_includes.obj_id = w_pages.page_id');
-		$this->CI->db->where('inc_id', $inclusion_key);
-		$this->CI->db->where('inc_value', $newvals['news_main_cat']);
-		$this->CI->db->where('inc_type', 'pages');
-		$this->CI->db->limit(1);
+// ------------------------------------------------------------------------
 
-		$query = $this->CI->db->get();
+// Индексирование статей
+if($this->CI->config->item('cms_site_indexing') && $newvals['news_active'])
+{
+    $this->CI->load->library('search');
+    $this->CI->load->helper('text');
 
-		if ($query->num_rows() > 0)
-		{
-			$row = $query->row();
+    $url 			= '/post/'.$newvals['news_url'];
+    $title 			= $newvals['news_name'];
+    $article_words 	= text2words(html_entity_decode($articles));
+    $title_words 	= text2words($title);
+    $short 			= word_limiter($article_words, 50);
+    $lang_array 	= $this->CI->config->item('cms_lang');
+    $lang			= $lang_array[$this->CI->session->userdata('w_alang')]['search'];
 
-			$this->CI->load->library('search');
-			$this->CI->load->helper('text');
-
-			$url 			= '/'.$row->url.'/'.$newvals['news_url'];
-			$title 			= $newvals['news_name'];
-			$article_words 	= text2words(html_entity_decode($newvals['news_content']));
-			$title_words 	= text2words($title);
-			$short 			= word_limiter($article_words, 50);
-			$lang_array 	= $this->CI->config->item('cms_lang');
-			$lang			= $lang_array[$this->CI->session->userdata('w_alang')]['search'];
-
-			$words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
-			$this->CI->search->index_insert($url, $title, $short, $words_array);
-		}
-	}
+    $words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
+    $this->CI->search->index_insert($url, $title, $short, $words_array);
 }
 
 // ------------------------------------------------------------------------

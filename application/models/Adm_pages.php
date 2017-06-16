@@ -215,9 +215,7 @@ class Adm_pages extends CI_Model {
             elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
             else $id = 0;
 
-            $views  = $this->config->item('cms_site_views');
-
-            return $this->Cms_articles->get_article_editors($id, 'pages', $views);
+            return $this->Cms_articles->get_article_editors($id, 'pages');
         }
     }
 
@@ -620,7 +618,7 @@ class Adm_pages extends CI_Model {
             'add_display'   => $this->get_articles(),
             'change_display'=> $this->get_articles(),
             'sort'          => false,
-            'help'          => 'Заполните поля требуемыми текстами. На сайт они будут выводится по следующему порядку: справа-налево и сверху-вниз.'
+            'help'          => 'Заполните поля требуемыми текстами.'
         );
         if($publish)
 		{

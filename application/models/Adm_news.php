@@ -14,6 +14,7 @@ class Adm_news extends CI_Model {
         $this->load->model('Cms_inclusions');
         $this->load->model('Cms_news');
         $this->load->model('Cms_myedit');
+        $this->load->model('Cms_articles');
 
         // Сработает при наличи в POST полей news_rubrics
         $this->Cms_myedit->mass_save('news_rubrics', 'news_id', 'news_cat_id', 'ncc_id', 'w_news_categories_cross');
@@ -211,6 +212,28 @@ class Adm_news extends CI_Model {
                 else echo 1;
             }
             else echo 2;
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Функция, генерирующая текстовые поля (внешний вызов)
+     *
+     * @access  public
+     * @return  string
+     */
+    function get_articles()
+    {
+        $rights = $this->cms_user->get_user_rights();
+
+        if ( is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
+        {
+            if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
+            elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
+            else $id = 0;
+
+            return $this->Cms_articles->get_article_editors($id, 'news');
         }
     }
 
@@ -573,20 +596,14 @@ class Adm_news extends CI_Model {
             'escape'        => false,
             'help'          => 'Введите в это поле краткий текст для вывода в списке новостей.'
         );
-        $opts['fdd']['news_content'] = array(
-            'name'          => 'Текст',
-            'select'        => 'T',
-            'addcss'        => 'htmleditor',
-            'options'       => 'ACPDV',
-            'maxlen'        => 65535,
-            'textarea'      => array(
-                'rows'      => 5,
-                'cols'      => 66
-            ),
-            'required'      => false,
+        $opts['fdd']['news_articles'] = array(
+            'name'          => 'Тексты',
+            'nodb'          => true,
+            'options'       => 'ACP',
+            'add_display'   => $this->get_articles(),
+            'change_display'=> $this->get_articles(),
             'sort'          => false,
-            'escape'        => false,
-            'help'          => 'Введите в это поле основной текст новости.'
+            'help'          => 'Заполните поля требуемыми текстами.'
         );
         $opts['fdd']['pic'] = array(
             'name'          => 'Картинка',
