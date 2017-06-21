@@ -9,7 +9,7 @@
 * @return   string
 */
 
-if ( ! function_exists('az_date_format_rus'))
+if ( ! function_exists('date_format_rus'))
 {
 	function date_format_rus ( $date, $mode = 'full' )
 	{
@@ -46,4 +46,54 @@ if ( ! function_exists('az_date_format_rus'))
 
 		return $date;
 	}
+}
+
+/**
+ * Проверяет, рабочее ли сейчас (в указанную дату) время
+ *
+ * @access	public
+ * @param	string
+ * @return	bool
+ */
+if ( ! function_exists('is_holiday'))
+{
+    function is_holiday ($date=false)
+    {
+        $time = ($date) ? strtotime($date) : time();
+
+        $year       = date('Y', $time);
+        $mon        = date('n', $time);
+        $day        = date('j', $time);
+        $hol        = date('N', $time);
+        $check_hol  = ($hol == 6 || $hol == 7) ? true : false;
+        $hour       = date('G', $time);
+        $hour_limit = 18;
+        $root       = $_SERVER['DOCUMENT_ROOT'].'/public/';
+        $file       = $root."calendar-".$year.".json";
+        $old        = $root."calendar-".($year-1).".json";
+
+        if(!is_file($file)){
+            if (is_file($old)) unlink($old);
+            $calendar = @file_get_contents("http://basicdata.ru/api/json/calend/");
+            file_put_contents ($file, $calendar);
+        } else {
+            $calendar = @file_get_contents($file);
+        }
+
+        $calendar = json_decode($calendar);
+        $calendar = $calendar->data->$year;
+
+        if(isset($calendar->$mon->$day)) {
+            /*
+            0 — рабочий день;
+            2 — праздничный/нерабочий день;
+            3 — сокращенный на 1 час рабочий день.
+            */
+            $check_hol = ($check_hol && ($calendar->$mon->$day->isWorking != '0' || $calendar->$mon->$day->isWorking != '3')) ? true : false;
+            if($calendar->$mon->$day->isWorking == '3') $hour_limit = $hour_limit - 1;
+        }
+
+        if($check_hol || $hour >= $hour_limit) return true;
+        else return false;
+    }
 }
