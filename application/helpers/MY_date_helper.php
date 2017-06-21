@@ -90,6 +90,7 @@ if ( ! function_exists('is_holiday'))
             3 — сокращенный на 1 час рабочий день.
             */
             $check_hol = ($check_hol && ($calendar->$mon->$day->isWorking != '0' || $calendar->$mon->$day->isWorking != '3')) ? true : false;
+            $check_hol = (!$check_hol && $calendar->$mon->$day->isWorking == '2') ? true : false;
             if($calendar->$mon->$day->isWorking == '3') $hour_limit = $hour_limit - 1;
         }
 
