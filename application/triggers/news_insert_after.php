@@ -67,7 +67,7 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
             'article_bg_id'     => $this->CI->input->post('page_article_bg_'.$matches[1]),
             'article_view_id'   => $this->CI->input->post('page_article_view_'.$matches[1]),
             'article_place_id'  => $this->CI->input->post('page_article_place_'.$matches[1]),
-            'article_text' 		=> $this->CI->input->post('page_article_'.$matches[1])
+            'article_text' 		=> $this->CI->input->post('page_article_'.$matches[1], false)
         );
 
         $this->CI->db->insert('w_pages_articles', $data);
