@@ -131,12 +131,17 @@ class Cms_myedit extends CI_Model {
 	{
         if ($this->cms_user->get_group_admin())
         {
+            $id = $this->cms_user->get_user_id();
+            $dir = FCPATH.'public/userfiles/'.$id.'/';
+            $url = '/public/userfiles/'.$id.'/';
+            if(!is_dir($dir)) mkdir($dir, 0755, true);
+
             $opts = array(
                 'roots' => array(
                     array(
                         'driver'        => 'LocalFileSystem',
-                        'path'          => FCPATH.'public/userfiles/',
-                        'URL'           => '/public/userfiles/'
+                        'path'          => $dir,
+                        'URL'           => $url
                     )
                 )
             );

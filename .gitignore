@@ -10,6 +10,8 @@ application/logs/*
 public/upload/*
 !public/upload/thumb.jpg
 
+public/userfiles/*
+
 # IDE Files
 #-------------------------
 .idea/*
