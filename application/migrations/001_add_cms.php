@@ -178,7 +178,7 @@ class Migration_Add_cms extends CI_Migration {
         $this->dbforge->add_key('config_lang_id');
         $this->dbforge->create_table('w_cms_configs', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
         // Параметры конфигурации
-        $this->db->query("INSERT INTO `w_cms_configs` (`config_id`, `config_name`, `config_label`, `config_value`, `config_module_label`, `config_lang_id`) VALUES (1, 'Форма для контактов - адрес электронной почты для отправки письма', 'contacts_email', '".$this->config->item('cms_admin_email')."', 'mod_contacts.php', 1),(2, 'Код для активации каптчи', 'recaptcha', '6LeuzR8UAAAAAPsYA8oTTfyyxW4AYFHXL3vnJ2Wn', '', 1),(3, 'Секретный код каптчи', 'recaptcha_secret', '6LeuzR8UAAAAACJtUwDyv69fdZJtlDAYJaIzviGn', '', 1);");
+        $this->db->query("INSERT INTO `w_cms_configs` (`config_id`, `config_name`, `config_label`, `config_value`, `config_module_label`, `config_lang_id`) VALUES (1, 'Форма для контактов - адрес электронной почты для отправки письма', 'contacts_email', '".$this->config->item('cms_admin_email')."', 'mod_contacts.php', 1);");
 
         // ------------------------------------------------------------------------
 

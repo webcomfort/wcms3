@@ -14,7 +14,7 @@
         </label>
 		</div>
 		<div class="pull-right mt10"><a href="/admin/remember"><?php echo lang('cms_user_form_3'); ?></a></div>
-        <button data-sitekey="<?php echo @conf('recaptcha'); ?>" data-callback="onSubmit" class="g-recaptcha btn btn-primary btn-block mt20"><?php echo lang('cms_user_form_5'); ?></button>
+        <button data-sitekey="<?php echo @file_conf('cms_recaptcha_sitekey'); ?>" data-callback="onSubmit" class="g-recaptcha btn btn-primary btn-block mt20"><?php echo lang('cms_user_form_5'); ?></button>
 
         </form>
         
@@ -28,7 +28,7 @@
         <?php if ($error) echo '<span class="label label-danger block my5 py5">'.lang('cms_user_error_'.$error).'</span>'; ?>
             
         <input type="text" class="form-control" placeholder="<?php echo lang('cms_user_form_1'); ?>" name="w_email">                
-        <button data-sitekey="<?php echo @conf('recaptcha'); ?>" data-callback="onSubmit" class="g-recaptcha btn btn-primary btn-block mt10"><?php echo lang('cms_user_form_6'); ?></button>
+        <button data-sitekey="<?php echo @file_conf('cms_recaptcha_sitekey'); ?>" data-callback="onSubmit" class="g-recaptcha btn btn-primary btn-block mt10"><?php echo lang('cms_user_form_6'); ?></button>
         <div class="wrapper-center mt10"><a href="/admin"><?php echo lang('cms_user_form_7'); ?></a></div>
             
         </form>
@@ -56,7 +56,7 @@
             <input type="hidden" name="w_hash" value="<?php echo $hash; ?>">
             <input type="password" class="form-control" placeholder="<?php echo lang('cms_user_form_8'); ?>" name="w_pass_new" value="<?php echo set_value('w_pass_new'); ?>">
             <input type="password" class="form-control mt5" placeholder="<?php echo lang('cms_user_form_9'); ?>" name="w_pass_confirm" value="<?php echo set_value('w_pass_confirm'); ?>">
-            <button data-sitekey="<?php echo @conf('recaptcha'); ?>" data-callback="onSubmit" class="g-recaptcha btn btn-primary btn-block mt10"><?php echo lang('cms_user_form_10'); ?></button>
+            <button data-sitekey="<?php echo @file_conf('cms_recaptcha_sitekey'); ?>" data-callback="onSubmit" class="g-recaptcha btn btn-primary btn-block mt10"><?php echo lang('cms_user_form_10'); ?></button>
             <div class="wrapper-center mt10"><a href="/admin"><?php echo lang('cms_user_form_7'); ?></a></div>
 
             </form>
