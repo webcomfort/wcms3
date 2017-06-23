@@ -75,8 +75,8 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'homestead';
-$db['default']['password'] = 'secret';
+$db['default']['username'] = 'root';
+$db['default']['password'] = '';
 $db['default']['database'] = 'wcms3';
 $db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = '';
