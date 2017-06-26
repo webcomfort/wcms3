@@ -61,3 +61,19 @@ if ( ! function_exists('conf'))
         return $CI->cms_page->get_config($label);
     }
 }
+
+/**
+ * Загрузка параметра конфигурации в шаблоне
+ *
+ * @access   public
+ * @param    string
+ * @return   string
+ */
+if ( ! function_exists('file_conf'))
+{
+    function file_conf($name)
+    {
+        $CI =& get_instance();
+        return $CI->config->item($name);
+    }
+}

@@ -546,9 +546,8 @@ class Cms_user extends CI_Model {
      */
     function recaptcha($response='')
     {
-        $this->load->model('cms_page');
         $google_url = "https://www.google.com/recaptcha/api/siteverify";
-        $secret = $this->cms_page->get_config('recaptcha_secret');
+        $secret = $this->config->item('cms_recaptcha_secret');
         $ip = $this->input->ip_address();
         $url = $google_url."?secret=".$secret."&response=".$response."&remoteip=".$ip;
 

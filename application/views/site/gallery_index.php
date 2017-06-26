@@ -1,3 +1,4 @@
+<?php if (isset($gallery_images['_big'])) { ?>
 <div id="gal_<?php echo $gallery_id; ?>" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
         <?php $i = 0; foreach ($gallery_images['_big'] as $key => $value) { ?>
@@ -14,3 +15,4 @@
     <a class="left carousel-control" href="#gal_<?php echo $gallery_id; ?>" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
     <a class="right carousel-control" href="#gal_<?php echo $gallery_id; ?>" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
 </div>
+<?php } ?>
