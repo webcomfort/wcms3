@@ -21,12 +21,13 @@
 			<script src="/public/site/bootstrap/js/html5shiv.js"></script>
 			<script src="/public/site/bootstrap/js/respond.min.js"></script>
         <![endif]-->
-        
-        <link rel="shortcut icon" href="/public/site/bootstrap/ico/favicon.png">
-		<link rel="apple-touch-icon" sizes="57?57" href="/public/site/bootstrap/ico/apple-touch-icon-57-precomposed.png">
-		<link rel="apple-touch-icon" sizes="72?72" href="/public/site/bootstrap/ico/apple-touch-icon-72-precomposed.png">
-		<link rel="apple-touch-icon" sizes="114?114" href="/public/site/bootstrap/ico/apple-touch-icon-114-precomposed.png">
-		<link rel="apple-touch-icon" sizes="144?144" href="/public/site/bootstrap/ico/apple-touch-icon-144-precomposed.png">
+
+        <!-- Icons -->
+        <link rel="shortcut icon" href="/public/admin/img/favicon.png">
+        <link rel="apple-touch-icon" sizes="57?57" href="/public/admin/img/apple-touch-icon-57-precomposed.png">
+        <link rel="apple-touch-icon" sizes="72?72" href="/public/admin/img/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon" sizes="114?114" href="/public/admin/img/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon" sizes="144?144" href="/public/admin/img/apple-touch-icon-144-precomposed.png">
         
         <?php echo @$page_head; ?>
 
