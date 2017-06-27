@@ -217,12 +217,12 @@ class Adm_gallery extends CI_Model {
         $opts['fdd']['gallery_view_id'] = array(
             'name'          => 'Макет',
             'select'        => 'D',
-            'options'       => 'APD',
+            'options'       => 'LACPD',
             'values2'       => $this->_get_view_list(),
             'default'       => 0,
             'required'      => true,
             'sort'          => true,
-            'help'          => 'Выберите из списка макет для отображения этой галереи.'
+            'help'          => 'Выберите из списка макет для отображения этой галереи. Макет определяет размеры создаваемых изображений.'
         );
         if($publish)
 		{
