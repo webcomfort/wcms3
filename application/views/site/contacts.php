@@ -1,7 +1,7 @@
 <div class="contact-form">
     <h3><?php echo lang('contacts_title'); ?></h3>
     <div id="contacts_error"></div>
-    <?php echo form_open('#',array('class' => '', 'id' => 'contacts_form')); ?>
+    <?php echo form_open('',array('class' => '', 'id' => 'contacts_form')); ?>
         <div class="row">
             <div class="col-xs-12 col-sm-4">
                 <div class="form-group">

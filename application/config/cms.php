@@ -20,16 +20,16 @@ $config['cms_admin_email'] = 'info@webcomfort.ru';
 | Без рабочих ключей вы не сможете авторизоваться в системе.
 |--------------------------------------------------------------------------
 */
-$config['cms_recaptcha_sitekey'] = '6LeuzR8UAAAAAPsYA8oTTfyyxW4AYFHXL3vnJ2Wn';
-$config['cms_recaptcha_secret']  = '6LeuzR8UAAAAACJtUwDyv69fdZJtlDAYJaIzviGn';
+$config['cms_recaptcha_sitekey'] = '6Ld4GScUAAAAAIXhm1AE0pbI5UsgVAOnOiBfIM_0';
+$config['cms_recaptcha_secret']  = '6Ld4GScUAAAAAB3j3M2MkYp4GHAgbJ8h9sCwmKHW';
 
 /*
 |--------------------------------------------------------------------------
 | Профилирование
 |--------------------------------------------------------------------------
 */
-$config['cms_site_profiling'] = true;
-$config['cms_admin_profiling'] = true;
+$config['cms_site_profiling'] = false;
+$config['cms_admin_profiling'] = false;
 
 /*
 |--------------------------------------------------------------------------

@@ -32,6 +32,7 @@ class Mod_contacts extends CI_Model {
     function p_send()
     {
         $this->load->model('Cms_page');
+        $this->load->model('Cms_user');
 
         $email  = $this->input->post('contacts_email', TRUE);
         $name = $this->input->post('contacts_name', TRUE);

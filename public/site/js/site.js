@@ -4,19 +4,19 @@
 function onSubmit(token) {
     var formData = $('#contacts_form').serialize();
     $.ajax({
-        type: "POST",
+        method: "POST",
         url: "/mod_contacts/p_send/",
-        data: formData,
-        success: function (result) {
-            var json = $.parseJSON(result);
-            $("#contacts_error").html(json.error);
-            if(json.error_code == '2') {
-                $("#contacts_form")[0].reset();
-            }
-        },
-        error: function () {
-            alert('SYSTEM ERROR, TRY LATER AGAIN');
+        data: formData
+    })
+    .done(function( result ) {
+        var json = $.parseJSON(result);
+        $("#contacts_error").html(json.error);
+        if(json.error_code == '2') {
+            $("#contacts_form")[0].reset();
         }
+    })
+    .fail(function() {
+        alert('SYSTEM ERROR, TRY LATER AGAIN');
     });
 }
 
