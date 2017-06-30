@@ -35,7 +35,7 @@ class Trigger {
             $this->delete_relative($tree[$id_name], $pid, $table, $id_name, $title, $title_value);
 
             if (isset($tree['nodes'])) {
-                $this->delete_child($tree['nodes'], $pid, $table, $id_name, $title, $title_value, $add_func);
+                $this->delete_child($tree['nodes'], $pid, $table, $id_name, $title, $title_value, $model, $func);
             }
         }
     }
