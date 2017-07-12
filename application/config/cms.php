@@ -137,8 +137,9 @@ $config['cms_site_inclusions'] = array(
         'description'   => 'news_cat_name',
         'orderby'       => 'news_cat_name',
         'where'         => array('pages'),
-        'add_code'      => '<a class="btn btn-primary btn-inc" href="#" role="button" data-toggle="modal" data-target="#NewsModal">Создать</a>',
-        'modal_code'    => 'admin/inc_news'
+        'add_code'      => '<a class="btn btn-primary btn-inc" href="#" role="button" data-toggle="modal" data-target="#NewsModal" id="add_news_button">Создать</a>',
+        'modal_code'    => 'admin/inc_news',
+        'adm_model'     => 'Adm_news'
     ),
     '3' => array(
         'file'          => 'mod_gallery',
@@ -150,8 +151,9 @@ $config['cms_site_inclusions'] = array(
         'description'   => 'gallery_name',
         'orderby'       => 'gallery_name',
         'where'         => array('pages', 'news'),
-        'add_code'      => '<a class="btn btn-primary btn-inc" href="#" role="button" data-toggle="modal" data-target="#GalleryModal">Создать</a>',
-        'modal_code'    => 'admin/inc_gallery'
+        'add_code'      => '<a class="btn btn-primary btn-inc" href="#" role="button" data-toggle="modal" data-target="#GalleryModal" id="add_gallery_button">Создать</a>',
+        'modal_code'    => 'admin/inc_gallery',
+        'adm_model'     => 'Adm_gallery_photos'
     )
 );
 

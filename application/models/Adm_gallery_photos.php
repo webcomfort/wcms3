@@ -275,6 +275,11 @@ class Adm_gallery_photos extends CI_Model {
             $this->session->set_userdata(array('photo_filter' => $this->input->post('photo_filter', true)));
         }
 
+        if($this->uri->segment(3) == 'gallery' && preg_int($this->uri->segment(4)))
+        {
+            $this->session->set_userdata(array('photo_filter' => $this->uri->segment(4)));
+        }
+
         // Отображение
         $data = array(
             'filter_name'   => 'Выберите галерею',

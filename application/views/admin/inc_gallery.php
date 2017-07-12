@@ -46,5 +46,25 @@
                 }
             });
         });
+        <?php
+        if(isset($inc_admin_page)){
+        ?>
+        set_gal_link();
+        $("#PME_data_<?php echo $ajax_select; ?>").change(function () {
+            set_gal_link();
+        });
+
+        function set_gal_link() {
+            var gal_val = $("#PME_data_<?php echo $ajax_select; ?>").val();
+            if (gal_val != 0) {
+                $(".gal_link_button").remove();
+                $("#add_gallery_button").after("<a class=\"gal_link_button btn btn-default btn-inc\" href=\"/admin/<?php echo $inc_admin_page; ?>/gallery/"+gal_val+"\" target='_blank'>Перейти к редактированию</a>");
+            } else {
+                $(".gal_link_button").remove();
+            }
+        }
+        <?php
+        }
+        ?>
     });
 </script>

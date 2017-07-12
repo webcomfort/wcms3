@@ -80,9 +80,20 @@ class Cms_inclusions extends CI_Model {
                 $opts['fdd'][$type.'_inc_'.$key]['required']  = true;
                 $opts['fdd'][$type.'_inc_'.$key]['sort']      = true;
                 $opts['fdd'][$type.'_inc_'.$key]['help']      = $value['help'];
+                $opts['fdd'][$type.'_inc_'.$key]['addcss']    = 'select2';
 
                 if (isset($value['add_code'])) $opts['fdd'][$type.'_inc_'.$key]['add_code']  = $value['add_code'];
-                if (isset($value['modal_code'])) $opts['fdd'][$type.'_inc_'.$key]['modal_code']  = $this->load->view($value['modal_code'], array('ajax_select' => $type.'_inc_'.$key), true);
+                if (isset($value['modal_code'])) {
+                    $data = array();
+                    $data['ajax_select'] = $type.'_inc_'.$key;
+                    if(isset($value['adm_model'])){
+                        $this->load->model('cms_utils');
+                        if($page = $this->cms_utils->get_admin_page_id($value['adm_model'])){
+                            $data['inc_admin_page'] = $page;
+                        }
+                    }
+                    $opts['fdd'][$type.'_inc_'.$key]['modal_code']  = $this->load->view($value['modal_code'], $data, true);
+                }
 
                 if (!$i) $opts['fdd'][$type.'_inc_'.$key]['tab'] = 'Подключения';
 

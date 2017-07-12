@@ -35,5 +35,26 @@
                 });
             });
         });
+
+        <?php
+        if(isset($inc_admin_page)){
+        ?>
+        set_news_link();
+        $("#PME_data_<?php echo $ajax_select; ?>").change(function () {
+            set_news_link();
+        });
+
+        function set_news_link() {
+            var news_val = $("#PME_data_<?php echo $ajax_select; ?>").val();
+            if (news_val != 0) {
+                $(".news_link_button").remove();
+                $("#add_news_button").after("<a class=\"news_link_button btn btn-default btn-inc\" href=\"/admin/<?php echo $inc_admin_page; ?>/category/"+news_val+"\" target='_blank'>Перейти к редактированию</a>");
+            } else {
+                $(".news_link_button").remove();
+            }
+        }
+        <?php
+        }
+        ?>
     });
 </script>
