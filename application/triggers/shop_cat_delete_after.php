@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Удаление новостной рубрики
+ * Удаление товарной категории
  *
  * @action	delete
  * @mode	after
@@ -15,12 +15,12 @@ $this->CI->db->cache_delete_all();
 // ------------------------------------------------------------------------
 // Удаление пересечений удаляемого элемента
 
-$query = $this->CI->db->get_where('w_news_categories_cross', array('news_cat_id' => $id));
+$query = $this->CI->db->get_where('w_shop_items_cats', array('cat_id' => $id));
 
 if ($query->num_rows() > 0)
 {
     foreach ($query->result() as $row)
     {
-        $this->CI->trigger->delete_relative($row->ncc_id, $last_basket_element, 'w_news_categories_cross', 'ncc_id', 'Пересечение', '');
+        $this->CI->trigger->delete_relative($sic->ncc_id, $last_basket_element, 'w_shop_items_cats', 'sic_id', 'Пересечение', '');
     }
 }

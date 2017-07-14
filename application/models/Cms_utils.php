@@ -37,4 +37,21 @@ class Cms_utils extends CI_Model {
 	}
 
     // ------------------------------------------------------------------------
+
+    /**
+     * Извлекаем максимальное значение сортировки
+     *
+     * @access  private
+     * @return  int
+     */
+    function get_max_sort($field, $table) {
+        $this->db->select_max($field, 'sort');
+        $query = $this->db->get($table);
+        if ($query->num_rows() > 0) {
+            $row = $query->row();
+            return $row->sort+10;
+        } else {
+            return 10;
+        }
+    }
 }

@@ -1,23 +1,23 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Управление страницами сайта
+ * Управление категориями
  */
 
-class Adm_pages extends CI_Model {
+class Adm_shop_categories extends CI_Model {
 
-    private $forest         = array(); // древовидный массив всех страниц
-    private $pages_list     = array(); // массив страниц для выпадающего списка страниц-родителей
-    private $crumbs         = array(); // крошки, для интерфейса
+    private $forest = array();
+    private $categories_list = array();
+    private $crumbs = array();
 
     function __construct()
     {
         if($this->input->post('PME_sys_rec', TRUE) === '0' || $this->input->post('PME_sys_savecopy', TRUE) || $this->input->post('PME_sys_savedelete', TRUE)) header ('Location: /admin/'.$this->uri->segment(2));
         parent::__construct();
         $this->load->helper( array('string') );
-        $this->load->model('Cms_inclusions');
-        $this->load->model('Cms_articles');
+        $this->load->model('Cms_shop');
         $this->load->model('Cms_utils');
+        $this->_get_parent_list();
     }
 
     // ------------------------------------------------------------------------
@@ -30,55 +30,56 @@ class Adm_pages extends CI_Model {
 	 */
     function get_meta()
     {
+        if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
+        elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
+        else $id = 0;
+
         $meta = '<script>
-        $(document).ready(function() {
+        jQuery(document).ready(function() {
 
-            var urlcheck = $(\'#PME_data_page_url\').val();
-            var titlecheck = $(\'#PME_data_page_meta_title\').val();
-			var linkcheck = $(\'#PME_data_page_link_title\').val();
+            var urlcheck = $(\'#PME_data_cat_url\').val();
+            var titlecheck = $(\'#PME_data_cat_meta_title\').val();
 
-            $(\'#PME_data_page_name\').keyup(function(){
+            $(\'#PME_data_cat_name\').keyup(function(){
                 if (urlcheck == \'\') { url_generate(); }
-                if (titlecheck == \'\') { $(\'#PME_data_page_meta_title\').val($(\'#PME_data_page_name\').val()); }
-				if (linkcheck == \'\') { $(\'#PME_data_page_link_title\').val($(\'#PME_data_page_name\').val()); }
+                if (titlecheck == \'\') { $(\'#PME_data_cat_meta_title\').val($(\'#PME_data_cat_name\').val()); }
             });
 
-            $(\'#PME_data_page_url\').keyup(function(){
+            $(\'#PME_data_cat_url\').keyup(function(){
                 check_availability();
             });
-            
         });
 
         function url_generate(){
-            var url = $(\'#PME_data_page_name\').val();
-            $.post(\'/adm_pages/p_url_generate\', { url: url, '.$this->security->get_csrf_token_name().': "'.$this->security->get_csrf_hash().'" }, function(result){
-                $(\'#PME_data_page_url\').val(result);
+            var url = $(\'#PME_data_cat_name\').val();
+            $.post(\'/adm_shop_categories/p_url_generate\', { url: url, '.$this->security->get_csrf_token_name().': "'.$this->security->get_csrf_hash().'" }, function(result){
+                $(\'#PME_data_cat_url\').val(result);
                 check_availability();
             });
         }
 
         function check_availability(){
-            var name = $(\'#PME_data_page_url\').val();
+            var name = $(\'#PME_data_cat_url\').val();
 
-            if($(\'#PME_data_page_url\').val().length < 3){
-                $(\'#PME_data_page_url_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-danger\');
-                $(\'#PME_data_page_url_help\').html(\'Должно быть не менее трех символов\');
+            if($(\'#PME_data_cat_url\').val().length < 3){
+                $(\'#PME_data_cat_url_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-danger\');
+                $(\'#PME_data_cat_url_help\').html(\'Должно быть не менее трех символов\');
             }
             else{
-                $(\'#PME_data_page_url_alert\').removeClass(\'clearfix alert alert-danger alert-warning alert-info alert-success\');
-                $(\'#PME_data_page_url_help\').html(\'Проверка...\');
-                $.post(\'/adm_pages/p_check_url\', { name: name, '.$this->security->get_csrf_token_name().': "'.$this->security->get_csrf_hash().'" }, function(result){
+                $(\'#PME_data_cat_url_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\');
+                $(\'#PME_data_cat_url_help\').html(\'Проверка...\');
+                $.post(\'/adm_shop_categories/p_check_url\', { name: name, '.$this->security->get_csrf_token_name().': "'.$this->security->get_csrf_hash().'" }, function(result){
                     if(result == 1){
-                        $(\'#PME_data_page_url_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-success\');
-                        $(\'#PME_data_page_url_help\').html(\'<strong>\' + name + \'</strong> свободно\');
+                        $(\'#PME_data_cat_url_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-success\');
+                        $(\'#PME_data_cat_url_help\').html(\'<strong>\' + name + \'</strong> свободно\');
                     }
                     if(result == 2){
-                        $(\'#PME_data_page_url_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-danger\');
-                        $(\'#PME_data_page_url_help\').html(\'URL содержит недопустимые символы\');
+                        $(\'#PME_data_cat_url_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-danger\');
+                        $(\'#PME_data_cat_url_help\').html(\'URL содержит недопустимые символы\');
                     }
                     if(result == 0){
-                        $(\'#PME_data_page_url_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-danger\');
-                        $(\'#PME_data_page_url_help\').html(\'<strong>\' + name + \'</strong> занято\');
+                        $(\'#PME_data_cat_url_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-danger\');
+                        $(\'#PME_data_cat_url_help\').html(\'<strong>\' + name + \'</strong> занято\');
                     }
                 });
             }
@@ -99,43 +100,7 @@ class Adm_pages extends CI_Model {
 	 */
     function get_filters()
     {
-        // Получаем данные
-        $filter_init = $this->config->item('cms_site_menues');
-
-        foreach ($filter_init as $key => $value)
-        {
-            $filter_values[$key] = $value['name'];
-        }
-
-        // Сессия
-        if (!$this->session->userdata('page_filter'))
-        {
-            $this->session->set_userdata(array('page_filter' => current(array_keys($filter_values))));
-        }
-
-        if($this->input->post('page_filter', true) && preg_int($this->input->post('page_filter', true)))
-        {
-            $this->session->set_userdata(array('page_filter' => $this->input->post('page_filter', true)));
-        }
-
-        // Отображение
-        $data = array(
-            'filter_name'   => 'Выберите меню',
-            'filter_action' => '/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/',
-            'filter_field'  => 'page_filter',
-            'filter_class'  => ' select2',
-            'filter_active' => $this->session->userdata('page_filter'),
-            'filter_values' => $filter_values
-        );
-
-        $filters = '
-        <div class="row">
-            <div class="col-xs-12"><div class="p20 ui-block">'.
-                $this->load->view('admin/filter_default', $data, true)
-            .'</div></div>
-        </div>
-        ';
-
+        $filters = '';
         return $filters;
     }
 
@@ -187,9 +152,9 @@ class Adm_pages extends CI_Model {
         {
             if(preg_ext_string($this->input->post('name', TRUE)))
             {
-                $this->db->select('page_id');
-                $this->db->where('page_url', $this->input->post('name', TRUE));
-                $query = $this->db->get('w_pages');
+                $this->db->select('cat_id');
+                $this->db->where('cat_url', $this->input->post('name', TRUE));
+                $query = $this->db->get('w_shop_categories');
 
                 if ($query->num_rows() > 0) echo 0;
                 else echo 1;
@@ -201,41 +166,19 @@ class Adm_pages extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-     * Функция, генерирующая текстовые поля (внешний вызов)
+     * Возврат id родителя
      *
-     * @access  public
-     * @return  string
+     * @access  private
+     * @return  int
      */
-    function get_articles()
-    {
-        $rights = $this->cms_user->get_user_rights();
-
-        if ( is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
-        {
-            if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
-            elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
-            else $id = 0;
-
-            return $this->Cms_articles->get_article_editors($id, 'pages');
-        }
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-	 * Возврат id родительской страницы
-	 *
-	 * @access	private
-	 * @return	int
-	 */
 
     function _get_parent()
     {
-        if ($this->session->userdata('w_pages_parent') != 0)
+        if ($this->session->userdata('w_cat_parent') != 0)
         {
-            $this->db->select('page_pid AS pid')
-                ->from('w_pages')
-                ->where('page_id', $this->session->userdata('w_pages_parent'));
+            $this->db->select('cat_pid AS pid')
+                ->from('w_shop_categories')
+                ->where('cat_id', $this->session->userdata('w_cat_parent'));
 
             $query  = $this->db->get();
             $row    = $query->row();
@@ -246,18 +189,110 @@ class Adm_pages extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-     * Формирование хлебных крошек для UI
+     * Массив категорий для формирования выпадающего списка
      *
      * @access	private
+     * @return	void
+     */
+
+    function _get_parent_list()
+    {
+        $this->db->select('cat_id, cat_pid, cat_name')
+            ->order_by('cat_pid, cat_sort');
+
+        $query = $this->db->get('w_shop_categories');
+
+        $this->categories_list[0] = 'Верхний уровень';
+
+        if ($query->num_rows() > 0) {
+            @$this->forest =& $this->tree->get_tree('cat_id', 'cat_pid', $query->result_array(), 0);
+            $this->_get_cats_array ($this->forest, 'cat_id', 'cat_pid', 'cat_name', '');
+        }
+    }
+
+    /**
+     * Преобразование массива в дерево с отступами
+     *
+     * @access	private
+     * @return	void
+     */
+    function _get_cats_array ($forest, $id_name, $parent_name, $level_name, $dash='')
+    {
+        foreach ($forest as $tree)
+        {
+            $this->categories_list[$tree[$id_name]] = $dash.' '.$tree[$level_name];
+            if (isset($tree['nodes'])) $this->_get_cats_array($tree['nodes'], $id_name, $parent_name, $level_name, $dash.' -');
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Вывод дочерних элементов
+     *
+     * @access	public
+     * @param   int
+     * @param   string
      * @return	string
+     */
+
+    function get_child_pages($key, $value)
+    {
+        $this->db->select('cat_id, cat_pid, cat_name')
+            ->order_by('cat_pid, cat_name');
+        $query = $this->db->get('w_shop_categories');
+
+        if ($query->num_rows() > 0)$forest = $this->tree->get_full_tree('cat_id', 'cat_pid', $query->result_array(), $key);
+
+        return '<div class="jstree">' . $this->_reformat_forest($forest) . '</div>';
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Переформатирование дочерних элементов под вывод списка
+     *
+     * @access	private
+     * @param   array
+     * @param   array
+     * @return	array
+     */
+
+    function _reformat_forest ($forest, $menu = '')
+    {
+        $menu .= '<ul>';
+        foreach ($forest as $tree)
+        {
+            $menu .= '<li>';
+            $menu .= '<a href="/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/parent/'.$tree['cat_id'].'">';
+            $menu .= $tree['cat_name'];
+            $menu .= '</a>';
+            if (isset($tree['nodes'])) $menu = $this->_reformat_forest($tree['nodes'], $menu);
+            $menu .= '</li>';
+
+        }
+        $menu .= '</ul>';
+
+        return $menu;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Переформатирование дочерних элементов под вывод списка
+     *
+     * @access	private
+     * @param   array
+     * @param   array
+     * @return	array
      */
 
     function _get_crumbs ()
     {
         $crumbs = '<small>';
-        $this->set_crumbs($this->forest, 'page_id', 'page_pid', 'page_name', '/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/parent/', $this->session->userdata('w_pages_parent'));
+        $this->set_crumbs($this->forest, 'cat_id', 'cat_pid', 'cat_name', '/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/parent/', $this->session->userdata('w_cat_parent'));
         $this->crumbs = array_reverse($this->crumbs);
-        foreach ($this->crumbs as $value) $crumbs .= '<a href="'.$value['url'].'">'.$value['page_name'].'</a> &raquo; ';
+        foreach ($this->crumbs as $value) $crumbs .= '<a href="'.$value['url'].'">'.$value['cat_name'].'</a> &raquo; ';
         $crumbs .= '</small>';
         return $crumbs;
     }
@@ -267,6 +302,8 @@ class Adm_pages extends CI_Model {
      *
      * @access  public
      * @param   array
+     * @param   string
+     * @param   string
      * @param   string
      * @param   string
      * @param   int
@@ -298,116 +335,122 @@ class Adm_pages extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Массив страниц для формирования выпадающего списка
-	 *
-	 * @access	private
-	 * @return	array
-	 */
-
-    function _get_parent_list()
-    {
-        $this->pages_list[0] = 'Верхний уровень';
-
-        $this->db->select('page_id, page_pid, page_name')
-            ->where('page_lang_id', $this->session->userdata('w_alang'))
-            ->order_by('page_pid, page_sort');
-
-        $query = $this->db->get('w_pages');
-
-        if ($query->num_rows() > 0) {
-            $this->forest       = $this->tree->get_tree('page_id', 'page_pid', $query->result_array(), 0);
-        }
-        $this->_get_items_array ($this->forest, 'page_id', 'page_pid', 'page_name', '');
-
-    }
-
-    function _get_items_array ($forest, $id_name, $parent_name, $level_name, $dash='')
-    {
-        foreach ($forest as $tree)
-        {
-            $this->pages_list[$tree[$id_name]] = $dash.' '.$tree[$level_name];
-            if (isset($tree['nodes'])) $this->_get_items_array($tree['nodes'], $id_name, $parent_name, $level_name, $dash.' -');
-        }
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-	 * Массив макетов для формирования выпадающего списка
-	 *
-	 * @access	private
-	 * @return	array
-	 */
-
-    function _get_view_list()
-    {
-        $views  = $this->config->item('cms_site_views');
-        $val_arr = array();
-
-        foreach ($views as $key => $value)
-        {
-            $val_arr[$key] = $value['name'];
-        }
-
-        return $val_arr;
-    }
-    
-    // ------------------------------------------------------------------------
-
-    /**
-     * Вывод дочерних элементов
+     * Функция, генерирующая поля
      *
-     * @access	public
-     * @param   int
-     * @param   string
-     * @return	string
+     * @access  public
+     * @return  string
      */
-
-    function get_child_pages($key, $value)
+    function get_fields()
     {
-        $this->db->select('page_id, page_pid, page_name')
-            ->where('page_lang_id', $this->session->userdata('w_alang'))
-            ->order_by('page_pid, page_name');
-        $query = $this->db->get('w_pages');
+        $rights = $this->cms_user->get_user_rights();
 
-        if ($query->num_rows() > 0) {
-            $forest = $this->tree->get_full_tree('page_id', 'page_pid', $query->result_array(), $key);
+        if ( is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
+        {
+            if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
+            elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
+            else $id = 0;
+
+            return $this->_get_fields_html($id);
         }
-
-        return '<div class="jstree">' . $this->_reformat_forest($forest) . '</div>';
     }
-    
-    // ------------------------------------------------------------------------
 
     /**
-     * Переформатирование дочерних элементов под вывод списка
+     * Функция, генерирующая текстовые поля с возможностью редактирования
      *
-     * @access	private
-     * @param   array
-     * @param   array
-     * @return	array
+     * @access  public
+     * @param   int - id родителя
+     * @param   string - тип родителя
+     * @return  string
      */
-    
-    function _reformat_forest ($forest, $menu = '')
+    function _get_fields_html($id)
     {
-        $menu .= '<ul>';
-        foreach ($forest as $tree)
+        $i = 1;
+
+        $this->db->select('cf.cf_id, f.field_id, f.field_name, cf.field_values, cf.field_default_values, cf.field_filter, cf.field_modification, cf.field_table');
+        $this->db->from('w_shop_fields AS f');
+        $this->db->join('w_shop_categories_fields AS cf', 'f.field_id = cf.field_id', 'left');
+        $this->db->where('f.field_active', 1);
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0)
         {
-            $menu .= '<li>';
-            $menu .= '<a href="/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/parent/'.$tree['page_id'].'">';
-            $menu .= $tree['page_name'];
-            $menu .= '</a>';
-            if (isset($tree['nodes'])) $menu = $this->_reformat_forest($tree['nodes'], $menu);
-            $menu .= '</li>';
-
+            $fields = '';
+            foreach ($query->result() as $row)
+            {
+                $checked = ($row->cf_id != '') ? true : false;
+                $fields .= $this->_get_field_tpl($i, $row->field_name, $row->field_id, $row->field_values, $row->field_default_values, $row->field_filter, $row->field_modification, $row->field_table, $checked);
+                $i++;
+            }
         }
-        $menu .= '</ul>';
+        else
+        {
+            $fields = '';
+        }
 
-        return $menu;
+        return '<div id="fields_area">'.$fields.'</div>';
+    }
+
+    /**
+     * Функция, отдающая вспомогательный html для редактирования статей
+     *
+     * @access  public
+     * @param   int - номер блока
+     * @param   string - статья
+     * @param   int - номер фона
+     * @param   int - номер вида
+     * @return  string
+     */
+    function _get_field_tpl($id, $field_name, $field_id, $values = '', $default_values = '', $filter = 0, $modification = 0, $table = 0, $checked = false)
+    {
+
+        $response  = '<div class="field-div" data-id="'.$id.'">';
+        $response .= '<div class="field-title checkbox"><label><input name="field_cat_'.$id.'" value="'.$field_id.'" type="checkbox"';
+        $response .= ($checked) ? ' checked' : '';
+        $response .= '> '.$field_name.'</label></div>';
+        $response .= '<div class="field-buttons-div">
+<button class="btn btn-default btn-xs field-button-move field-button-up" data-id="'.$id.'" title="Наверх"><span class="glyphicon glyphicon-chevron-up"></span></button>
+<button class="btn btn-default btn-xs field-button-move field-button-down" data-id="'.$id.'"  title="Вниз"><span class="glyphicon glyphicon-chevron-down"></span></button>
+</div>';
+        $response .= '<div class="field-content';
+        $response .= ($checked) ? ' field-content-visible' : '';
+        $response .= '">';
+
+        $response .= '<div class="form-group">';
+
+        $response .= '<div class="field-options checkbox"><label><input name="field_filter_'.$id.'" value="'.$filter.'" type="checkbox"';
+        $response .= ($filter) ? ' checked' : '';
+        $response .= '> В фильтрах</label></div>';
+
+        $response .= '<div class="field-options checkbox"><label><input name="field_modification_'.$id.'" value="'.$modification.'" type="checkbox"';
+        $response .= ($modification) ? ' checked' : '';
+        $response .= '> Модификация</label></div>';
+
+        $response .= '<div class="field-options checkbox"><label><input name="field_table_'.$id.'" value="'.$table.'" type="checkbox"';
+        $response .= ($filter) ? ' checked' : '';
+        $response .= '> В таблице характеристик</label></div>';
+
+        $response .= '</div>';
+
+        $response .= '<div class="form-group">';
+        $response .= '<label for="field_values_'.$id.'">Значения через запятую</label>';
+        $response .= '<textarea name="field_values_'.$id.'" class="field-values">'.$values.'</textarea>';
+        $response .= '</div>';
+        $response .= '<div class="form-group">';
+        $response .= '<label for="field_default_values_'.$id.'">Значения по умолчанию через запятую</label>';
+        $response .= '<textarea name="field_default_values_'.$id.'" class="field-values">'.$default_values.'</textarea>';
+        $response .= '</div>';
+
+        $response .= '</div>';
+
+
+        $response .= '<input type="hidden" class="field_order" name="field_order_'.$id.'" value="'.$id.'">';
+        $response .= '</div>';
+
+        return $response;
     }
 
     // ------------------------------------------------------------------------
-	
+
 	/**
 	 * Параметры phpMyEdit
 	 *
@@ -416,7 +459,7 @@ class Adm_pages extends CI_Model {
 	 */
 	function _get_crud_model ()
 	{
-		// Массив переменных из урла
+        // Массив переменных из урла
         $uri_assoc_array = $this->uri->uri_to_assoc(1);
 
         // Получаем базовые настройки
@@ -430,14 +473,14 @@ class Adm_pages extends CI_Model {
         $opts['buttons']['F']['down'] = $opts['buttons']['L']['up'];
 
         // Таблица
-        $opts['tb'] = 'w_pages';
+        $opts['tb'] = 'w_shop_categories';
 
         // Ключ
-        $opts['key'] = 'page_id';
+        $opts['key'] = 'cat_id';
 
         // Начальная и ручная(UI) сортировка
-        $opts['sort_field'] = array('page_sort');
-        $opts['ui_sort_field'] = 'page_sort';
+        $opts['sort_field'] = array('cat_sort');
+        $opts['ui_sort_field'] = 'cat_sort';
 
         // Кол-во записей для вывода на экран
         $opts['inc'] = 100;
@@ -454,33 +497,28 @@ class Adm_pages extends CI_Model {
         $opts['options'] = $rights[basename(__FILE__)];
 
         // Активизируем родительский режим и управляем сессиями
-        if($this->uri->segment(3) == 'lang' && preg_int ($this->uri->segment(4))) $this->session->unset_userdata('w_pages_parent');
-
         if(isset($uri_assoc_array['parent'])){
-            $this->session->set_userdata('w_pages_parent', $uri_assoc_array['parent']);
+            $this->session->set_userdata('w_cat_parent', $uri_assoc_array['parent']);
         }
-        if(!$this->session->userdata('w_pages_parent')) {
-            $this->session->set_userdata('w_pages_parent', 0);
+        if(!$this->session->userdata('w_cat_parent')) {
+            $this->session->set_userdata('w_cat_parent', 0);
         }
 
         // Фильтрация вывода
         $opts['filters'] = array (
-            "page_pid = '" . $this->session->userdata('w_pages_parent') . "'",
-            "page_lang_id = '" . $this->session->userdata('w_alang') . "'",
-            "page_menu_id = '" . $this->session->userdata('page_filter') . "'"
+            "cat_pid = '" . $this->session->userdata('w_cat_parent') . "'",
+            "cat_lang_id = '" . $this->session->userdata('w_alang') . "'"
         );
 
         // Триггеры
 		// $this->opts['triggers']['insert']['after'] = '';
 		// $this->opts['triggers']['update']['after'] = '';
 		// $this->opts['triggers']['delete']['before'] = '';
-        $opts['triggers']['insert']['after']  = APPPATH.'triggers/pages_insert_after.php';
-        $opts['triggers']['update']['after']  = APPPATH.'triggers/pages_update_after.php';
-		$opts['triggers']['delete']['after']  = APPPATH.'triggers/pages_delete_after.php';
+        $opts['triggers']['delete']['after']  = FCPATH.APPPATH.'triggers/shop_cat_delete_after.php';
 
         // Логирование: общее название класса и поле где хранится название объекта
-        $opts['logtable_title'] = 'Страница сайта';
-        $opts['logtable_field'] = 'page_name';
+        $opts['logtable_title'] = 'Категория';
+        $opts['logtable_field'] = 'cat_name';
 
         // ------------------------------------------------------------------------
         // Опции полей (об этих и других опциях читайте в справке по phpMyEdit):
@@ -542,9 +580,6 @@ class Adm_pages extends CI_Model {
         // F - присутствует в фильтрах
         // ------------------------------------------------------------------------
 
-        // Формируем дерево страниц
-        $this->_get_parent_list();
-
         $opts['fdd']['go2'] = array(
             'name'          => '',
             'css'           => array('postfix'=>'nav'),
@@ -556,7 +591,7 @@ class Adm_pages extends CI_Model {
 
         // ------------------------------------------------------------------------
 
-        $opts['fdd']['page_id'] = array(
+        $opts['fdd']['cat_id'] = array(
             'name'          => 'Номер по б/д',
             'select'        => 'T',
             'options'       => 'F', // Автоинкремент
@@ -564,130 +599,121 @@ class Adm_pages extends CI_Model {
             'default'       => '0',
             'sort'          => true
         );
-        $opts['fdd']['page_name'] = array(
-            'name'          => 'Название страницы',
+        $opts['fdd']['cat_name'] = array(
+            'name'          => 'Название',
             'options'       => 'LACPDV',
             'select'        => 'T',
+            'cell_func' => array(
+                'model' => 'adm_shop_categories',
+                'func'  => 'get_child_pages'
+            ),
             'maxlen'        => 65535,
             'required'      => true,
             'sort'          => true,
-            'cell_func' => array(
-                'model' => 'adm_pages',
-                'func'  => 'get_child_pages'
-            ),
             'tab'           => array (
                 'name'      => 'Основные параметры',
                 'default'   => true,
             ),
-            'help'          => 'Введите название страницы. Это название будет использовано при выводе в меню.'
+            'help'          => 'Введите имя категории.'
         );
-        $opts['fdd']['page_url'] = array(
+        $opts['fdd']['cat_desc'] = array(
+            'name'          => 'Текст описания категории',
+            'select'        => 'T',
+            'options'       => 'ACPDV',
+            'maxlen'        => 65535,
+            'addcss'        => 'htmleditor',
+            'textarea'      => array(
+                'rows'      => 5,
+                'cols'      => 66
+            ),
+            'required'      => false,
+            'sort'          => true,
+            'escape'        => false,
+            'help'          => 'Введите сюда текст описания товарной категории!'
+        );
+        $shop_page = $this->Cms_shop->get_shop_page();
+        $opts['fdd']['cat_url'] = array(
             'name'          => 'URL страницы',
             'options'       => 'LACPDV',
             'select'        => 'T',
-            'URL'           => '/$value',
-            'URLdisp'       => '/$value',
+            'URL'           => '/'.$shop_page.'/$value',
+            'URLdisp'       => '/'.$shop_page.'/$value',
             'URLtarget'     => '_blank',
             'maxlen'        => 65535,
             'required'      => true,
             'sort'          => true,
             'help'          => 'Введите сюда слово на английском, которое будет выведено в URL. Разрешены латинские буквы, цифры, минус и символ подчеркивания. Во время ввода будет проведена автоматическая проверка данных.'
         );
-		$opts['fdd']['page_meta_title'] = array(
-            'name'          => 'Заголовок страницы',
-            'options'       => 'ACPDV',
-            'select'        => 'T',
-            'maxlen'        => 65535,
-            'required'      => true,
-            'sort'          => true,
-            'help'          => 'Введите сюда заголовок страницы - заголовок окна браузера &lt;title&gt;.'
+        $opts['fdd']['pic'] = array(
+            'name'          => 'Иконка',
+            'options'       => 'LACPD',
+            'required'      => false,
+            'sort'          => false,
+            'size'          => '50',
+            'nodb'          => true,
+            'file'          => array (
+                'tn'        => '',
+                'url'       => '/public/upload/shopcat/',
+                'multiple'  => false
+            ),
+            'help'          => 'Выберите иконку на своем компьютере для загрузки.'
         );
-        $opts['fdd']['page_view_id'] = array(
-            'name'          => 'Макет',
+        $opts['fdd']['cat_pid'] = array(
+            'name'          => 'Родительский раздел',
             'select'        => 'D',
             'options'       => 'ACPD',
-            'values2'       => $this->_get_view_list(),
-            'default'       => 0,
+            'values2'       => $this->categories_list,
+            'default'       => $this->session->userdata('w_cat_parent'),
             'required'      => true,
             'sort'          => true,
-            'help'          => 'Выберите из списка макет для отображения этой страницы'
-        );
-		$opts['fdd']['page_articles'] = array(
-            'name'          => 'Тексты',
-            'nodb'          => true,
-            'options'       => 'ACP',
-            'add_display'   => $this->get_articles(),
-            'change_display'=> $this->get_articles(),
-            'sort'          => false,
-            'help'          => 'Заполните поля требуемыми текстами.'
+            'help'          => 'Проставляется автоматически при заведении страницы. Можно использовать, когда требуется перенести категорию в другой раздел.'
         );
         if($publish)
 		{
-			$opts['fdd']['page_status'] = array(
+			$opts['fdd']['cat_active'] = array(
 				'name'          => 'Статус',
 				'select'        => 'D',
 				'options'       => 'LACPDV',
 				'values2'       => array (
-					'1'         => 'Активна и открыта',
-					'2'         => 'Активна и невидима',
-					'0'         => 'Неактивна',
-					'3'         => 'Переход на уровень ниже'
+					'1'         => 'Активна',
+					'0'         => 'Неактивна'
 				),
 				'save'          => true,
-				'default'       => 2,
-				'help'          => 'Поведение страницы'
+				'default'       => 0,
+				'help'          => 'Статус категории на сайте. Если вы хотите, чтобы категории не было видно на сайте - сделайте ее неактивным, т.е. совсем не обязательно удалять категорию, чтобы ее скрыть.'
 			);
 		}
-        $opts['fdd']['page_sort'] = array(
+        $opts['fdd']['cat_sort'] = array(
             'name'          => 'Сортировка',
             'select'        => 'T',
             'options'       => 'LACPD',
-            'default'       => $this->Cms_utils->get_max_sort('page_sort', 'w_pages'),
+            'default'       => $this->Cms_utils->get_max_sort('cat_sort', 'w_shop_categories'),
             'save'          => true,
             'sort'          => false
         );
-
-        // ------------------------------------------------------------------------
-
-        $opts = array_merge_recursive((array)$opts, (array)$this->Cms_inclusions->get_admin_inclusions('pages'));
-
-        // ------------------------------------------------------------------------
-
-        $opts['fdd']['page_pid'] = array(
-            'name'          => 'Родительский раздел',
-            'select'        => 'D',
-            'options'       => 'ACPD',
-            'values2'       => $this->pages_list,
-            'default'       => $this->session->userdata('w_pages_parent'),
-            'required'      => true,
-            'addcss'        => 'select2',
-            'tab'           => 'Вспомогательные параметры',
-            'sort'          => true,
-            'help'          => 'Проставляется автоматически при заведении страницы. Можно использовать, когда требуется перенести страницу в другой раздел.'
-        );
-        $opts['fdd']['page_redirect'] = array(
-            'name'          => 'Переадресация',
-            'options'       => 'LACPDV',
-            'select'        => 'T',
-            'maxlen'        => 65535,
-            'required'      => false,
-            'sort'          => true,
-            'help'          => 'Введите сюда адрес страницы, на которую нужно будет перебросить посетителя.'
+        $opts['fdd']['cat_fields'] = array(
+            'name'          => 'Характеристики',
+            'nodb'          => true,
+            'options'       => 'ACP',
+            'add_display'   => $this->get_fields(),
+            'change_display'=> $this->get_fields(),
+            'sort'          => false,
+            'help'          => 'Выберите требуемые поля и параметры для товаров данной категории. Отсортируйте их в нужном порядке.'
         );
 
         // ------------------------------------------------------------------------
 
-		$opts['fdd']['page_link_title'] = array(
-            'name'          => 'Заголовок ссылки меню',
+        $opts['fdd']['cat_meta_title'] = array(
+            'name'          => 'Заголовок страницы',
             'options'       => 'ACPDV',
             'select'        => 'T',
             'maxlen'        => 65535,
             'required'      => false,
             'sort'          => true,
-			'tab'           => 'Мета-информация',
-            'help'          => 'Введите сюда заголовок для ссылки в меню, т.е. атрибут title тега &lt;a&gt;.'
+            'tab'           => 'Мета-информация',
+            'help'          => 'Введите сюда заголовок страницы - заголовок окна браузера &lt;title&gt;.'
         );
-        $opts['fdd']['page_meta_keywords'] = array(
+        $opts['fdd']['cat_meta_keywords'] = array(
             'name'          => 'Ключевые слова',
             'select'        => 'T',
             'options'       => 'ACPDV',
@@ -701,7 +727,7 @@ class Adm_pages extends CI_Model {
             'escape'        => false,
             'help'          => 'Ключевые слова через запятую. Для поисковых систем. Это поле используется при продвижении сайта!'
         );
-        $opts['fdd']['page_meta_description'] = array(
+        $opts['fdd']['cat_meta_description'] = array(
             'name'          => 'Описание',
             'select'        => 'T',
             'options'       => 'ACPDV',
@@ -715,11 +741,12 @@ class Adm_pages extends CI_Model {
             'escape'        => false,
             'help'          => 'Одно-два предложения, описывающих содержимое страницы. Для поисковых систем. Это поле используется при продвижении сайта!'
         );
-        $opts['fdd']['page_meta_additional'] = array(
-            'name'          => 'Дополнительные мета-теги',
+        $opts['fdd']['cat_seo'] = array(
+            'name'          => 'SEO текст',
             'select'        => 'T',
             'options'       => 'ACPDV',
             'maxlen'        => 65535,
+            'addcss'        => 'htmleditor',
             'textarea'      => array(
                 'rows'      => 5,
                 'cols'      => 66
@@ -727,34 +754,12 @@ class Adm_pages extends CI_Model {
             'required'      => false,
             'sort'          => true,
             'escape'        => false,
-            'help'          => 'Сюда можно добавить дополнительные инструкции для этой страницы. Они будут размещены между тегами &lt;head&gt;&lt;/head&gt;!'
-        );
-		$opts['fdd']['page_footer_additional'] = array(
-            'name'          => 'Дополнительный код в подвал',
-            'select'        => 'T',
-            'options'       => 'ACPDV',
-            'maxlen'        => 65535,
-            'textarea'      => array(
-                'rows'      => 5,
-                'cols'      => 66
-            ),
-            'required'      => false,
-            'sort'          => true,
-            'escape'        => false,
-            'help'          => 'Сюда можно добавить дополнительные инструкции для этой страницы. Они будут размещены до закрывающего тега &lt;/body&gt;!'
+            'help'          => 'Дополнительный текст для продвижении сайта!'
         );
 
         // ------------------------------------------------------------------------
 
-        $opts['fdd']['page_menu_id'] = array(
-            'name'          => 'Меню',
-            'select'        => 'T',
-            'options'       => 'ACPH',
-            'maxlen'        => 3,
-            'default'       => $this->session->userdata('page_filter'),
-            'sort'          => false
-        );
-        $opts['fdd']['page_lang_id'] = array(
+        $opts['fdd']['cat_lang_id'] = array(
             'name'          => 'Язык',
             'select'        => 'T',
             'options'       => 'ACPH',
@@ -763,12 +768,11 @@ class Adm_pages extends CI_Model {
             'sort'          => false
         );
 
+        $opts['parent_id']      = $this->_get_parent();
+        $opts['parent_sess_id'] = $this->session->userdata('w_cat_parent');
+        $opts['parent_crumbs']  = $this->_get_crumbs();
 
         // ------------------------------------------------------------------------
-
-        $opts['parent_id']      = $this->_get_parent();
-        $opts['parent_sess_id'] = $this->session->userdata('w_pages_parent');
-        $opts['parent_crumbs']  = $this->_get_crumbs();
 
 		return $opts;
 	}

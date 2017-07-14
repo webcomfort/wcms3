@@ -109,14 +109,14 @@ td.pme-tab-selected a { text-decoration: none; }
 .pme-value { width: 70%; vertical-align: top !important; }
 .pme-help { width: 20%; vertical-align: top !important; padding-top: 15px !important; padding-bottom: 15px !important; }
 .pme-value .control-group { margin: 10px 0 0 0; padding: 0; }
-.pme-value .control-group .alert { width: 94%; margin: 5px 0 0 0; }
-.pme-value select.pme-input { width: 94%; }
-.pme-value textarea.pme-input { width: 94%; }
-.pme-value input.pme-input { width: 94%; }
+.pme-value .control-group .alert { width: 100%; margin: 5px 0 0 0; }
+.pme-value select.pme-input { width: 100%; }
+.pme-value textarea.pme-input { width: 100%; }
+.pme-value input.pme-input { width: 100%; }
 .pme-value input[type="checkbox"], .pme-value input[type="radio"] { width: auto; }
-.pme-filter select.pme-filter { width: 95%; }
-.pme-filter textarea.pme-filter { width: 94%; }
-.pme-filter input.pme-filter { width: 94%; }
+.pme-filter select.pme-filter { width: 100%; }
+.pme-filter textarea.pme-filter { width: 100%; }
+.pme-filter input.pme-filter { width: 100%; }
 .btn-inc { margin-top: 5px; margin-right: 5px; }
 
 /*----------  2.5. Input  ----------*/
@@ -125,8 +125,7 @@ td.pme-tab-selected a { text-decoration: none; }
 .control-group .file-value { padding-left: 10px; }
 
 /*----------  2.6. Select2  ----------*/
-.select2-container { min-width: 200px !important; max-width: 94% !important; }
-.control-group .select2-container { width: 94% !important; }
+.select2-container { min-width: 200px !important; width: 100% !important; }
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove { margin-right: 7px; float: left; }
 .select2-result-repository { padding-top: 4px; padding-bottom: 3px; display: inline-block; width: 100%; }
 .select2-result-repository__avatar { float: left; width: 20%; margin-right: 10px; }

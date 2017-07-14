@@ -9,8 +9,9 @@ class Adm_gallery_photos extends CI_Model {
     function __construct()
     {
         if($this->input->post('PME_sys_rec', TRUE) === '0' || $this->input->post('PME_sys_savecopy', TRUE) || $this->input->post('PME_sys_savedelete', TRUE)) header ('Location: /admin/'.$this->uri->segment(2));
+        $this->load->model('Cms_utils');
+        $this->load->helper('form');
         parent::__construct();
-		$this->load->helper('form');
     }
 
     // ------------------------------------------------------------------------
@@ -614,6 +615,14 @@ class Adm_gallery_photos extends CI_Model {
 				'help'          => 'Статус фото на сайте. Если вы хотите, чтобы фото не было видно на сайте - сделайте его неактивным, т.е. совсем не обязательно удалять фото, чтобы его скрыть.'
 			);
 		}
+        $opts['fdd']['photo_sort'] = array(
+            'name'          => 'Сортировка',
+            'select'        => 'T',
+            'options'       => 'LACPD',
+            'default'       => $this->Cms_utils->get_max_sort('photo_sort', 'w_gallery_photos'),
+            'save'          => true,
+            'sort'          => false
+        );
 
         // ------------------------------------------------------------------------
 
@@ -645,14 +654,6 @@ class Adm_gallery_photos extends CI_Model {
 
         // ------------------------------------------------------------------------
 
-        $opts['fdd']['photo_sort'] = array(
-            'name'          => 'Сортировка',
-            'select'        => 'T',
-            'options'       => 'ACPH',
-            'default'       => time(),
-            'fdefault'      => time(),
-            'sort'          => false
-        );
         $opts['fdd']['photo_lang_id'] = array(
             'name'          => 'Язык',
             'select'        => 'T',

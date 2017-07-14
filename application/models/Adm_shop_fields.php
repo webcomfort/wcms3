@@ -1,14 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Управление баннерами
+ * Управление новостными рубриками
  */
 
-class Adm_banners extends CI_Model {
+class Adm_shop_fields extends CI_Model {
 
     function __construct()
     {
         if($this->input->post('PME_sys_rec', TRUE) === '0' || $this->input->post('PME_sys_savecopy', TRUE) || $this->input->post('PME_sys_savedelete', TRUE)) header ('Location: /admin/'.$this->uri->segment(2));
+        $this->load->helper( array('string') );
         $this->load->model('Cms_utils');
         parent::__construct();
     }
@@ -16,15 +17,110 @@ class Adm_banners extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-	 * Функция, отдающая дополнительные параметры в <head>
-	 *
-	 * @access	public
-	 * @return	string
-	 */
+     * Функция, отдающая дополнительные параметры в <head>
+     *
+     * @access	public
+     * @return	string
+     */
     function get_meta()
     {
-        $meta = '';
+        $meta = '<script>
+        jQuery(document).ready(function() {
+
+            var label           = \'#PME_data_field_label\';
+            var name            = \'#PME_data_field_name\';
+            var generate_func   = \'/adm_shop_fields/p_label_generate\';
+            var check_func      = \'/adm_shop_fields/p_check_label\';
+            var check           = $(label).val();
+
+            $(name).keyup(function(){
+                if (check === \'\') { label_generate(label, name, generate_func, check_func); }
+            });
+
+            $(label).keyup(function(){
+                check_availability(label, name, generate_func, check_func);
+            });
+        });
+
+        function label_generate(label, name, generate_func, check_func){
+            $.post(generate_func, { url: $(name).val(), '.$this->security->get_csrf_token_name().': "'.$this->security->get_csrf_hash().'" }, function(result){
+                $(label).val(result);
+                check_availability(label, name, generate_func, check_func);
+            });
+        }
+
+        function check_availability(label, name, generate_func, check_func){
+            if($(label).val().length < 3){
+                $(label+\'_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-danger\');
+                $(label+\'_help\').html(\'Должно быть не менее трех символов\');
+            }
+            else{
+                $(label+\'_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\');
+                $(label+\'_help\').html(\'Проверка...\');
+                $.post(check_func, { name: $(label).val(), '.$this->security->get_csrf_token_name().': "'.$this->security->get_csrf_hash().'" }, function(result){
+                    if(result == 1){
+                        $(label+\'_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-success\');
+                        $(label+\'_help\').html(\'<strong>\' + $(label).val() + \'</strong> свободно\');
+                    }
+                    if(result == 2){
+                        $(label+\'_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-danger\');
+                        $(label+\'_help\').html(\'Содержит недопустимые символы\');
+                    }
+                    if(result == 0){
+                        $(label+\'_alert\').removeClass(\'alert alert-danger alert-warning alert-info alert-success\').addClass(\'alert alert-danger\');
+                        $(label+\'_help\').html(\'<strong>\' + $(label).val() + \'</strong> занято\');
+                    }
+                });
+            }
+        }
+
+        </script>';
         return $meta;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Функция, генерирующая метку (внешний вызов)
+     *
+     * @access  public
+     * @return  string
+     */
+    function p_label_generate()
+    {
+        $rights = $this->cms_user->get_user_rights();
+
+        if ( is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
+        {
+            echo ru2lat($this->input->post('url', TRUE), 0);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Функция, проверяющая метку (внешний вызов)
+     *
+     * @access  public
+     * @return  string
+     */
+    function p_check_label()
+    {
+        $rights = $this->cms_user->get_user_rights();
+
+        if ( is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
+        {
+            if(preg_ext_string($this->input->post('name', TRUE)))
+            {
+                $this->db->select('field_id');
+                $this->db->where('field_label', $this->input->post('name', TRUE));
+                $query = $this->db->get('w_shop_fields');
+
+                if ($query->num_rows() > 0) echo 0;
+                else echo 1;
+            }
+            else echo 2;
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -37,65 +133,8 @@ class Adm_banners extends CI_Model {
 	 */
     function get_filters()
     {
-        // Получаем данные
-        $filter_init = $this->config->item('cms_banners_places');
-
-        foreach ($filter_init as $key => $value)
-        {
-            $filter_values[$key] = $value['name'];
-        }
-
-        // Сессия
-        if (!$this->session->userdata('banner_filter'))
-        {
-            $this->session->set_userdata(array('banner_filter' => current(array_keys($filter_values))));
-        }
-
-        if($this->input->post('banner_filter', true) && preg_int($this->input->post('banner_filter', true)))
-        {
-            $this->session->set_userdata(array('banner_filter' => $this->input->post('banner_filter', true)));
-        }
-
-        // Отображение
-        $data = array(
-            'filter_name'   => 'Выберите место размещения баннера',
-            'filter_action' => '/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/',
-            'filter_field'  => 'banner_filter',
-            'filter_class'  => ' select2',
-            'filter_active' => $this->session->userdata('banner_filter'),
-            'filter_values' => $filter_values
-        );
-
-        $filters = '
-        <div class="row">
-            <div class="col-xs-12"><div class="p20 ui-block">'.
-                $this->load->view('admin/filter_default', $data, true)
-            .'</div></div>
-        </div>
-        ';
-
+        $filters = '';
         return $filters;
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Массив макетов для формирования выпадающего списка
-     *
-     * @access  private
-     * @return  array
-     */
-
-    function _get_view_list()
-    {
-        $views  = $this->config->item('cms_banners_views');
-
-        foreach ($views as $key => $value)
-        {
-            $val_arr[$key] = $value['name'];
-        }
-
-        return $val_arr;
     }
 
     // ------------------------------------------------------------------------
@@ -128,25 +167,25 @@ class Adm_banners extends CI_Model {
         // Получаем базовые настройки
         $this->load->model('Cms_myedit');
         $opts = $this->Cms_myedit->get_base_opts();
-		
-		// Переопределяем кнопки
-		$opts['buttons']['L']['up'] = array('add','save','<<','<','>','>>','goto_combo');
-		$opts['buttons']['L']['down'] = $opts['buttons']['L']['up'];
+
+        // Переопределяем кнопки
+        $opts['buttons']['L']['up'] = array('add','<<','<','>','>>','goto_combo');
+        $opts['buttons']['L']['down'] = $opts['buttons']['L']['up'];
         $opts['buttons']['F']['up'] = $opts['buttons']['L']['up'];
         $opts['buttons']['F']['down'] = $opts['buttons']['L']['up'];
 
         // Таблица
-        $opts['tb'] = 'w_banners';
+        $opts['tb'] = 'w_shop_fields';
 
         // Ключ
-        $opts['key'] = 'banner_id';
+        $opts['key'] = 'field_id';
 
         // Начальная и ручная(UI) сортировка
-        $opts['sort_field'] = array('banner_sort');
-        $opts['ui_sort_field'] = 'banner_sort';
+        $opts['sort_field'] = array('field_name');
+        $opts['ui_sort_field'] = '';
 
         // Кол-во записей для вывода на экран
-        $opts['inc'] = 100;
+        $opts['inc'] = 20;
 
         // Имя файла модуля, передаем для последующей проверки прав на него
         $opts['module'] = basename(__FILE__);
@@ -155,14 +194,13 @@ class Adm_banners extends CI_Model {
         // A - добавление,  C - изменение, P - копирование, V - просмотр, D - удаление,
         // F - фильтры (всегда активно), I - начальная сортировка (всегда активно)
         $publish = $this->cms_user->get_user_rights();
-		$publish = $publish[basename(__FILE__)]['active'];
-		$rights = $this->cms_user->get_user_myedit_rights();
+        $publish = $publish[basename(__FILE__)]['active'];
+        $rights = $this->cms_user->get_user_myedit_rights();
         $opts['options'] = $rights[basename(__FILE__)];
 
         // Фильтрация вывода
         $opts['filters'] = array (
-            "banner_lang_id = '" . $this->session->userdata('w_alang') . "'",
-            "banner_place_id = '" . $this->session->userdata('banner_filter') . "'"
+            "field_lang_id = '" . $this->session->userdata('w_alang') . "'"
         );
 
         // Триггеры
@@ -171,8 +209,8 @@ class Adm_banners extends CI_Model {
 		// $this->opts['triggers']['delete']['before'] = '';
 
         // Логирование: общее название класса и поле где хранится название объекта
-        $opts['logtable_title'] = 'Баннер';
-        $opts['logtable_field'] = 'banner_name';
+        $opts['logtable_title'] = 'Поле';
+        $opts['logtable_field'] = 'field_name';
 
         // ------------------------------------------------------------------------
         // Опции полей (об этих и других опциях читайте в справке по phpMyEdit):
@@ -234,18 +272,7 @@ class Adm_banners extends CI_Model {
         // F - присутствует в фильтрах
         // ------------------------------------------------------------------------
 
-        $opts['fdd']['go'] = array(
-            'name'          => '',
-            'css'           => array('postfix'=>'nav'),
-            'nodb'          => true,
-            'options'       => 'L',
-            'cell_display'   => '<div class="mr20"><a href="'.$opts['page_name'].'/move/up/id/$key" class="btn btn-sm btn-default mr2" rel="tooltip" title="Сдвинуть вверх"><i class="glyphicon glyphicon-chevron-up"></i></a><a href="'.$opts['page_name'].'/move/down/id/$key" class="btn btn-sm btn-default" rel="tooltip" title="Сдвинуть вниз"><i class="glyphicon glyphicon-chevron-down"></i></a></div>',
-            'sort'          => false,
-        );
-
-        // ------------------------------------------------------------------------
-
-        $opts['fdd']['banner_id'] = array(
+        $opts['fdd']['field_id'] = array(
             'name'          => 'Номер по б/д',
             'select'        => 'T',
             'options'       => 'F', // Автоинкремент
@@ -253,115 +280,60 @@ class Adm_banners extends CI_Model {
             'default'       => '0',
             'sort'          => true
         );
-        $opts['fdd']['banner_name'] = array(
-            'name'          => 'Название баннера',
+        $opts['fdd']['field_name'] = array(
+            'name'          => 'Название',
             'options'       => 'LACPDV',
             'select'        => 'T',
             'maxlen'        => 65535,
             'required'      => true,
             'sort'          => true,
-            'help'          => 'Введите название баннера.'
+            'help'          => 'Введите название.'
         );
-        $opts['fdd']['pic'] = array(
-            'name'          => 'Баннер',
-            'required'      => false,
-            'sort'          => false,
-            'size'          => '50',
-            'nodb'          => true,
-            'file'          => array (
-                'tn'        => '',
-                'url'       => $this->config->item('cms_banners_dir'),
-                'multiple'  => false
-            ),
-            'help'          => 'Выберите баннер на своем компьютере для загрузки. Он может быть в формате .jpg, .gif, .swf, .png, .bmp. Удаление баннера из режима редактирования приводит к его безвозвратному удалению.'
-        );
-        $opts['fdd']['banner_link'] = array(
-            'name'          => 'Ссылка',
-            'options'       => 'LACPDV',
-            'select'        => 'T',
-            'maxlen'        => 65535,
-            'required'      => true,
-            'sort'          => true,
-            'help'          => 'Введите ссылку для баннера. Информация для разработчиков баннеров: внутри флэш-баннера ссылка должна быть прописана следующего вида <strong>on (release) { getURL(_root.link1, "_blank"); }</strong>'
-        );
-        $opts['fdd']['banner_code'] = array(
-            'name'          => 'Код',
-            'select'        => 'T',
-            'options'       => 'ACPDV',
-            'maxlen'        => 65535,
-            'textarea'      => array(
-                'rows'      => 5,
-                'cols'      => 66
-            ),
-            'required'      => false,
-            'sort'          => true,
-            'escape'        => false,
-            'help'          => 'Вы можете не загружать баннер, если у вас есть сторонний код. Например, это может быть код счетчика. Если в это поле введены данные, то системой не будут учтены поля "В новом окне?", "Ссылка" и не будет показано загруженное изображение.'
-        );
-        $opts['fdd']['banner_blank'] = array(
-            'name'          => 'В новом окне?',
+        $opts['fdd']['field_type'] = array(
+            'name'          => 'Тип поля',
             'select'        => 'D',
-            'options'       => 'ACPDV',
+            'options'       => 'LACPDV',
             'values2'       => array (
-                '1'         => 'Да',
-                '0'         => 'Нет'
+                '1'         => 'Текст - строка',
+                '2'         => 'Статья - большое поле',
+                '3'         => 'Статья - большое поле + редактор',
+                '4'         => 'Выпадающий список - единственный выбор',
+                '5'         => 'Выпадающий список - множественный выбор',
+                '6'         => 'Чекбоксы (функционально идентичен "Выпадающий список - множественный выбор")',
+                '7'         => 'Радио (функционально идентичен "Выпадающий список - единственный выбор")',
+                '8'         => 'Дата'
             ),
-            'default'       => 0,
-            'help'          => 'Будет ли открываться новое окно при щелчке на баннер'
+            'default'       => 1,
+            'help'          => 'Выберите тип поля, наиболее удобный для редактирования данных'
         );
-        $opts['fdd']['banner_view_id'] = array(
-            'name'          => 'Макет',
-            'select'        => 'D',
-            'options'       => 'ACPDV',
-            'values2'       => $this->_get_view_list(),
-            'default'       => 0,
+        $opts['fdd']['field_label'] = array(
+            'name'          => 'Метка',
+            'options'       => 'LACPDV',
+            'select'        => 'T',
+            'maxlen'        => 65535,
             'required'      => true,
             'sort'          => true,
-            'help'          => 'Выберите из списка макет для отображения этой галереи.'
+            'help'          => 'Введите сюда метку на латинице, разные слова разделяются подчеркиванием, например "Региональный музей" = "regional_museum".'
         );
         if($publish)
-		{
-			$opts['fdd']['banner_active'] = array(
-				'name'          => 'Статус',
-				'select'        => 'D',
-				'options'       => 'LACPDV',
-				'values2'       => array (
-					'1'         => 'Активен',
-					'0'         => 'Неактивен'
-				),
-				'default'       => 0,
-				'save'			=> true,
-				'help'          => 'Неактивный баннер не показывается на сайте'
-			);
-		}
-        $opts['fdd']['banner_click'] = array(
-            'name'          => 'Клики',
-            'select'        => 'N',
-            'options'       => 'L',
-            'maxlen'        => 11,
-            'default'       => '0',
-            'sort'          => true
-        );
+        {
+            $opts['fdd']['field_active'] = array(
+                'name'          => 'Статус',
+                'select'        => 'D',
+                'options'       => 'LACPDV',
+                'values2'       => array (
+                    '1'         => 'Активно',
+                    '0'         => 'Неактивно'
+                ),
+                'save'          => true,
+                'default'       => 0,
+                'help'          => 'Статус на сайте. Если вы хотите, чтобы этот параметр не было видно на сайте - сделайте его неактивным, т.е. совсем не обязательно удалять параметр, чтобы его скрыть.'
+            );
+        }
 
         // ------------------------------------------------------------------------
 
-        $opts['fdd']['banner_place_id'] = array(
-            'name'          => 'Место',
-            'select'        => 'T',
-            'options'       => 'ACPH',
-            'maxlen'        => 3,
-            'default'       => $this->session->userdata('banner_filter'),
-            'sort'          => false
-        );
-        $opts['fdd']['banner_sort'] = array(
-            'name'          => 'Сортировка',
-            'select'        => 'T',
-            'options'       => 'LACPD',
-            'default'       => $this->Cms_utils->get_max_sort('banner_sort', 'w_banners'),
-            'save'          => true,
-            'sort'          => false
-        );
-        $opts['fdd']['banner_lang_id'] = array(
+        $opts['fdd']['field_lang_id'] = array(
             'name'          => 'Язык',
             'select'        => 'T',
             'options'       => 'ACPH',
@@ -369,8 +341,6 @@ class Adm_banners extends CI_Model {
             'default'       => $this->session->userdata('w_alang'),
             'sort'          => false
         );
-
-        // ------------------------------------------------------------------------
 
 		return $opts;
 	}

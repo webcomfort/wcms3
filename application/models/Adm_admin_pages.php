@@ -94,12 +94,12 @@ class Adm_admin_pages extends CI_Model {
 
     function _get_parent_list()
     {
-        $val_arr[0] = 'Верхний уровень';
-
         $this->db->select('cms_page_id, cms_page_pid, cms_page_name')
             ->order_by('cms_page_pid, cms_page_sort');
 
         $query = $this->db->get('w_cms_pages');
+
+        $this->items_list[0] = 'Верхний уровень';
 
         if ($query->num_rows() > 0) {
             @$this->forest =& $this->tree->get_tree('cms_page_id', 'cms_page_pid', $query->result_array(), 0);
