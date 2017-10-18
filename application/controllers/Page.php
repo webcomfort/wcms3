@@ -72,6 +72,7 @@ class Page extends CI_Controller {
 
             $this->db->where('page_lang_id', $lang_id);
 			$this->db->where('page_menu_id', 1);
+            $this->db->where('page_pid', 0);
             $this->db->where_in('page_status', $statuses);
 			$this->db->order_by('page_sort', 'asc');
             $query = $this->db->get('w_pages', 1);

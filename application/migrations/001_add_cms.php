@@ -664,7 +664,7 @@ class Migration_Add_cms extends CI_Migration {
         $this->dbforge->add_key('page_lang_id');
         $this->dbforge->create_table('w_pages', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
         // Главная страница
-        $this->db->query("INSERT INTO `w_pages` (`page_id`, `page_pid`, `page_menu_id`, `page_name`, `page_url`, `page_meta_title`, `page_link_title`, `page_meta_keywords`, `page_meta_description`, `page_meta_additional`, `page_footer_additional`, `page_view_id`, `page_status`, `page_sort`, `page_redirect`, `page_lang_id`) VALUES (1, 0, 1, 'Главная', 'index', 'Главная страница', 'Заголовок ссылки', '', '', '', '', 2, 1, 1369826732, '', 1)");
+        $this->db->query("INSERT INTO `w_pages` (`page_id`, `page_pid`, `page_menu_id`, `page_name`, `page_url`, `page_meta_title`, `page_link_title`, `page_meta_keywords`, `page_meta_description`, `page_meta_additional`, `page_footer_additional`, `page_view_id`, `page_status`, `page_sort`, `page_redirect`, `page_lang_id`) VALUES (1, 0, 1, 'Главная', 'index', 'Главная страница', 'Заголовок ссылки', '', '', '', '', 2, 1, 10, '', 1)");
 
         // ------------------------------------------------------------------------
 
