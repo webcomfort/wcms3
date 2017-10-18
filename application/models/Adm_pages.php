@@ -638,11 +638,21 @@ class Adm_pages extends CI_Model {
 				'help'          => 'Поведение страницы'
 			);
 		}
-        $opts['fdd']['page_sort'] = array(
+        $where = array(
+            0 => array(
+                'field' => 'page_menu_id',
+                'value' => $this->session->userdata('page_filter')
+            ),
+            1 => array(
+                'field' => 'page_pid',
+                'value' => $this->session->userdata('w_pages_parent')
+            )
+        );
+		$opts['fdd']['page_sort'] = array(
             'name'          => 'Сортировка',
             'select'        => 'T',
             'options'       => 'LACPD',
-            'default'       => $this->Cms_utils->get_max_sort('page_sort', 'w_pages'),
+            'default'       => $this->Cms_utils->get_max_sort('page_sort', 'w_pages', $where),
             'save'          => true,
             'sort'          => false
         );

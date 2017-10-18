@@ -322,7 +322,15 @@ class Adm_news extends CI_Model {
      */
     function _news_rubrics($key)
     {
+        $val_arr = $this->_get_rubrics();
         $val_arr_active = array();
+
+        if($key == 0 && $this->session->userdata('news_filter') != 999999999 && $this->session->userdata('news_filter') != 0) {
+            $query_active = $this->db->query('SELECT news_cat_id AS id, news_cat_name AS name FROM w_news_categories WHERE news_cat_id = "'.$this->session->userdata('news_filter').'"');
+            $row_active = $query_active->row();
+            $val_arr[$row_active->id] = $row_active->name;
+            $val_arr_active[] = $row_active->id;
+        }
 
         // Active
         $this->db->select('w_news_categories_cross.news_cat_id AS id, news_cat_name AS name')
@@ -340,7 +348,7 @@ class Adm_news extends CI_Model {
             }
 
             $data = array(
-                'values'    => $this->_get_rubrics(),
+                'values'    => $val_arr,
                 'defaults'  => $val_arr_active
             );
 
@@ -348,8 +356,8 @@ class Adm_news extends CI_Model {
         }
         else {
             $data = array(
-                'values'    => $this->_get_rubrics(),
-                'defaults'  => array()
+                'values'    => $val_arr,
+                'defaults'  => $val_arr_active
             );
             return $data;
         }
@@ -410,7 +418,7 @@ class Adm_news extends CI_Model {
         // Фильтрация вывода
         $opts['filters'] = array();
 
-        // Фильтр по объектам
+        // Фильтр по рубрикам
         $rub_ids = array();
         if ($this->session->userdata('news_filter')) {
             if ($this->session->userdata('news_filter') != 999999999) {
@@ -623,13 +631,14 @@ class Adm_news extends CI_Model {
             ),
             'help'          => 'Выберите картинку на своем компьютере для загрузки, если хотите, чтобы в списке рядом с этой новостью стояла картинка. Картинки, которые вы хотите расположить по тексту статьи, надо загружать через редактор. Удаление картинки из режима редактирования новости приводит к ее безвозвратному удалению.'
         );
+        $rubrics_select = $this->get_rubrics_select($id);
         $opts['fdd']['news_cat'] = array(
             'name'     => 'Рубрики',
             'nodb'     => true,
             'select'   => 'M',
             'options'  => 'ACPL',
-            'add_display'   => $this->get_rubrics_select($id),
-            'change_display'=> $this->get_rubrics_select($id),
+            'add_display'   => $rubrics_select,
+            'change_display'=> $rubrics_select,
             'cell_func' => array(
                 'model' => 'adm_news',
                 'func'  => 'get_rubrics_select'

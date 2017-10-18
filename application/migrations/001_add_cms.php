@@ -214,7 +214,34 @@ class Migration_Add_cms extends CI_Migration {
         $this->dbforge->add_key('module_id', TRUE);
         $this->dbforge->create_table('w_cms_modules', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
         // Модули администрирования
-        $this->db->query("INSERT INTO `w_cms_modules` (`module_id`, `module_name`, `module_file`, `module_type`, `module_active`, `module_sort`) VALUES (1, 'Меню администрирования', 'Adm_admin_pages.php', 2, 1, 1369826732),(2, 'Управление пользователями', 'Adm_users.php', 2, 1, 1369826733),(3, 'Корзина', 'Adm_changelog.php', 2, 1, 1369826734),(4, 'Страницы', 'Adm_pages.php', 2, 1, 1369826735),(5, 'Баннеры', 'Adm_banners.php', 2, 1, 1369826736),(6, 'Сквозные блоки', 'Adm_cross_blocks.php', 2, 1, 1369826737),(7, 'Настройки сайта', 'Adm_site_configs.php', 2, 1, 1369826738),(8, 'Новости', 'Adm_news.php', 2, 1, 1369826739),(9, 'Новостные рубрики', 'Adm_news_categories.php', 2, 1, 1369826740),(10, 'Фотографии', 'Adm_gallery_photos.php', 2, 1, 1369826741),(11, 'Галереи', 'Adm_gallery.php', 2, 1, 1369826742),(12, 'Контактная форма', 'Mod_contacts.php', 1, 1, 1369826750),(13, 'Результаты поиска по сайту (служебный)', 'Mod_search.php', 1, 1, 1378837186),(14, 'Модули', 'Adm_modules.php', 2, 1, 1369826752),(15, 'Карта сайта (служебный)', 'Mod_site_map.php', 1, 1, 1369826751),(16, 'Вывод поста/новости (служебный)', 'Mod_news.php', 1, 1, 1491916603),(17, 'Фоны', 'Adm_backgrounds.php', 2, 1, 1493809645)");
+        $this->db->query("INSERT INTO `w_cms_modules` (`module_id`, `module_name`, `module_file`, `module_type`, `module_active`, `module_sort`) VALUES 
+(1, 'Меню администрирования', 'Adm_admin_pages.php', 2, 1, 1369826732),
+(2, 'Управление пользователями', 'Adm_users.php', 2, 1, 1369826733),
+(3, 'Корзина', 'Adm_changelog.php', 2, 1, 1369826734),
+(4, 'Страницы', 'Adm_pages.php', 2, 1, 1369826735),
+(5, 'Баннеры', 'Adm_banners.php', 2, 1, 1369826736),
+(6, 'Сквозные блоки', 'Adm_cross_blocks.php', 2, 1, 1369826737),
+(7, 'Настройки сайта', 'Adm_site_configs.php', 2, 1, 1369826738),
+(8, 'Новости', 'Adm_news.php', 2, 1, 1369826739),
+(9, 'Новостные рубрики', 'Adm_news_categories.php', 2, 1, 1369826740),
+(10, 'Фотографии', 'Adm_gallery_photos.php', 2, 1, 1369826741),
+(11, 'Галереи', 'Adm_gallery.php', 2, 1, 1369826742),
+(12, 'Контактная форма', 'Mod_contacts.php', 1, 1, 1369826750),
+(13, 'Результаты поиска по сайту (служебный)', 'Mod_search.php', 1, 1, 1378837186),
+(14, 'Модули', 'Adm_modules.php', 2, 1, 1369826752),
+(15, 'Карта сайта (служебный)', 'Mod_site_map.php', 1, 1, 1369826751),
+(16, 'Вывод поста/новости (служебный)', 'Mod_news.php', 1, 1, 1491916603),
+(17, 'Фоны', 'Adm_backgrounds.php', 2, 1, 1493809645),
+(18, 'Вендоры', 'Adm_shop_vendor.php', 2, 1, 1499937434),
+(19, 'Категории', 'Adm_shop_categories.php', 2, 1, 1499942236),
+(20, 'Характеристики', 'Adm_shop_fields.php', 2, 1, 1499953231),
+(21, 'Товары', 'Adm_shop_item.php', 2, 1, 1500456310),
+(22, 'Типы', 'Adm_shop_types.php', 2, 1, 1500556775)
+");
+
+        /*
+         *
+         * */
 
         // ------------------------------------------------------------------------
 
@@ -255,7 +282,30 @@ class Migration_Add_cms extends CI_Migration {
         $this->dbforge->add_key('cms_page_pid');
         $this->dbforge->create_table('w_cms_pages', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
         // Страницы администрирования
-        $this->db->query("INSERT INTO `w_cms_pages` (`cms_page_id`, `cms_page_pid`, `cms_page_name`, `cms_page_model_id`, `cms_page_view_id`, `cms_page_sort`, `cms_page_status`) VALUES (1, 0, 'Администратор', 0, 0, 1369665049, 3),(2, 1, 'Меню администрирования', 1, 1, 1371473563, 1),(3, 0, 'Пользователи', 2, 1, 1368050509, 1),(4, 0, 'Корзина', 3, 1, 1368736763, 1),(5, 0, 'Сайт', 4, 1, 1364596270, 3),(6, 5, 'Страницы', 4, 1, 1368918785, 1),(7, 5, 'Баннеры', 5, 1, 1369044778, 1),(8, 5, 'Сквозные блоки', 6, 1, 1369144591, 1),(9, 0, 'Настройки сайта', 7, 1, 1368918747, 1),(10, 0, 'Новости и фото', 8, 1, 1367927286, 3),(11, 10, 'Новости', 8, 1, 1369665078, 1),(12, 11, 'Рубрики', 9, 1, 1369729521, 1),(13, 10, 'Фото', 10, 1, 1369811296, 1),(14, 13, 'Галереи', 11, 1, 1369811312, 1),(15, 1, 'Модули', 14, 1, 1369146092, 1),(16, 5, 'Фоны', 17, 1, 1493809673, 1)");
+        $this->db->query("INSERT INTO `w_cms_pages` (`cms_page_id`, `cms_page_pid`, `cms_page_name`, `cms_page_model_id`, `cms_page_view_id`, `cms_page_sort`, `cms_page_status`) VALUES 
+(1, 0, 'Администратор', 0, 0, 1369665049, 3),
+(2, 1, 'Меню администрирования', 1, 1, 1371473563, 1),
+(3, 0, 'Пользователи', 2, 1, 1368050509, 1),
+(4, 0, 'Корзина', 3, 1, 1368736763, 1),
+(5, 0, 'Сайт', 4, 1, 1364596270, 3),
+(6, 5, 'Страницы', 4, 1, 1368918785, 1),
+(7, 5, 'Баннеры', 5, 1, 1369044778, 1),
+(8, 5, 'Сквозные блоки', 6, 1, 1369144591, 1),
+(9, 0, 'Настройки сайта', 7, 1, 1368918747, 1),
+(10, 0, 'Новости и фото', 8, 1, 1367927286, 3),
+(11, 10, 'Новости', 8, 1, 1369665078, 1),
+(12, 11, 'Рубрики', 9, 1, 1369729521, 1),
+(13, 10, 'Фото', 10, 1, 1369811296, 1),
+(14, 13, 'Галереи', 11, 1, 1369811312, 1),
+(15, 1, 'Модули', 14, 1, 1369146092, 1),
+(16, 5, 'Фоны', 17, 1, 1493809673, 1),
+(17, 0, 'Каталог', 0, 1, 1367927286, 3),
+(18, 17, 'Вендоры', 18, 1, 1500456340, 1),
+(19, 17, 'Категории', 19, 1, 1499942261, 1),
+(20, 21, 'Характеристики', 20, 1, 1500556807, 1),
+(21, 17, 'Товары', 21, 1, 1499937610, 1),
+(22, 21, 'Типы', 22, 1, 1499953249, 1)
+");
 
         // ------------------------------------------------------------------------
 
@@ -848,7 +898,331 @@ class Migration_Add_cms extends CI_Migration {
         $this->dbforge->add_key('rule_model_id');
         $this->dbforge->create_table('w_user_rules', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
         // Добавляем права администратору
-        $this->db->query("INSERT INTO `w_user_rules` (`rule_id`, `rule_user_id`, `rule_model_id`, `rule_view`, `rule_add`, `rule_edit`, `rule_copy`, `rule_delete`, `rule_active`) VALUES (1, 1, 1, 1, 1, 1, 1, 1, 1),(2, 1, 2, 1, 1, 1, 1, 1, 1),(3, 1, 3, 1, 1, 1, 1, 1, 1),(4, 1, 4, 1, 1, 1, 1, 1, 1),(5, 1, 5, 1, 1, 1, 1, 1, 1),(6, 1, 6, 1, 1, 1, 1, 1, 1),(7, 1, 7, 1, 1, 1, 1, 1, 1),(8, 1, 8, 1, 1, 1, 1, 1, 1),(9, 1, 9, 1, 1, 1, 1, 1, 1),(10, 1, 10, 1, 1, 1, 1, 1, 1),(11, 1, 11, 1, 1, 1, 1, 1, 1),(12, 1, 14, 1, 1, 1, 1, 1, 1),(13, 1, 17, 1, 1, 1, 1, 1, 1)");
+        $this->db->query("INSERT INTO `w_user_rules` (`rule_id`, `rule_user_id`, `rule_model_id`, `rule_view`, `rule_add`, `rule_edit`, `rule_copy`, `rule_delete`, `rule_active`) VALUES 
+(1, 1, 1, 1, 1, 1, 1, 1, 1),
+(2, 1, 2, 1, 1, 1, 1, 1, 1),
+(3, 1, 3, 1, 1, 1, 1, 1, 1),
+(4, 1, 4, 1, 1, 1, 1, 1, 1),
+(5, 1, 5, 1, 1, 1, 1, 1, 1),
+(6, 1, 6, 1, 1, 1, 1, 1, 1),
+(7, 1, 7, 1, 1, 1, 1, 1, 1),
+(8, 1, 8, 1, 1, 1, 1, 1, 1),
+(9, 1, 9, 1, 1, 1, 1, 1, 1),
+(10, 1, 10, 1, 1, 1, 1, 1, 1),
+(11, 1, 11, 1, 1, 1, 1, 1, 1),
+(12, 1, 14, 1, 1, 1, 1, 1, 1),
+(13, 1, 17, 1, 1, 1, 1, 1, 1),
+(815, 1, 18, 1, 1, 1, 1, 1, 1),
+(816, 1, 19, 1, 1, 1, 1, 1, 1),
+(817, 1, 20, 1, 1, 1, 1, 1, 1),
+(818, 1, 21, 1, 1, 1, 1, 1, 1),
+(819, 1, 22, 1, 1, 1, 1, 1, 1)
+");
+
+	    // ----------------------------------- КАТАЛОГ -------------------------------------
+
+	    // Категории
+	    $this->dbforge->add_field(array(
+		    'cat_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+			    'unsigned' => TRUE,
+			    'auto_increment' => TRUE
+		    ),
+		    'cat_pid' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'cat_name' => array(
+			    'type' => 'text',
+		    ),
+		    'cat_desc' => array(
+			    'type' => 'text',
+		    ),
+		    'cat_url' => array(
+			    'type' => 'varchar',
+			    'constraint' => 255,
+		    ),
+		    'cat_active' => array(
+			    'type' => 'tinyint',
+			    'constraint' => 1,
+			    'default' => '0',
+		    ),
+		    'cat_sort' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'cat_meta_title' => array(
+			    'type' => 'text',
+		    ),
+		    'cat_meta_keywords' => array(
+			    'type' => 'text',
+		    ),
+		    'cat_meta_description' => array(
+			    'type' => 'text',
+		    ),
+		    'cat_seo' => array(
+			    'type' => 'text',
+		    ),
+		    'cat_lang_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+	    ));
+	    $this->dbforge->add_key('cat_id', TRUE);
+	    $this->dbforge->add_key('cat_pid');
+	    $this->dbforge->create_table('w_shop_categories', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
+	    // Поля
+	    $this->dbforge->add_field(array(
+		    'field_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+			    'unsigned' => TRUE,
+			    'auto_increment' => TRUE
+		    ),
+		    'field_type_back' => array(
+			    'type' => 'text',
+		    ),
+		    'field_type_front' => array(
+			    'type' => 'text',
+		    ),
+		    'field_name' => array(
+			    'type' => 'text',
+		    ),
+		    'field_label' => array(
+			    'type' => 'varchar',
+			    'constraint' => 255,
+		    ),
+		    'field_active' => array(
+			    'type' => 'tinyint',
+			    'constraint' => 1,
+			    'default' => '0',
+		    ),
+		    'field_lang_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+	    ));
+	    $this->dbforge->add_key('field_id', TRUE);
+	    $this->dbforge->create_table('w_shop_fields', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
+		// Товары
+	    $this->dbforge->add_field(array(
+		    'item_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+			    'unsigned' => TRUE,
+			    'auto_increment' => TRUE
+		    ),
+		    'item_pid' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'item_article' => array(
+			    'type' => 'text',
+		    ),
+		    'item_vendor_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'item_type_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'item_name' => array(
+			    'type' => 'text',
+		    ),
+		    'item_cut' => array(
+			    'type' => 'text',
+		    ),
+		    'item_url' => array(
+			    'type' => 'varchar',
+			    'constraint' => 255,
+		    ),
+		    'item_price' => array(
+			    'type' => 'double',
+		    ),
+		    'item_price_old' => array(
+			    'type' => 'double',
+		    ),
+		    'item_price_curr' => array(
+			    'type' => 'varchar',
+			    'constraint' => 3,
+		    ),
+		    'item_avail' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'item_active' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'item_label' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'item_sort' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'item_meta_title' => array(
+			    'type' => 'text',
+		    ),
+		    'item_meta_keywords' => array(
+			    'type' => 'text',
+		    ),
+		    'item_meta_description' => array(
+			    'type' => 'text',
+		    ),
+		    'item_seo' => array(
+			    'type' => 'text',
+		    ),
+		    'item_lang_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+	    ));
+	    $this->dbforge->add_key('item_id', TRUE);
+	    $this->dbforge->add_key('item_pid');
+	    $this->dbforge->add_key('item_vendor_id');
+	    $this->dbforge->add_key('item_price');
+	    $this->dbforge->add_key('item_avail');
+	    $this->dbforge->add_key('item_sort');
+	    $this->dbforge->create_table('w_shop_items', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
+	    // Пересечения товаров и категорий
+	    $this->dbforge->add_field(array(
+		    'sic_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+			    'unsigned' => TRUE,
+			    'auto_increment' => TRUE
+		    ),
+		    'item_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'cat_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+	    ));
+	    $this->dbforge->add_key('sic_id', TRUE);
+	    $this->dbforge->add_key('item_id');
+	    $this->dbforge->add_key('cat_id');
+	    $this->dbforge->create_table('w_shop_items_cats', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
+	    // Значения параметров
+	    $this->dbforge->add_field(array(
+		    'par_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+			    'unsigned' => TRUE,
+			    'auto_increment' => TRUE
+		    ),
+		    'item_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'field_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'par_value' => array(
+			    'type' => 'text',
+		    ),
+	    ));
+	    $this->dbforge->add_key('par_id', TRUE);
+	    $this->dbforge->add_key('item_id');
+	    $this->dbforge->add_key('field_id');
+	    $this->dbforge->create_table('w_shop_items_params', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
+	    // Типы
+	    $this->dbforge->add_field(array(
+		    'type_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+			    'unsigned' => TRUE,
+			    'auto_increment' => TRUE
+		    ),
+		    'type_name' => array(
+			    'type' => 'text',
+		    ),
+	    ));
+	    $this->dbforge->add_key('type_id', TRUE);
+	    $this->dbforge->create_table('w_shop_types', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
+	    // Значения полей для типов
+		$this->dbforge->add_field(array(
+		    'tf_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+			    'unsigned' => TRUE,
+			    'auto_increment' => TRUE
+		    ),
+		    'type_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'field_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'field_values' => array(
+			    'type' => 'text',
+		    ),
+		    'field_default_values' => array(
+			    'type' => 'text',
+		    ),
+		    'field_filter' => array(
+			    'type' => 'tinyint',
+			    'constraint' => 1,
+			    'default' => '0',
+		    ),
+		    'field_modification' => array(
+			    'type' => 'tinyint',
+			    'constraint' => 1,
+			    'default' => '0',
+		    ),
+		    'field_table' => array(
+			    'type' => 'tinyint',
+			    'constraint' => 1,
+			    'default' => '0',
+		    ),
+		    'field_order' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+	    ));
+	    $this->dbforge->add_key('tf_id', TRUE);
+	    $this->dbforge->add_key('type_id');
+	    $this->dbforge->add_key('field_id');
+	    $this->dbforge->create_table('w_shop_types_fields', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
+	    // Производители
+	    $this->dbforge->add_field(array(
+		    'vendor_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+			    'unsigned' => TRUE,
+			    'auto_increment' => TRUE
+		    ),
+		    'vendor_name' => array(
+			    'type' => 'text',
+		    ),
+		    'vendor_filter' => array(
+			    'type' => 'tinyint',
+			    'constraint' => 1,
+			    'default' => '0',
+		    ),
+		    'vendor_sort' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+	    ));
+	    $this->dbforge->add_key('vendor_id', TRUE);
+	    $this->dbforge->create_table('w_shop_vendors', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
     }
 
     public function down()
@@ -874,5 +1248,13 @@ class Migration_Add_cms extends CI_Migration {
         $this->dbforge->drop_table('w_sessions');
         $this->dbforge->drop_table('w_user');
         $this->dbforge->drop_table('w_user_rules');
+	    $this->dbforge->drop_table('w_shop_categories');
+	    $this->dbforge->drop_table('w_shop_fields');
+	    $this->dbforge->drop_table('w_shop_items');
+	    $this->dbforge->drop_table('w_shop_items_cats');
+	    $this->dbforge->drop_table('w_shop_items_params');
+	    $this->dbforge->drop_table('w_shop_types');
+	    $this->dbforge->drop_table('w_shop_types_fields');
+	    $this->dbforge->drop_table('w_shop_vendors');
     }
 }

@@ -15,6 +15,10 @@ $this->CI->db->cache_delete_all();
 
 // ------------------------------------------------------------------------
 
+$this->CI->db->where('article_pid', $id);
+$this->CI->db->where('article_pid_type', 'pages');
+$this->CI->db->delete('w_pages_articles');
+
 foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 {
     unset($data);
@@ -24,10 +28,6 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 
     if (preg_match("/^page_article_order_([1-9][0-9]*)$/", $key, $matches))
 	{
-        $this->CI->db->where('article_pid', $id);
-        $this->CI->db->where('article_pid_type', 'pages');
-        $this->CI->db->delete('w_pages_articles');
-
         $data = array(
             'article_id' 		=> '',
             'article_pid'	    => $id,

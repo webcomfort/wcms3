@@ -85,6 +85,7 @@ class Cms_inclusions extends CI_Model {
                 if (isset($value['add_code'])) $opts['fdd'][$type.'_inc_'.$key]['add_code']  = $value['add_code'];
                 if (isset($value['modal_code'])) {
                     $data = array();
+                    $data['inc_id'] = $key;
                     $data['ajax_select'] = $type.'_inc_'.$key;
                     if(isset($value['adm_model'])){
                         $this->load->model('cms_utils');

@@ -28,11 +28,13 @@ if ($query->num_rows() > 0)
 // ------------------------------------------------------------------------
 // Очистка индекса удаляемого элемента
 
+$child_indexing = false;
 if($this->CI->config->item('cms_site_indexing'))
 {
     $this->CI->load->library('search');
     $url = ($oldvals['page_status'] == '4') ? $url = '/' : '/'.$oldvals['page_url'];
     $this->CI->search->index_delete($url);
+    $child_indexing = array('pre_url' => '/', 'url' => 'page_url');
 }
 
 // ------------------------------------------------------------------------
@@ -43,11 +45,25 @@ $this->CI->Cms_inclusions->admin_inclusions_delete($id, 'pages', $last_basket_el
 // ------------------------------------------------------------------------
 // Удаление дочерних элементов, их статей, подключений и очистка поискового индекса
 
-$this->CI->db->select('page_id, page_pid')->from('w_pages');
+$this->CI->db->select('page_id, page_pid, page_url, page_name')->from('w_pages');
 $query = $this->CI->db->get();
 
 if ($query->num_rows() > 0)
 {
     $forest =& $this->CI->tree->get_tree('page_id', 'page_pid', $query->result_array(), $id);
-    $this->CI->trigger->delete_child($forest, $last_basket_element, 'w_pages', 'page_id', 'Страница сайта', 'page_name', 'Adm_pages', 'delete_child_params');
+    $parameters_array[0] = array(
+        'table'         => 'w_pages_articles',
+        'table_pid'     => 'article_pid',
+        'table_where'   => array('article_pid_type' => 'pages'),
+        'table_key'     => 'article_id',
+        'title'         => 'Статья',
+    );
+    $parameters_array[1] = array(
+        'table'         => 'w_includes',
+        'table_pid'     => 'obj_id',
+        'table_where'   => array('inc_type' => 'pages'),
+        'table_key'     => 'i_id',
+        'title'         => 'Подключение',
+    );
+    $this->CI->trigger->delete_child($forest, $last_basket_element, 'w_pages', 'page_id', 'Страница сайта', 'page_name', $parameters_array, $child_indexing, 'pages');
 }

@@ -2,7 +2,7 @@
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * CRUD модуль - вспомогательные функции
+ * Утилиты административного раздела
  */
 
 class Cms_utils extends CI_Model {
@@ -42,10 +42,22 @@ class Cms_utils extends CI_Model {
      * Извлекаем максимальное значение сортировки
      *
      * @access  private
+     * @param   string
+     * @param   string
      * @return  int
      */
-    function get_max_sort($field, $table) {
+    function get_max_sort($field, $table, $where=false) {
         $this->db->select_max($field, 'sort');
+        if($where && is_array($where)) {
+            if(array_key_exists('field', $where)) {
+                $this->db->where($where['field'], $where['value']);
+            }
+            if(array_key_exists(0, $where)) {
+                foreach ($where AS $value) {
+                    $this->db->where($value['field'], $value['value']);
+                }
+            }
+        }
         $query = $this->db->get($table);
         if ($query->num_rows() > 0) {
             $row = $query->row();

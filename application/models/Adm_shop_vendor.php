@@ -103,9 +103,7 @@ class Adm_shop_vendor extends CI_Model {
         $opts['options'] = $rights[basename(__FILE__)];
 
         // Фильтрация вывода
-        $opts['filters'] = array (
-            "vendor_lang_id = '" . $this->session->userdata('w_alang') . "'"
-        );
+        $opts['filters'] = array ();
 
         // Триггеры
 		// $this->opts['triggers']['insert']['after'] = '';
@@ -231,15 +229,6 @@ class Adm_shop_vendor extends CI_Model {
             'save'          => true,
             'sort'          => false
         );
-        $opts['fdd']['vendor_lang_id'] = array(
-            'name'          => 'Язык',
-            'select'        => 'T',
-            'options'       => 'ACPH',
-            'maxlen'        => 3,
-            'default'       => $this->session->userdata('w_alang'),
-            'sort'          => false
-        );
-
 
         // ------------------------------------------------------------------------
 

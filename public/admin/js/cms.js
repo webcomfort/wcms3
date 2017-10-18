@@ -46,23 +46,23 @@ $(document).ready(function () {
     // ------------------------------------------------------------------------
     //                               Articles
     // ------------------------------------------------------------------------
-    function firstAndLast(container) {
+    function firstAndLast(container, div, button) {
         if (!container) {
             return false;
         }
         else {
-            var n = $( ".article-div" ).length;
+            var n = div.length;
             container.find('button:disabled').prop('disabled', false);
-            if(n === 1) container.find('button.article-button-remove:first').prop('disabled', true);
-            container.find('button.article-button-up:first').prop('disabled', true);
-            container.find('button.article-button-down:last').prop('disabled', true);
+            if(n === 1) container.find('button.'+button+'-button-remove:first').prop('disabled', true);
+            container.find('button.'+button+'-button-up:first').prop('disabled', true);
+            container.find('button.'+button+'-button-down:last').prop('disabled', true);
         }
     }
 
-    function getMaximum() {
+    function getMaximum(container) {
         var maximum = null;
 
-        $('.article-div').each(function() {
+        $(container).each(function() {
             var value = parseFloat($(this).data('id'));
             maximum = (value > maximum) ? value : maximum;
         });
@@ -70,16 +70,16 @@ $(document).ready(function () {
         return maximum;
     }
 
-    function recalcOrder() {
+    function recalcOrder(container) {
         var i = 1;
 
-        $('.page_article_order').each(function() {
+        $(container).each(function() {
             $(this).val(i);
             i++;
         });
     }
 
-    firstAndLast($('#articles_area'));
+    firstAndLast($('#articles_area'), $('.article-div'), 'article');
 
     $(document).on('click', '.article-button-move', function(e) {
         e.preventDefault();
@@ -93,15 +93,15 @@ $(document).ready(function () {
             CKEDITOR.instances[editor].destroy();
             parent.insertBefore(parent.prev('.article-div'));
             CKEDITOR.replace(editor);
-            firstAndLast(grandparent);
-            recalcOrder();
+            firstAndLast(grandparent, $('.article-div'), 'article');
+            recalcOrder('.page_article_order');
         }
         else if ($(this).hasClass('article-button-down')) {
             CKEDITOR.instances[editor].destroy();
             parent.insertAfter(parent.next('.article-div'));
             CKEDITOR.replace(editor);
-            firstAndLast(grandparent);
-            recalcOrder();
+            firstAndLast(grandparent, $('.article-div'), 'article');
+            recalcOrder('.page_article_order');
         }
     });
 
@@ -110,7 +110,7 @@ $(document).ready(function () {
         var grandparent = $('#articles_area');
         var parent = $(this).closest('.article-div');
         var id = parent.data('id');
-        var maxId = getMaximum();
+        var maxId = getMaximum('.article-div');
         var nextId = maxId + 1;
 
         $.ajax({
@@ -128,8 +128,8 @@ $(document).ready(function () {
 
             $(article).insertBefore(parent);
             CKEDITOR.replace('page_article_'+nextId);
-            firstAndLast(grandparent);
-            recalcOrder();
+            firstAndLast(grandparent, $('.article-div'), 'article');
+            recalcOrder('.page_article_order');
         });
     });
 
@@ -138,8 +138,41 @@ $(document).ready(function () {
         var grandparent = $('#articles_area');
         var parent = $(this).closest('.article-div');
         parent.remove();
-        firstAndLast(grandparent);
-        recalcOrder();
+        firstAndLast(grandparent, $('.article-div'), 'article');
+        recalcOrder('.page_article_order');
     });
 
+    // ------------------------------------------------------------------------
+    //                               Fields
+    // ------------------------------------------------------------------------
+
+    firstAndLast($('#fields_area'), $('.field-div'), 'field');
+
+    $(document).on('click', '.field-button-move', function(e) {
+        e.preventDefault();
+
+        var parent = $(this).closest('.field-div');
+        var id = parent.data('id');
+        var grandparent = $('#fields_area');
+
+        if ($(this).hasClass('field-button-up')) {
+            parent.insertBefore(parent.prev('.field-div'));
+            firstAndLast(grandparent, $('.field-div'), 'field');
+            recalcOrder('.field_order');
+        }
+        else if ($(this).hasClass('field-button-down')) {
+            parent.insertAfter(parent.next('.field-div'));
+            firstAndLast(grandparent, $('.field-div'), 'field');
+            recalcOrder('.field_order');
+        }
+    });
+
+    $('.field_active').change(function() {
+        var id = $(this).data( "id" );
+        if($(this).is(':checked')) {
+            $('#field-content-'+id).removeClass( "field-content-hidden" ).addClass( "field-content-visible" );
+        } else {
+            $('#field-content-'+id).removeClass( "field-content-visible" ).addClass( "field-content-hidden" );
+        }
+    });
 });

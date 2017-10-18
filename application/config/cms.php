@@ -77,7 +77,7 @@ $config['cms_site_menues'] = array(
     )
 );
 
-// Макеты
+// Макеты страниц
 $config['cms_site_views'] = array(
     '1' => array(
         'file'      => 'page_default',
@@ -119,7 +119,7 @@ $config['cms_site_inclusions'] = array(
     '1' => array(
         'file'          => 'cms_module',
         'name'          => 'Модуль',
-        'help'          => 'Выберите из списка модуль для отображения в центральной части страницы.',
+        'help'          => 'Выберите из списка модуль для подключения.',
         'table'         => 'w_cms_modules',
         'key'           => 'module_id',
         'filter'        => '$filters = "module_active = \'1\' AND module_type = \'1\'";',
@@ -130,7 +130,7 @@ $config['cms_site_inclusions'] = array(
     '2' => array(
         'file'          => 'mod_news',
         'name'          => 'Новостная рубрика',
-        'help'          => 'Выберите из списка новостную рубрику для отображения в центральной части страницы.',
+        'help'          => 'Выберите из списка новостную рубрику для подключения.',
         'table'         => 'w_news_categories',
         'key'           => 'news_cat_id',
         'filter'        => '$filters = "";',
@@ -144,14 +144,14 @@ $config['cms_site_inclusions'] = array(
     '3' => array(
         'file'          => 'mod_gallery',
         'name'          => 'Галерея',
-        'help'          => 'Выберите из списка галерею для отображения в центральной части страницы.',
+        'help'          => 'Выберите из списка галерею для подключения.',
         'table'         => 'w_galleries',
         'key'           => 'gallery_id',
         'filter'        => '$filters = "gallery_lang_id=\'{$this->session->userdata(\'w_alang\')}\'";',
         'description'   => 'gallery_name',
         'orderby'       => 'gallery_name',
-        'where'         => array('pages', 'news'),
-        'add_code'      => '<a class="btn btn-primary btn-inc" href="#" role="button" data-toggle="modal" data-target="#GalleryModal" id="add_gallery_button">Создать</a>',
+        'where'         => array('pages', 'news', 'shop'),
+        'add_code'      => '<a class="btn btn-primary btn-inc" href="#" role="button" data-toggle="modal" data-target="#GalleryModal3" id="add_gallery_button_3">Создать</a>',
         'modal_code'    => 'admin/inc_gallery',
         'adm_model'     => 'Adm_gallery_photos'
     )
@@ -235,6 +235,7 @@ $config['cms_news_views'] = array(
 |--------------------------------------------------------------------------
 */
 $config['cms_shop_dir'] = '/public/upload/shop/';
+$config['cms_shop_cat_dir'] = '/public/upload/shopcat/';
 $config['cms_shop_images'] = array(
     '_thumb' => array(
         'width'     => 200,

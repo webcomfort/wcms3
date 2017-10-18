@@ -13,6 +13,7 @@ class Adm_shop_categories extends CI_Model {
     function __construct()
     {
         if($this->input->post('PME_sys_rec', TRUE) === '0' || $this->input->post('PME_sys_savecopy', TRUE) || $this->input->post('PME_sys_savedelete', TRUE)) header ('Location: /admin/'.$this->uri->segment(2));
+
         parent::__construct();
         $this->load->helper( array('string') );
         $this->load->model('Cms_shop');
@@ -238,6 +239,7 @@ class Adm_shop_categories extends CI_Model {
 
     function get_child_pages($key, $value)
     {
+        $forest = array();
         $this->db->select('cat_id, cat_pid, cat_name')
             ->order_by('cat_pid, cat_name');
         $query = $this->db->get('w_shop_categories');
@@ -255,7 +257,7 @@ class Adm_shop_categories extends CI_Model {
      * @access	private
      * @param   array
      * @param   array
-     * @return	array
+     * @return	string
      */
 
     function _reformat_forest ($forest, $menu = '')
@@ -284,7 +286,7 @@ class Adm_shop_categories extends CI_Model {
      * @access	private
      * @param   array
      * @param   array
-     * @return	array
+     * @return	string
      */
 
     function _get_crumbs ()
@@ -330,123 +332,6 @@ class Adm_shop_categories extends CI_Model {
                 }
             }
         }
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Функция, генерирующая поля
-     *
-     * @access  public
-     * @return  string
-     */
-    function get_fields()
-    {
-        $rights = $this->cms_user->get_user_rights();
-
-        if ( is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
-        {
-            if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
-            elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
-            else $id = 0;
-
-            return $this->_get_fields_html($id);
-        }
-    }
-
-    /**
-     * Функция, генерирующая текстовые поля с возможностью редактирования
-     *
-     * @access  public
-     * @param   int - id родителя
-     * @param   string - тип родителя
-     * @return  string
-     */
-    function _get_fields_html($id)
-    {
-        $i = 1;
-
-        $this->db->select('cf.cf_id, f.field_id, f.field_name, cf.field_values, cf.field_default_values, cf.field_filter, cf.field_modification, cf.field_table');
-        $this->db->from('w_shop_fields AS f');
-        $this->db->join('w_shop_categories_fields AS cf', 'f.field_id = cf.field_id', 'left');
-        $this->db->where('f.field_active', 1);
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0)
-        {
-            $fields = '';
-            foreach ($query->result() as $row)
-            {
-                $checked = ($row->cf_id != '') ? true : false;
-                $fields .= $this->_get_field_tpl($i, $row->field_name, $row->field_id, $row->field_values, $row->field_default_values, $row->field_filter, $row->field_modification, $row->field_table, $checked);
-                $i++;
-            }
-        }
-        else
-        {
-            $fields = '';
-        }
-
-        return '<div id="fields_area">'.$fields.'</div>';
-    }
-
-    /**
-     * Функция, отдающая вспомогательный html для редактирования статей
-     *
-     * @access  public
-     * @param   int - номер блока
-     * @param   string - статья
-     * @param   int - номер фона
-     * @param   int - номер вида
-     * @return  string
-     */
-    function _get_field_tpl($id, $field_name, $field_id, $values = '', $default_values = '', $filter = 0, $modification = 0, $table = 0, $checked = false)
-    {
-
-        $response  = '<div class="field-div" data-id="'.$id.'">';
-        $response .= '<div class="field-title checkbox"><label><input name="field_cat_'.$id.'" value="'.$field_id.'" type="checkbox"';
-        $response .= ($checked) ? ' checked' : '';
-        $response .= '> '.$field_name.'</label></div>';
-        $response .= '<div class="field-buttons-div">
-<button class="btn btn-default btn-xs field-button-move field-button-up" data-id="'.$id.'" title="Наверх"><span class="glyphicon glyphicon-chevron-up"></span></button>
-<button class="btn btn-default btn-xs field-button-move field-button-down" data-id="'.$id.'"  title="Вниз"><span class="glyphicon glyphicon-chevron-down"></span></button>
-</div>';
-        $response .= '<div class="field-content';
-        $response .= ($checked) ? ' field-content-visible' : '';
-        $response .= '">';
-
-        $response .= '<div class="form-group">';
-
-        $response .= '<div class="field-options checkbox"><label><input name="field_filter_'.$id.'" value="'.$filter.'" type="checkbox"';
-        $response .= ($filter) ? ' checked' : '';
-        $response .= '> В фильтрах</label></div>';
-
-        $response .= '<div class="field-options checkbox"><label><input name="field_modification_'.$id.'" value="'.$modification.'" type="checkbox"';
-        $response .= ($modification) ? ' checked' : '';
-        $response .= '> Модификация</label></div>';
-
-        $response .= '<div class="field-options checkbox"><label><input name="field_table_'.$id.'" value="'.$table.'" type="checkbox"';
-        $response .= ($filter) ? ' checked' : '';
-        $response .= '> В таблице характеристик</label></div>';
-
-        $response .= '</div>';
-
-        $response .= '<div class="form-group">';
-        $response .= '<label for="field_values_'.$id.'">Значения через запятую</label>';
-        $response .= '<textarea name="field_values_'.$id.'" class="field-values">'.$values.'</textarea>';
-        $response .= '</div>';
-        $response .= '<div class="form-group">';
-        $response .= '<label for="field_default_values_'.$id.'">Значения по умолчанию через запятую</label>';
-        $response .= '<textarea name="field_default_values_'.$id.'" class="field-values">'.$default_values.'</textarea>';
-        $response .= '</div>';
-
-        $response .= '</div>';
-
-
-        $response .= '<input type="hidden" class="field_order" name="field_order_'.$id.'" value="'.$id.'">';
-        $response .= '</div>';
-
-        return $response;
     }
 
     // ------------------------------------------------------------------------
@@ -514,7 +399,7 @@ class Adm_shop_categories extends CI_Model {
 		// $this->opts['triggers']['insert']['after'] = '';
 		// $this->opts['triggers']['update']['after'] = '';
 		// $this->opts['triggers']['delete']['before'] = '';
-        $opts['triggers']['delete']['after']  = FCPATH.APPPATH.'triggers/shop_cat_delete_after.php';
+        $opts['triggers']['delete']['after']  = APPPATH.'triggers/shop_cat_delete_after.php';
 
         // Логирование: общее название класса и поле где хранится название объекта
         $opts['logtable_title'] = 'Категория';
@@ -616,6 +501,19 @@ class Adm_shop_categories extends CI_Model {
             ),
             'help'          => 'Введите имя категории.'
         );
+        $shop_page = $this->Cms_shop->get_shop_page();
+        $opts['fdd']['cat_url'] = array(
+            'name'          => 'URL страницы',
+            'options'       => 'LACPDV',
+            'select'        => 'T',
+            'URL'           => '/'.$shop_page.'/$value',
+            'URLdisp'       => '/'.$shop_page.'/$value',
+            'URLtarget'     => '_blank',
+            'maxlen'        => 65535,
+            'required'      => true,
+            'sort'          => true,
+            'help'          => 'Введите сюда слово на английском, которое будет выведено в URL. Разрешены латинские буквы, цифры, минус и символ подчеркивания. Во время ввода будет проведена автоматическая проверка данных.'
+        );
         $opts['fdd']['cat_desc'] = array(
             'name'          => 'Текст описания категории',
             'select'        => 'T',
@@ -631,19 +529,6 @@ class Adm_shop_categories extends CI_Model {
             'escape'        => false,
             'help'          => 'Введите сюда текст описания товарной категории!'
         );
-        $shop_page = $this->Cms_shop->get_shop_page();
-        $opts['fdd']['cat_url'] = array(
-            'name'          => 'URL страницы',
-            'options'       => 'LACPDV',
-            'select'        => 'T',
-            'URL'           => '/'.$shop_page.'/$value',
-            'URLdisp'       => '/'.$shop_page.'/$value',
-            'URLtarget'     => '_blank',
-            'maxlen'        => 65535,
-            'required'      => true,
-            'sort'          => true,
-            'help'          => 'Введите сюда слово на английском, которое будет выведено в URL. Разрешены латинские буквы, цифры, минус и символ подчеркивания. Во время ввода будет проведена автоматическая проверка данных.'
-        );
         $opts['fdd']['pic'] = array(
             'name'          => 'Иконка',
             'options'       => 'LACPD',
@@ -653,7 +538,7 @@ class Adm_shop_categories extends CI_Model {
             'nodb'          => true,
             'file'          => array (
                 'tn'        => '',
-                'url'       => '/public/upload/shopcat/',
+                'url'       => $this->config->item('cms_shop_cat_dir'),
                 'multiple'  => false
             ),
             'help'          => 'Выберите иконку на своем компьютере для загрузки.'
@@ -683,22 +568,17 @@ class Adm_shop_categories extends CI_Model {
 				'help'          => 'Статус категории на сайте. Если вы хотите, чтобы категории не было видно на сайте - сделайте ее неактивным, т.е. совсем не обязательно удалять категорию, чтобы ее скрыть.'
 			);
 		}
-        $opts['fdd']['cat_sort'] = array(
+        $where = array(
+            'field' => 'cat_pid',
+            'value' => $this->session->userdata('w_cat_parent')
+        );
+		$opts['fdd']['cat_sort'] = array(
             'name'          => 'Сортировка',
             'select'        => 'T',
             'options'       => 'LACPD',
-            'default'       => $this->Cms_utils->get_max_sort('cat_sort', 'w_shop_categories'),
+            'default'       => $this->Cms_utils->get_max_sort('cat_sort', 'w_shop_categories', $where),
             'save'          => true,
             'sort'          => false
-        );
-        $opts['fdd']['cat_fields'] = array(
-            'name'          => 'Характеристики',
-            'nodb'          => true,
-            'options'       => 'ACP',
-            'add_display'   => $this->get_fields(),
-            'change_display'=> $this->get_fields(),
-            'sort'          => false,
-            'help'          => 'Выберите требуемые поля и параметры для товаров данной категории. Отсортируйте их в нужном порядке.'
         );
 
         // ------------------------------------------------------------------------

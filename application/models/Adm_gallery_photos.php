@@ -37,7 +37,7 @@ class Adm_gallery_photos extends CI_Model {
      * @return  string
      */
 
-    function _get_inc_form()
+    function _get_inc_form($inc_id)
     {
         $this->session->unset_userdata('photo_filter');
         return '
@@ -51,13 +51,14 @@ class Adm_gallery_photos extends CI_Model {
             </div>
             <div class="form-group">
                 <label for="galfile">Выберите фотографии</label><br>
-                <span class="file-value" id="gal-value"></span>
-                <input id="gal_trigger" type="button" name="download" value="Выбрать файлы" class="btn btn-success" />
-                <input type="file" min="1" max="9999" name="galfile[]" multiple="true" class="file-input" id="gal_input" />
+                <span class="file-value" id="gal-value-'.$inc_id.'"></span>
+                <input type="hidden" name="inc_id" value="'.$inc_id.'">
+                <input id="gal_trigger-'.$inc_id.'" type="button" name="download" value="Выбрать файлы" class="btn btn-success" />
+                <input type="file" min="1" max="9999" name="galfile[]" multiple="true" class="file-input" id="gal_input-'.$inc_id.'" />
                 <script>
                     $(document).ready(function () {
-                        document.getElementById(\'gal_trigger\').onclick = function(){ document.getElementById(\'gal_input\').click(); }
-                        $(\'#gal_input\').change(function() { $(\'#gal-value\').html( $(\'#gal_input\').val() ) });
+                        document.getElementById(\'gal_trigger-'.$inc_id.'\').onclick = function(){ document.getElementById(\'gal_input-'.$inc_id.'\').click(); }
+                        $(\'#gal_input-'.$inc_id.'\').change(function() { $(\'#gal-value-'.$inc_id.'\').html( $(\'#gal_input-'.$inc_id.'\').val() ) });
                     });
                 </script>
             </div>
@@ -79,7 +80,7 @@ class Adm_gallery_photos extends CI_Model {
 
         if ( is_array($rights) && (isset($rights[basename(__FILE__)])) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
         {
-            echo $this->_get_inc_form();
+            echo $this->_get_inc_form($this->input->post('inc_id', TRUE));
         }
         else
         {
@@ -113,7 +114,7 @@ class Adm_gallery_photos extends CI_Model {
             $this->db->insert('w_galleries', $data);
             if (isset($_FILES['galfile']) && $_FILES['galfile']['tmp_name'][0] != '') $this->_upload_files($this->db->insert_id());
 
-            echo '<div class="alert alert-success" role="alert">Галерея была успешно добавлена!</div>'.$this->_get_inc_form();
+            echo '<div class="alert alert-success" role="alert">Галерея была успешно добавлена!</div>'.$this->_get_inc_form($this->input->post('inc_id', TRUE));
         }
         else
         {
@@ -615,11 +616,15 @@ class Adm_gallery_photos extends CI_Model {
 				'help'          => 'Статус фото на сайте. Если вы хотите, чтобы фото не было видно на сайте - сделайте его неактивным, т.е. совсем не обязательно удалять фото, чтобы его скрыть.'
 			);
 		}
+        $where = array(
+            'field' => 'photo_gallery_id',
+            'value' => $this->session->userdata('photo_filter')
+        );
         $opts['fdd']['photo_sort'] = array(
             'name'          => 'Сортировка',
             'select'        => 'T',
             'options'       => 'LACPD',
-            'default'       => $this->Cms_utils->get_max_sort('photo_sort', 'w_gallery_photos'),
+            'default'       => $this->Cms_utils->get_max_sort('photo_sort', 'w_gallery_photos', $where),
             'save'          => true,
             'sort'          => false
         );

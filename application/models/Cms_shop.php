@@ -53,152 +53,11 @@ class Cms_shop extends CI_Model {
     // ------------------------------------------------------------------------
 
     /**
-     * Находим страницу категории
-     *
-     * @access  public
-     * @param   int
-     * @return  string
-     */
-    function get_cat_page($id)
-    {
-        // Урл страницы, к которой подключена категория
-        $this->db->select('cat_url');
-        $this->db->from('w_shop_categories');
-        $this->db->where('cat_id', $id);
-        $this->db->limit(1);
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0)
-        {
-            $row = $query->row();
-            return $row->cat_url;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    /**
-     * Находим верхнюю категорию
+     * Хлебные крошки категорий
      *
      * @access  public
      * @return  string
      */
-    function get_top_cat()
-    {
-        // Урл страницы, к которой подключена категория
-        $this->db->select('cat_url');
-        $this->db->from('w_shop_categories');
-        $this->db->where('cat_pid', 0);
-        $this->db->order_by('cat_sort', 'asc');
-        $this->db->limit(1);
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0)
-        {
-            $row = $query->row();
-            return $row->cat_url;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    /**
-     * Параметры категории
-     *
-     * @access  public
-     * @param   int
-     * @return  array
-     */
-    function get_cat_params($url)
-    {
-        $this->db->select('cat_id, cat_pid, cat_name, cat_url, cat_set_id, cat_active, cat_sort, cat_meta_title, cat_meta_keywords, cat_meta_description, cat_seo, cat_lang_id');
-        $this->db->from('w_shop_categories');
-        $this->db->where('cat_url', $url);
-        $this->db->limit(1);
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0)
-        {
-            $data = $query->result_array();
-            return $data[0];
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    /**
-     * id категории
-     *
-     * @access  public
-     * @param   int
-     * @return  array
-     */
-    function get_cat_id($url)
-    {
-        $this->db->select('cat_id');
-        $this->db->from('w_shop_categories');
-        $this->db->where('cat_url', $url);
-        $this->db->limit(1);
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0)
-        {
-            $row = $query->row();
-            return $row->cat_id;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    /**
-     * Отдаем цепочку дочерних категорий
-     *
-     * @access	private
-     * @param   array
-     * @return	string
-     */
-    function get_categories_chain ($id)
-    {
-        $this->db->select('cat_id, cat_pid, cat_name, cat_url, cat_set_id, cat_active, cat_sort, cat_meta_title, cat_meta_keywords, cat_meta_description, cat_seo, cat_lang_id');
-        $this->db->from('w_shop_categories');
-        $this->db->where('cat_active =', 1);
-        $this->db->where('cat_lang_id =', LANG);
-        $this->db->order_by('cat_sort', 'asc');
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0)
-        {
-            $forest =& $this->tree->get_tree('cat_id', 'cat_pid', $query->result_array(), $id);
-            $this->_categories_processing($forest, $id);
-            $childs_plus = array();
-            $childs_plus[] = $id;
-            $childs_plus = array_merge($childs_plus, $this->cat_childs);
-
-            $data = array('childs' => $this->cat_childs, 'direct_childs' => $this->cat_direct_childs, 'childs_plus' => $childs_plus);
-
-            return $data;
-        }
-    }
-
-    function _categories_processing ($forest, $id)
-    {
-        foreach ($forest as $tree)
-        {
-            if ($tree['cat_pid'] == $id) $this->cat_direct_childs[] = array('id' => $tree['cat_id'], 'url' => $tree['cat_url'], 'name' => $tree['cat_name']);
-            $this->cat_childs[] = $tree['cat_id'];
-
-            if (isset($tree['nodes'])) $this->_categories_processing($tree['nodes'], $id);
-        }
-    }
-
     function get_cat_crumbs (){
         $this->db->select('cat_id, cat_pid, cat_name, cat_url');
         $this->db->from('w_shop_categories');
@@ -217,6 +76,12 @@ class Cms_shop extends CI_Model {
         }
     }
 
+    /**
+     * Формируем цепочку
+     *
+     * @access  private
+     * @return  void
+     */
     function _set_crumbs ($forest, $id_name, $parent_name, $level_name, $url_name, $active_id, $shop_url)
     {
         if (is_array($forest))
@@ -239,6 +104,8 @@ class Cms_shop extends CI_Model {
             }
         }
     }
+
+    // ------------------------------------------------------------------------
 
     /**
      * Изображения

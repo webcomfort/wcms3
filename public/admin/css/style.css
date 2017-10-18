@@ -147,6 +147,21 @@ td.pme-tab-selected a { text-decoration: none; }
 .article-selects-div { position: absolute; top: 10px; left: 20px; }
 .article-selects-div select { padding: 3px; max-width: 200px; }
 
+/*----------  2.8. Fields  ----------*/
+.field-div { background-color: #ecebeb; border: #dcdcdc 1px solid; padding: 5px 10px; margin-bottom: 5px; }
+.field-div label { font-weight: normal; }
+.field-header { height: 30px; position: relative; }
+.field-title { position: absolute; top: 5px; left: 0; }
+.field-title label { font-weight: bold; }
+.field-buttons-div { position: absolute; top: 5px; right: 0; }
+.field-content { height: 1%; overflow: hidden; }
+.field-options { float: left; height: 20px; margin-right: 10px; }
+.field-form-group { height: 1%; overflow: hidden; clear: both; margin-bottom: 5px; }
+.field-label { display: block; }
+.field-form-group textarea { width: 100%; }
+.field-content-hidden { display: none; }
+.field-content-visible { display: block; }
+
 
 /*=================================
  =====       PREDEFINED       =====

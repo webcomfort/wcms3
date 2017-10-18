@@ -353,11 +353,15 @@ class Adm_banners extends CI_Model {
             'default'       => $this->session->userdata('banner_filter'),
             'sort'          => false
         );
+        $where = array(
+            'field' => 'banner_place_id',
+            'value' => $this->session->userdata('banner_filter')
+        );
         $opts['fdd']['banner_sort'] = array(
             'name'          => 'Сортировка',
             'select'        => 'T',
             'options'       => 'LACPD',
-            'default'       => $this->Cms_utils->get_max_sort('banner_sort', 'w_banners'),
+            'default'       => $this->Cms_utils->get_max_sort('banner_sort', 'w_banners', $where),
             'save'          => true,
             'sort'          => false
         );

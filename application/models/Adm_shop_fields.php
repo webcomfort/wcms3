@@ -289,8 +289,8 @@ class Adm_shop_fields extends CI_Model {
             'sort'          => true,
             'help'          => 'Введите название.'
         );
-        $opts['fdd']['field_type'] = array(
-            'name'          => 'Тип поля',
+        $opts['fdd']['field_type_back'] = array(
+            'name'          => 'Тип поля в админе',
             'select'        => 'D',
             'options'       => 'LACPDV',
             'values2'       => array (
@@ -305,6 +305,19 @@ class Adm_shop_fields extends CI_Model {
             ),
             'default'       => 1,
             'help'          => 'Выберите тип поля, наиболее удобный для редактирования данных'
+        );
+        $opts['fdd']['field_type_front'] = array(
+            'name'          => 'Тип поля на сайте',
+            'select'        => 'D',
+            'options'       => 'LACPDV',
+            'values2'       => array (
+                '0'         => 'Не выбрано',
+                '1'         => 'Числовой диапазон',
+                '2'         => 'Чекбоксы',
+                '3'         => 'Диапазон дат'
+            ),
+            'default'       => 1,
+            'help'          => 'Выберите тип поля, наиболее удобный для подбора товара на сайте (фильтры)'
         );
         $opts['fdd']['field_label'] = array(
             'name'          => 'Метка',
