@@ -1211,7 +1211,7 @@ class Migration_Add_cms extends CI_Migration {
 		    'vendor_name' => array(
 			    'type' => 'text',
 		    ),
-		    'vendor_filter' => array(
+		    'vendor_active' => array(
 			    'type' => 'tinyint',
 			    'constraint' => 1,
 			    'default' => '0',
