@@ -1,7 +1,11 @@
+php_value post_max_size 30M
+php_value upload_max_filesize 30M
+
 <IfModule mod_rewrite.c>
 
-DirectoryIndex index.php
-RewriteEngine on
+Options +FollowSymLinks -MultiViews
+RewriteEngine On
+RewriteBase /
 
 RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
 RewriteRule ^(.*)$ http://%1%{REQUEST_URI} [R=301,QSA,NC,L]
