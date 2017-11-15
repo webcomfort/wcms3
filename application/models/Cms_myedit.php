@@ -88,8 +88,9 @@ class Cms_myedit extends CI_Model {
 	 */
 	function p_delete()
 	{
-		$path   = FCPATH.substr($this->input->post('folder', TRUE), 1);
-        $id     = $this->input->post('id', TRUE);
+		$id     = $this->input->post('id', TRUE);
+		$iid    = ceil(intval($id)/1000);
+		$path   = FCPATH.substr($this->input->post('folder', TRUE), 1).$iid.'/';
         $module = $this->input->post('module', TRUE);
         $check  = false;
 
