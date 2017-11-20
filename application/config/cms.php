@@ -210,7 +210,7 @@ $config['cms_gallery_views'] = array(
 | Новости
 |--------------------------------------------------------------------------
 */
-$config['cms_news_limit'] = 3;
+$config['cms_news_limit'] = 1;
 $config['cms_news_dir'] = '/public/upload/news/';
 $config['cms_news_images'] = array(
     '_thumb' => array(

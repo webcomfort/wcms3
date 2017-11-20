@@ -41,3 +41,6 @@ if ($_FILES['pic']['tmp_name'] != '')
 		}
 	}
 }
+
+// Теги
+$this->CI->Cms_tags->admin_tags_insert_update($id, 'photo');

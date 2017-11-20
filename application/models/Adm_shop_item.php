@@ -23,6 +23,7 @@ class Adm_shop_item extends CI_Model {
         $this->load->model('Cms_inclusions');
         $this->load->model('Cms_myedit');
         $this->load->model('Cms_articles');
+	    $this->load->model('Cms_tags');
         $this->load->helper( array('string') );
         $this->_categories(); // наполнит $this->categories и $this->cat_forest для фильтра
         $this->_get_parent_list(); // наполнит $this->forest для UI крошек
@@ -107,8 +108,10 @@ class Adm_shop_item extends CI_Model {
 
         </script>';
 
-        // JS функции для модуля select2 - простой список
-        $meta .= $this->Cms_myedit->get_ajax_default_format();
+	    // JS функции для модуля select2 - простой список
+	    $meta .= $this->Cms_myedit->get_ajax_default_format();
+	    // JS функции для модуля select2 - список с изображениями
+	    $meta .= $this->Cms_myedit->get_ajax_icon_format();
 
         return $meta;
     }
@@ -1114,24 +1117,8 @@ class Adm_shop_item extends CI_Model {
             'default'       => 0,
             'help'          => 'Выберите дополнительную маркировку товара.'
         );
-        $opts['fdd']['item_type_id'] = array(
-            'name'     => 'Тип',
-            'select'   => 'D',
-            'options'  => 'ACPDV',
-            'values2'  => $this->_get_types(),
-            'required' => false,
-            'sort'     => false,
-            'help'     => 'Выберите из списка тип, он определит набор характеристик товара.'
-        );
-        $opts['fdd']['item_fields'] = array(
-            'name'          => 'Данные',
-            'nodb'          => true,
-            'options'       => 'ACP',
-            'add_display'   => '<div id="item_fields_area"></div>',
-            'change_display'=> '<div id="item_fields_area"></div>',
-            'sort'          => false,
-            'help'          => 'Заполните поля требуемыми значениями.'
-        );
+		// Tags
+		$opts = array_merge_recursive((array)$opts, (array)$this->Cms_tags->get_admin_opts($id, 'shop'));
         if($publish)
         {
             $opts['fdd']['item_active'] = array(
@@ -1158,7 +1145,25 @@ class Adm_shop_item extends CI_Model {
 
         // ------------------------------------------------------------------------
 
-
+		$opts['fdd']['item_type_id'] = array(
+			'name'     => 'Тип',
+			'select'   => 'D',
+			'options'  => 'ACPDV',
+			'values2'  => $this->_get_types(),
+			'tab'      => 'Параметры',
+			'required' => false,
+			'sort'     => false,
+			'help'     => 'Выберите из списка тип, он определит набор характеристик товара.'
+		);
+		$opts['fdd']['item_fields'] = array(
+			'name'          => 'Данные',
+			'nodb'          => true,
+			'options'       => 'ACP',
+			'add_display'   => '<div id="item_fields_area"></div>',
+			'change_display'=> '<div id="item_fields_area"></div>',
+			'sort'          => false,
+			'help'          => 'Заполните поля требуемыми значениями.'
+		);
 
         // ------------------------------------------------------------------------
 

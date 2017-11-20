@@ -11,6 +11,7 @@ class Mod_news extends CI_Model {
     {
         parent::__construct();
         $this->load->model('Cms_news');
+	    $this->load->model('Cms_tags');
     }
 
     // ------------------------------------------------------------------------
@@ -26,8 +27,8 @@ class Mod_news extends CI_Model {
     {
         $id = (isset($params[0])) ? $params[0] : false;
 
-        if (!$this->uri->segment(2) || preg_int ($this->uri->segment(2))) $output = $this->_get_list($id);
-        if ($this->uri->segment(1)  && $this->uri->segment(1) == 'post' && $this->uri->segment(2) && !preg_int ($this->uri->segment(2)) && preg_ext_string ($this->uri->segment(2))) $output = $this->_get_news($id, $this->uri->segment(2));
+        if (!$this->uri->segment(2) || ($this->uri->segment(2) && preg_int ($this->uri->segment(2))) || ($this->uri->segment(2) && preg_int ($this->uri->segment(2)) && $this->uri->segment(3) && $this->uri->segment(3) == 'tag' && $this->uri->segment(4) && preg_int ($this->uri->segment(4)))) $output = $this->_get_list($id);
+        if ($this->uri->segment(1) && $this->uri->segment(1) == 'post' && $this->uri->segment(2) && preg_ext_string ($this->uri->segment(2))) $output = $this->_get_news($id, $this->uri->segment(2));
 
         return $output;
     }
@@ -82,7 +83,27 @@ class Mod_news extends CI_Model {
      */
     function _get_list($id)
     {
-        $page_url   = $this->uri->segment(1);
+        if($this->uri->segment(3) && $this->uri->segment(3) == 'tag' && $this->uri->segment(4) && preg_int($this->uri->segment(4))){
+	        $tag = $this->Cms_tags->get_items_by_tag($this->uri->segment(4),'news', 'w_news', 'news_id', array(
+		        'news_active' => 1,
+		        'news_lang_id' => LANG,
+		        'w_news_categories_cross.news_cat_id' => $id,
+	        ), array(
+		        'news_date' => 'desc',
+	        ), array(
+		        'table' => 'w_news_categories_cross',
+		        'field' => 'news_id',
+	        ));
+	        $tag_items = $tag['result'];
+	        $tag_name  = $tag['name'];
+	        $suffix = '/tag/'.$this->uri->segment(4);
+        } else {
+	        $tag_items = array();
+	        $tag_name  = false;
+	        $suffix = '';
+        }
+
+    	$page_url   = $this->uri->segment(1);
         $cat        = $this->Cms_news->get_cat_params($id);
         $cat_name   = $cat['name'];
         $views      = $this->config->item('cms_news_views');
@@ -93,10 +114,11 @@ class Mod_news extends CI_Model {
         // Страницы
         $this->db->select('w_news.news_id');
         $this->db->from('w_news_categories_cross');
-        $this->db->join('w_news', 'w_news.news_id = w_news_categories_cross.news_id');
+        $this->db->join('w_news', 'w_news.news_id = w_news_categories_cross.news_id', 'left');
         $this->db->where('news_cat_id', $id);
         $this->db->where('news_active', 1);
 		$this->db->where_in('news_active', $statuses);
+		if(is_array($tag_items) && count($tag_items)) $this->db->where_in('w_news.news_id', $tag_items);
         $this->db->where('news_date <=', date('Y-m-d H:i:00'));
         $this->db->where('news_lang_id', LANG);
 
@@ -114,6 +136,8 @@ class Mod_news extends CI_Model {
         $config['next_link']    = $this->lang->line('pagination_next_link');
         $config['prev_link']    = $this->lang->line('pagination_prev_link');
         $config['uri_segment']  = 2;
+	    $config['suffix']       = $suffix;
+	    $config['first_url']    = $config['base_url'] . '/0/' . $config['suffix'];
         $this->pagination->initialize($config);
         $pages = $this->pagination->create_links();
 
@@ -127,11 +151,12 @@ class Mod_news extends CI_Model {
         // Новости
         $this->db->select('w_news.news_id, news_name, news_date, news_cut, news_url');
         $this->db->from('w_news_categories_cross');
-        $this->db->join('w_news', 'w_news.news_id = w_news_categories_cross.news_id');
+        $this->db->join('w_news', 'w_news.news_id = w_news_categories_cross.news_id', 'left');
         $this->db->where('news_cat_id', $id);
         $this->db->where_in('news_active', $statuses);
         $this->db->where('news_date <=', date('Y-m-d H:i:00'));
         $this->db->where('news_lang_id', LANG);
+	    if(is_array($tag_items) && count($tag_items)) $this->db->where_in('w_news.news_id', $tag_items);
         $this->db->order_by('news_date', 'desc');
         $this->db->limit($limit,$start);
         $query = $this->db->get();
@@ -141,7 +166,6 @@ class Mod_news extends CI_Model {
         if ($query->num_rows() > 0)
         {
             $this->load->helper(array('date','text'));
-            $thumbs = $this->config->item('cms_news_images');
             $news   = array();
 
             foreach ($query->result() as $row)
@@ -152,7 +176,8 @@ class Mod_news extends CI_Model {
                     'news_url'  => '/post/'.$row->news_url,
                     'news_date' => date_format_rus ( $row->news_date, 'date' ),
                     'news_cut'  => $row->news_cut,
-                    'news_img'  => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-responsive')
+                    'news_img'  => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-responsive'),
+	                'news_tags' => $this->Cms_tags->get_tags_by_item($row->news_id,'news')
                 );
             }
 
@@ -160,7 +185,8 @@ class Mod_news extends CI_Model {
                 'news_list_cat'   => $cat_name,
                 'news_list'       => $news,
                 'news_list_url'   => '/'.$page_url,
-                'news_list_pages' => $pages
+                'news_list_pages' => $pages,
+	            'tag_name'        => $tag_name
             );
 
             if ($view) return $this->load->view('site/'.$view, $data, true);
@@ -190,8 +216,9 @@ class Mod_news extends CI_Model {
         $statuses   = array(1, 2);
 		
 		// Новость
-        $this->db->select('news_id, news_name, news_date, news_url, news_meta_title, news_meta_keywords, news_meta_description');
+        $this->db->select('w_news.news_id, news_name, news_date, news_url, news_meta_title, news_meta_keywords, news_meta_description, news_cat_id');
         $this->db->from('w_news');
+	    $this->db->join('w_news_categories_cross', 'w_news.news_id = w_news_categories_cross.news_id', 'left');
         $this->db->where('news_url', $news);
         $this->db->where_in('news_active', $statuses);
         $this->db->where('news_date <=', date('Y-m-d H:i:00'));
@@ -221,7 +248,9 @@ class Mod_news extends CI_Model {
                 'news_name'     => $row->news_name,
                 'news_date'     => date_format_rus ( $row->news_date, 'date' ),
                 'news_articles' => $articles,
-                'news_img'      => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-responsive')
+                'news_img'      => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-responsive'),
+                'news_tags' => $this->Cms_tags->get_tags_by_item($row->news_id,'news'),
+	            'news_list_url' => '/'.$this->Cms_news->get_news_page($row->news_cat_id)
             );
 
             // Подключения

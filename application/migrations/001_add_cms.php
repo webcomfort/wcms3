@@ -236,7 +236,8 @@ class Migration_Add_cms extends CI_Migration {
 (19, 'Категории', 'Adm_shop_categories.php', 2, 1, 1499942236),
 (20, 'Характеристики', 'Adm_shop_fields.php', 2, 1, 1499953231),
 (21, 'Товары', 'Adm_shop_item.php', 2, 1, 1500456310),
-(22, 'Типы', 'Adm_shop_types.php', 2, 1, 1500556775)
+(22, 'Типы', 'Adm_shop_types.php', 2, 1, 1500556775),
+(23, 'Теги', 'Adm_tags.php', 2, 1, 1500556775)
 ");
 
         /*
@@ -304,7 +305,8 @@ class Migration_Add_cms extends CI_Migration {
 (19, 17, 'Категории', 19, 1, 1499942261, 1),
 (20, 21, 'Характеристики', 20, 1, 1500556807, 1),
 (21, 17, 'Товары', 21, 1, 1499937610, 1),
-(22, 21, 'Типы', 22, 1, 1499953249, 1)
+(22, 21, 'Типы', 22, 1, 1499953249, 1),
+(23, 10, 'Теги', 23, 1, 1369811300, 1)
 ");
 
         // ------------------------------------------------------------------------
@@ -910,13 +912,14 @@ class Migration_Add_cms extends CI_Migration {
 (9, 1, 9, 1, 1, 1, 1, 1, 1),
 (10, 1, 10, 1, 1, 1, 1, 1, 1),
 (11, 1, 11, 1, 1, 1, 1, 1, 1),
-(12, 1, 14, 1, 1, 1, 1, 1, 1),
-(13, 1, 17, 1, 1, 1, 1, 1, 1),
-(815, 1, 18, 1, 1, 1, 1, 1, 1),
-(816, 1, 19, 1, 1, 1, 1, 1, 1),
-(817, 1, 20, 1, 1, 1, 1, 1, 1),
-(818, 1, 21, 1, 1, 1, 1, 1, 1),
-(819, 1, 22, 1, 1, 1, 1, 1, 1)
+(14, 1, 12, 1, 1, 1, 1, 1, 1),
+(17, 1, 13, 1, 1, 1, 1, 1, 1),
+(18, 1, 14, 1, 1, 1, 1, 1, 1),
+(19, 1, 15, 1, 1, 1, 1, 1, 1),
+(20, 1, 16, 1, 1, 1, 1, 1, 1),
+(21, 1, 17, 1, 1, 1, 1, 1, 1),
+(22, 1, 18, 1, 1, 1, 1, 1, 1),
+(23, 1, 19, 1, 1, 1, 1, 1, 1)
 ");
 
 	    // ----------------------------------- КАТАЛОГ -------------------------------------
@@ -1223,6 +1226,47 @@ class Migration_Add_cms extends CI_Migration {
 	    ));
 	    $this->dbforge->add_key('vendor_id', TRUE);
 	    $this->dbforge->create_table('w_shop_vendors', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
+	    // Теги
+	    $this->dbforge->add_field(array(
+		    'tag_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+			    'unsigned' => TRUE,
+			    'auto_increment' => TRUE
+		    ),
+		    'tag_name' => array(
+			    'type' => 'text',
+		    ),
+		    'tag_lang_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+	    ));
+	    $this->dbforge->add_key('tag_id', TRUE);
+	    $this->dbforge->create_table('w_tags', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
+	    // Пересечения тегов и сущностей
+	    $this->dbforge->add_field(array(
+		    'tc_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+			    'unsigned' => TRUE,
+			    'auto_increment' => TRUE
+		    ),
+		    'tag_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'item_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+	    ));
+	    $this->dbforge->add_key('tc_id', TRUE);
+	    $this->dbforge->add_key('tag_id');
+	    $this->dbforge->add_key('item_id');
+	    $this->dbforge->create_table('w_tags_cross', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
     }
 
     public function down()
@@ -1256,5 +1300,7 @@ class Migration_Add_cms extends CI_Migration {
 	    $this->dbforge->drop_table('w_shop_types');
 	    $this->dbforge->drop_table('w_shop_types_fields');
 	    $this->dbforge->drop_table('w_shop_vendors');
+	    $this->dbforge->drop_table('w_tags');
+	    $this->dbforge->drop_table('w_tags_cross');
     }
 }

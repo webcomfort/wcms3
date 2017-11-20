@@ -38,7 +38,9 @@ if($this->CI->config->item('cms_site_indexing'))
 // ------------------------------------------------------------------------
 
 // Удаление подключений
-$this->CI->Cms_inclusions->admin_inclusions_delete($id, 'news');
+$this->CI->Cms_inclusions->admin_inclusions_delete($id, 'news', $last_basket_element);
+// Теги
+$this->CI->Cms_tags->admin_tags_delete($id, 'news', $last_basket_element);
 
 // ------------------------------------------------------------------------
 

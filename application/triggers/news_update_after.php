@@ -179,3 +179,5 @@ if($this->CI->config->item('cms_site_indexing'))
 
 // Подключения
 $this->CI->Cms_inclusions->admin_inclusions_insert_update($id, 'news');
+// Теги
+$this->CI->Cms_tags->admin_tags_insert_update($id, 'news');

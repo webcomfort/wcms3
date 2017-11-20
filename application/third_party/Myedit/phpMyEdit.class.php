@@ -1607,8 +1607,9 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
         if(isset($this->fdd[$k]['cell_func']) && is_array($this->fdd[$k]['cell_func']) && count($this->fdd[$k]['cell_func']) > 0) {
 		    $model = $this->fdd[$k]['cell_func']['model'];
             $func  = $this->fdd[$k]['cell_func']['func'];
+	        $params  = isset($this->fdd[$k]['cell_func']['params'])?$this->fdd[$k]['cell_func']['params']:'';
             $this->CI->load->model($model);
-            return $this->CI->$model->$func($key_rec, $value);
+            return $this->CI->$model->$func($key_rec, $value, $params);
         }
 		if (@$this->fdd[$k]['save']) {
 			return $this->saveDisplay($k, $row);

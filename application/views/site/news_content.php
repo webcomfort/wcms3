@@ -19,6 +19,14 @@ else
     }
     ?>
 
+	<?php if (isset($news_tags) && is_array($news_tags) && count($news_tags)) { ?>
+        <div class="tags">
+			<?php foreach ($news_tags as $tag_id => $tag_name) { ?>
+                <a href="<?php echo $news_list_url; ?>/0/tag/<?php echo $tag_id; ?>" class="tag" title="<?php echo $tag_name; ?>"><?php echo $tag_name; ?></a>
+			<?php } ?>
+        </div>
+	<?php } ?>
+
     <?php echo @$inc_module_1; ?>
     <?php echo @$inc_module_3; ?>
 

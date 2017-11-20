@@ -16,11 +16,13 @@ class Adm_news extends CI_Model {
         $this->load->helper( array('string') );
         $this->load->model('Cms_inclusions');
         $this->load->model('Cms_news');
+	    $this->load->model('Cms_tags');
         $this->load->model('Cms_myedit');
         $this->load->model('Cms_articles');
 
         // Сработает при наличи в POST полей news_rubrics
         $this->Cms_myedit->mass_save('news_rubrics', 'news_id', 'news_cat_id', 'ncc_id', 'w_news_categories_cross');
+	    $this->Cms_tags->mass_save('news');
     }
 
     // ------------------------------------------------------------------------
@@ -650,6 +652,10 @@ class Adm_news extends CI_Model {
             'sort'     => false,
             'help'     => 'Выберите из списка рубрики, в которых будет располагаться новость. Одна и та же новость может быть размещена в разных рубриках.'
         );
+
+        // Tags
+	    $opts = array_merge_recursive((array)$opts, (array)$this->Cms_tags->get_admin_opts($id, 'news'));
+
         if($publish)
         {
             $opts['fdd']['news_active'] = array(

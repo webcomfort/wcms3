@@ -13,6 +13,8 @@ class Adm_gallery_photos extends CI_Model {
 		    header ('Location: /admin/'.$this->uri->segment(2).'/?PME_sys_operation=PME_op_Change&PME_sys_rec='.$this->input->post('PME_sys_rec', TRUE).(($this->input->post('PME_sys_cur_tab', TRUE)) ? '&PME_sys_cur_tab='.$this->input->post('PME_sys_cur_tab', TRUE) : ''));
 	    }
         $this->load->model('Cms_utils');
+	    $this->load->model('Cms_myedit');
+	    $this->load->model('Cms_tags');
         $this->load->helper('form');
         parent::__construct();
     }
@@ -28,6 +30,10 @@ class Adm_gallery_photos extends CI_Model {
     function get_meta()
     {
         $meta = '';
+	    // JS функции для модуля select2 - простой список
+	    $meta .= $this->Cms_myedit->get_ajax_default_format();
+	    // JS функции для модуля select2 - список с изображениями
+	    $meta .= $this->Cms_myedit->get_ajax_icon_format();
         return $meta;
     }
 
@@ -437,7 +443,12 @@ class Adm_gallery_photos extends CI_Model {
 	 */
 	function _get_crud_model ()
 	{
-        // Массив переменных из урла
+		// $id текущей записи
+		if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
+		elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
+		else $id = 0;
+
+		// Массив переменных из урла
         $uri_assoc_array = $this->uri->uri_to_assoc(1);
 
         // Получаем базовые настройки
@@ -486,6 +497,7 @@ class Adm_gallery_photos extends CI_Model {
 		// $this->opts['triggers']['delete']['before'] = '';
         $opts['triggers']['insert']['after']  = APPPATH.'triggers/photo_insert_after.php';
         $opts['triggers']['update']['after']  = APPPATH.'triggers/photo_update_after.php';
+		$opts['triggers']['delete']['after']  = APPPATH.'triggers/photo_delete_after.php';
 
         // Логирование: общее название класса и поле где хранится название объекта
         $opts['logtable_title'] = 'Фото';
@@ -604,6 +616,10 @@ class Adm_gallery_photos extends CI_Model {
             ),
             'help'          => 'Выберите фото на своем компьютере для загрузки. Удаление фото из режима редактирования приводит к его безвозвратному удалению.'
         );
+
+        // Tags
+		$opts = array_merge_recursive((array)$opts, (array)$this->Cms_tags->get_admin_opts($id, 'photo'));
+
         if($publish)
 		{
 			$opts['fdd']['photo_active'] = array(

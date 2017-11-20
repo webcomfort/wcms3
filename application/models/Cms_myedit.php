@@ -211,22 +211,23 @@ class Cms_myedit extends CI_Model {
         return $script;
     }
 
-    /**
-     * Функция, отдающая аякс-код для селектов
-     *
-     * @access	public
-     * @param   int     - id поля
-     * @param   string  - адрес вызова /модель/метод
-     * @param   string  - префикс для класса селектов
-     * @param   int     - тип отображения выпадающего списка (вызов сторонней функции)
-     * @return	string
-     */
-    function get_ajax ($key, $url, $prefix, $mode = 1)
-    {
-        $script ='<script>
+	/**
+	 * Функция, отдающая аякс-код для селектов
+	 *
+	 * @access	public
+	 * @param   int     - id поля
+	 * @param   string  - адрес вызова /модель/метод
+	 * @param   string  - префикс для класса селектов
+	 * @param   int     - тип отображения выпадающего списка (вызов сторонней функции)
+	 * @return	string
+	 */
+	function get_ajax ($key, $url, $prefix, $mode = 1, $tags = false)
+	{
+		$script ='<script>
         $(document).ready(function () {
             $(".js-data-ajax-'.$prefix.'-'.$key.'").select2({
-              language: "ru", 
+            '.(($tags)?'tags: true, tokenSeparators: [","],':'');
+		$script .='language: "ru", 
               ajax: {
                 method: "POST",
                 url: "'.$url.'",
@@ -263,8 +264,8 @@ class Cms_myedit extends CI_Model {
         });
         </script>';
 
-        return $script;
-    }
+		return $script;
+	}
 
     /**
      * Функция, отдающая массивы значений для селекта при вводе посковой фразы
