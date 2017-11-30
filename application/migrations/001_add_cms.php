@@ -1262,6 +1262,9 @@ class Migration_Add_cms extends CI_Migration {
 			    'type' => 'int',
 			    'constraint' => 11,
 		    ),
+		    'item_type' => array(
+			    'type' => 'text',
+		    ),
 	    ));
 	    $this->dbforge->add_key('tc_id', TRUE);
 	    $this->dbforge->add_key('tag_id');
