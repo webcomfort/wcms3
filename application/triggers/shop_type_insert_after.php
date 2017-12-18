@@ -24,12 +24,15 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 
     if (preg_match("/^field_([0-9]*)$/", $key, $matches))
     {
-        $data = array(
+	    $values = implode (",", $this->CI->input->post('field_values_'.$matches[1]));
+	    $default_values = implode (",", $this->CI->input->post('field_default_values_'.$matches[1]));
+
+    	$data = array(
             'tf_id'                 => '',
             'type_id'               => $id,
             'field_id'              => $matches[1],
-            'field_values'          => $this->CI->input->post('field_values_'.$matches[1]),
-            'field_default_values'  => $this->CI->input->post('field_default_values_'.$matches[1]),
+            'field_values'          => $values,
+            'field_default_values'  => $default_values,
             'field_filter'          => ($this->CI->input->post('field_filter_'.$matches[1])) ? 1 : 0,
             'field_modification'    => ($this->CI->input->post('field_modification_'.$matches[1])) ? 1 : 0,
             'field_table'           => ($this->CI->input->post('field_table_'.$matches[1])) ? 1 : 0,

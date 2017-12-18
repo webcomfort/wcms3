@@ -206,12 +206,39 @@ class Adm_shop_types extends CI_Model {
             $response .= '</div>';
 
             $response .= '<div class="field-form-group">';
-            $response .= '<label class="field-label" for="field_values_' . $value['field_id'] . '">Значения через запятую (для полей с выбором из нескольких значений)</label>';
-            $response .= '<textarea name="field_values_' . $value['field_id'] . '" class="field-values">' . $value['values'] . '</textarea>';
+            $response .= '<label class="field-label" for="field_values_' . $value['field_id'] . '">Значения (для полей с выбором из нескольких значений)</label>';
+
+			$values1 = ($value['values'] != '') ? explode(',', $value['values']) : array();
+	        $values1 = array_combine($values1,$values1);
+	        $response .= form_multiselect('field_values_' . $value['field_id'].'[]', $values1, array_keys($values1), 'class="field-values field_values_' . $value['field_id'] . '"');
+	        $response .= '<script>
+	        $(document).ready(function () {
+	            $(".field_values_' . $value['field_id'] . '").select2({
+	            tags: true, 
+	            tokenSeparators: [","],
+	            language: "ru"
+	            });
+	        });
+	        </script>';
+
+
             $response .= '</div>';
             $response .= '<div class="field-form-group">';
-            $response .= '<label class="field-label" for="field_default_values_' . $value['field_id'] . '">Значения по умолчанию через запятую (для всех полей)</label>';
-            $response .= '<textarea name="field_default_values_' . $value['field_id'] . '" class="field-values">' . $value['default_values'] . '</textarea>';
+            $response .= '<label class="field-label" for="field_default_values_' . $value['field_id'] . '">Значения по умолчанию (для всех полей)</label>';
+
+	        $values2 = ($value['default_values'] != '') ? explode(',', $value['default_values']) : array();
+	        $values2 = array_combine($values2,$values2);
+	        $response .= form_multiselect('field_default_values_' . $value['field_id'].'[]', $values2, array_keys($values2), 'class="field-values field_default_values_' . $value['field_id'] . '"');
+	        $response .= '<script>
+	        $(document).ready(function () {
+	            $(".field_default_values_' . $value['field_id'] . '").select2({
+	            tags: true, 
+	            tokenSeparators: [","],
+	            language: "ru"
+	            });
+	        });
+	        </script>';
+
             $response .= '</div>';
 
             $response .= '</div>';

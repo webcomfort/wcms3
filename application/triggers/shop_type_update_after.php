@@ -60,9 +60,12 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
             $this->CI->trigger->change_relative ($row->tf_id, $last_basket_element, 'w_shop_types_fields', 'tf_id', 'field_values', 'Изменение значений поля '.$row->field_name.' типа ', $oldvals['type_name']);
             $this->CI->trigger->change_relative ($row->tf_id, $last_basket_element, 'w_shop_types_fields', 'tf_id', 'field_default_values', 'Изменение значений по умолчанию поля '.$row->field_name.' типа ', $oldvals['type_name']);
 
+			$values = implode (",", $this->CI->input->post('field_values_'.$matches[1]));
+			$default_values = implode (",", $this->CI->input->post('field_default_values_'.$matches[1]));
+
             $data = array(
-                'field_values'          => $this->CI->input->post('field_values_'.$matches[1]),
-                'field_default_values'  => $this->CI->input->post('field_default_values_'.$matches[1]),
+	            'field_values'          => $values,
+	            'field_default_values'  => $default_values,
                 'field_filter'          => $this->CI->input->post('field_filter_'.$matches[1]),
                 'field_modification'    => $this->CI->input->post('field_modification_'.$matches[1]),
                 'field_table'           => $this->CI->input->post('field_table_'.$matches[1]),
@@ -73,12 +76,15 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 		}
 		else
 		{
-            $data = array(
+			$values = implode (",", $this->CI->input->post('field_values_'.$matches[1]));
+			$default_values = implode (",", $this->CI->input->post('field_default_values_'.$matches[1]));
+
+			$data = array(
                 'tf_id'                 => '',
                 'type_id'               => $id,
                 'field_id'              => $matches[1],
-                'field_values'          => $this->CI->input->post('field_values_'.$matches[1]),
-                'field_default_values'  => $this->CI->input->post('field_default_values_'.$matches[1]),
+                'field_values'          => $values,
+                'field_default_values'  => $default_values,
                 'field_filter'          => ($this->CI->input->post('field_filter_'.$matches[1])) ? 1 : 0,
                 'field_modification'    => ($this->CI->input->post('field_modification_'.$matches[1])) ? 1 : 0,
                 'field_table'           => ($this->CI->input->post('field_table_'.$matches[1])) ? 1 : 0,
