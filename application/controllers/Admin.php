@@ -245,9 +245,10 @@ class Admin extends CI_Controller {
                     'admin_active_lang' => $this->session->userdata('w_alang')
                 );
 
-				header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-				header("Cache-Control: post-check=0, pre-check=0", false);
-				header("Pragma: no-cache");
+	            $time = time();
+	            header("Expires: " . gmdate("D, d M Y H:i:s", $time) . " GMT");
+	            header("Last-Modified: " . gmdate("D, d M Y H:i:s", $time) . " GMT");
+	            header("Cache-Control: no-cache, must-revalidate");
 
                 $this->load->view('admin/page_header', $data);
                 $this->load->view('admin/'.$view, $data);
@@ -323,6 +324,11 @@ class Admin extends CI_Controller {
             'error' => $error,
             'hash'  => $hash
         );
+
+        $time = time();
+	    header("Expires: " . gmdate("D, d M Y H:i:s", $time) . " GMT");
+	    header("Last-Modified: " . gmdate("D, d M Y H:i:s", $time) . " GMT");
+	    header("Cache-Control: no-cache, must-revalidate");
 
         $this->load->view('admin/page_header', $data);
         $this->load->view('admin/login', $data);
