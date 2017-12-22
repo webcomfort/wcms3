@@ -33,9 +33,9 @@ class Cms_articles extends CI_Model {
             $response['div'] = '<div class="article-div" data-id="'.$id.'">';
 
             $response['selects'] = '<div class="article-selects-div">
-            '.form_dropdown('page_article_view_'.$id, $this->_get_article_views(), $view).'
-            '.form_dropdown('page_article_bg_'.$id, $this->_get_article_bg(), $bg).'
-            '.form_dropdown('page_article_place_'.$id, $this->_get_article_places(), $place).'
+            '.form_dropdown('page_article_view_'.$id, $this->_get_article_views(), $view, 'class="select2"').'
+            '.$this->_get_article_bg($id, $bg).'
+            '.form_dropdown('page_article_place_'.$id, $this->_get_article_places(), $place, 'class="select2"').'
             </div>';
 
             $response['buttons'] = '<div class="article-buttons-div">
@@ -63,7 +63,8 @@ class Cms_articles extends CI_Model {
      */
     function get_article_editors($id, $type)
     {
-        $i = 1;
+	    $this->load->model('Cms_myedit');
+    	$i = 1;
         $fields = '';
 
         $this->db->select('article_text, article_bg_id, article_view_id, article_place_id');
@@ -100,7 +101,7 @@ class Cms_articles extends CI_Model {
             $fields .= '</div>';
         }
 
-        return '<div id="articles_area">'.$fields.'</div>';
+        return '<div id="articles_area">'.$fields.'</div>'.$this->Cms_myedit->get_ajax_icon_format($this->config->item('cms_bg_dir'));
     }
 
     /**
@@ -145,13 +146,17 @@ class Cms_articles extends CI_Model {
      * Массив фонов для формирования выпадающего списка
      *
      * @access	private
-     * @return	array
+     * @return	string
+     *
+     * <select name="page_article_view_1" class="select2 select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+    <option value="1" selected="selected">В контейнере</option>
+    <option value="2">На всю ширину</option>
+    </select>
+     *
      */
 
-    function _get_article_bg()
+    function _get_article_bg($id, $bg=0)
     {
-        $val_arr[0] = 'Выберите фон';
-
         $this->db->select('bg_id, bg_name');
         $this->db->where('bg_active', 1);
         $this->db->order_by('bg_name', 'ASC');
@@ -159,13 +164,17 @@ class Cms_articles extends CI_Model {
 
         if ($query->num_rows() > 0)
         {
-            foreach ($query->result() as $row) {
+            $select = '<select name="page_article_view_'.$id.'" class="select2_icon">';
+	        $select .= '<option value="0"'. (($bg == 0) ? 'selected="selected"' : '').'>Без фона</option>';
 
-                $val_arr[$row->bg_id] =$row->bg_name;
+        	foreach ($query->result() as $row) {
+		        $select .= '<option value="'.$row->bg_id.'"'. (($bg == $row->bg_id) ? 'selected="selected"' : '').'>'.$row->bg_name.'</option>';
             }
+
+	        $select .= '</select>';
         }
 
-        return $val_arr;
+        return $select;
     }
 
     /**

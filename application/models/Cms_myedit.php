@@ -182,15 +182,22 @@ class Cms_myedit extends CI_Model {
      * @return	string
      */
 
-    function get_ajax_icon_format ()
+    function get_ajax_icon_format ($folder)
     {
         $script = '<script>
-        function formatItems2 (items) {
+        function formatItems_icon (items) {
             if (items.loading) return items.text;
-            console.log(items);
+            var iid = Math.ceil(items.id/1000);
+            var avatar;
+            
+            if(items.id == 0){
+                avatar = "<div class=\'select2-result-repository__avatar\'></div>";
+            } else {
+                avatar = "<div class=\'select2-result-repository__avatar\'><a href=\''.$folder.'" + iid + \'/\' + items.id + ".jpg\' target=\'_blank\'><img src=\''.$folder.'" + iid + \'/\' + items.id + "_thumb.jpg\' /></a></div>";
+            }
             
             var markup = "<div class=\'select2-result-repository clearfix\'>" +
-            "<div class=\'select2-result-repository__avatar\'><img src=\'" + items.img + "\' /></div>" +
+            "<div class=\'select2-result-repository__avatar\'>"+avatar+"</div>" +
             "<div class=\'select2-result-repository__meta\'>" +
               "<div class=\'select2-result-repository__title\'>" + items.text + "</div>" +
             "</div></div>";
@@ -198,9 +205,19 @@ class Cms_myedit extends CI_Model {
             return markup;
         }
         
-        function formatItemsSelection2 (items) {
+        function formatItemsSelection_icon (items) {
+            
+            var iid = Math.ceil(items.id/1000);
+            var avatar;
+            
+            if(items.id == 0){
+                avatar = "<div class=\'select2-result-repository__avatar\'></div>";
+            } else {
+                avatar = "<div class=\'select2-result-repository__avatar\'><a href=\''.$folder.'" + iid + \'/\' + items.id + ".jpg\' target=\'_blank\'><img src=\''.$folder.'" + iid + \'/\' + items.id + "_thumb.jpg\' /></a></div>";
+            }
+            
             var markup = "<div class=\'select2-result-repository\'>" +
-            "<div class=\'select2-result-repository__avatar\'><a href=\''.$this->config->item('cms_history_photo_folder').'" + items.id + ".jpg\' target=\'_blank\'><img src=\''.$this->config->item('cms_history_photo_folder').'" + items.id + "_thumb.jpg\' /></a></div>" +
+            "<div class=\'select2-result-repository__avatar\'>"+avatar+"</div>" +
             "<div class=\'select2-result-repository__meta\'>" +
               "<div class=\'select2-result-repository__title\'>" + items.text + "</div>" +
             "</div></div>";

@@ -77,40 +77,43 @@ $config['cms_site_menues'] = array(
     )
 );
 
+// Возможные места статей
+$config['cms_article_places'] = array('Основной блок','Сайдбар');
+
 // Макеты страниц
 $config['cms_site_views'] = array(
     '1' => array(
         'file'      => 'page_default',
         'name'      => 'Макет для регулярной страницы с меню второго уровня и последними новостями',
         'header'    => 'page_header',
-        'footer'    => 'page_footer'
+        'footer'    => 'page_footer',
+	    'articles'  => array('Основной блок','Сайдбар')
     ),
     '3' => array(
         'file'      => 'page_default_wide',
         'name'      => 'Макет для регулярной страницы на всю ширину',
         'header'    => 'page_header',
-        'footer'    => 'page_footer'
+        'footer'    => 'page_footer',
+        'articles'  => array('Основной блок')
     ),
     '2' => array(
         'file'      => 'page_index',
         'name'      => 'Макет для главной страницы',
         'header'    => 'page_header',
-        'footer'    => 'page_footer'
+        'footer'    => 'page_footer',
+        'articles'  => array('Основной блок','Сайдбар')
     )
 );
-
-// Возможные места статей
-$config['cms_article_places'] = array('Основной блок','Сайдбар');
 
 // Макеты статей
 $config['cms_article_views'] = array(
     '1' => array(
         'file'      => 'article_default',
-        'name'      => 'Стандартный макет для статьи'
+        'name'      => 'В контейнере'
     ),
     '2' => array(
         'file'      => 'article_with_bg',
-        'name'      => 'Макет с фоном для статьи'
+        'name'      => 'На всю ширину'
     )
 );
 

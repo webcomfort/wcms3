@@ -33,6 +33,13 @@ $(document).ready(function () {
         language: "ru"
     });
 
+    $(".select2_icon").select2({
+        language: "ru",
+        escapeMarkup: function (markup) { return markup; },
+        templateResult: formatItems_icon,
+        templateSelection: formatItemsSelection_icon
+    });
+
     //JsTree
     $(".jstree").jstree().bind('select_node.jstree', function(e,data) {
         var href = data.node.a_attr.href;
