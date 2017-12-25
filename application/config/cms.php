@@ -86,22 +86,19 @@ $config['cms_site_views'] = array(
         'file'      => 'page_default',
         'name'      => 'Макет для регулярной страницы с меню второго уровня и последними новостями',
         'header'    => 'page_header',
-        'footer'    => 'page_footer',
-	    'articles'  => array('Основной блок','Сайдбар')
+        'footer'    => 'page_footer'
     ),
     '3' => array(
         'file'      => 'page_default_wide',
         'name'      => 'Макет для регулярной страницы на всю ширину',
         'header'    => 'page_header',
-        'footer'    => 'page_footer',
-        'articles'  => array('Основной блок')
+        'footer'    => 'page_footer'
     ),
     '2' => array(
         'file'      => 'page_index',
         'name'      => 'Макет для главной страницы',
         'header'    => 'page_header',
-        'footer'    => 'page_footer',
-        'articles'  => array('Основной блок','Сайдбар')
+        'footer'    => 'page_footer'
     )
 );
 
