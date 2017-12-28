@@ -1,3 +1,4 @@
+    <div class="container">
         <div class="row mt10">
             <div class="col-xs-8">
 				<div class="row">
@@ -20,3 +21,4 @@
                 <?php echo @module('mod_news_latest', array(1, 2, 'news_latest')); ?>
             </div>
         </div>
+    </div>

@@ -65,7 +65,7 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 
             $this->CI->trigger->change_relative ($row->article_id, $last_basket_element, 'w_pages_articles', 'article_id', 'article_text', 'Изменение статей на странице ', $oldvals['page_name']);
 
-            $data = array(
+			$data = array(
                 'article_order'     => $value,
                 'article_bg_id'     => $this->CI->input->post('page_article_bg_'.$matches[1]),
                 'article_view_id'   => $this->CI->input->post('page_article_view_'.$matches[1]),

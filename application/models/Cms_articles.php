@@ -32,9 +32,12 @@ class Cms_articles extends CI_Model {
 
             $response['div'] = '<div class="article-div" data-id="'.$id.'">';
 
+            $views = $this->_get_article_views();
+            $view  = (array_key_exists($view, $views)) ? $view : key($views);
+
             $response['selects'] = '<div class="article-selects-div">
-            '.form_dropdown('page_article_view_'.$id, $this->_get_article_views(), $view, 'class="select2"').'
             '.$this->_get_article_bg($id, $bg).'
+            '.form_dropdown('page_article_view_'.$id, $this->_get_article_views(), $view, 'class="select2"').'           
             '.form_dropdown('page_article_place_'.$id, $this->_get_article_places(), $place, 'class="select2"').'
             </div>';
 
@@ -164,7 +167,7 @@ class Cms_articles extends CI_Model {
 
         if ($query->num_rows() > 0)
         {
-            $select = '<select name="page_article_view_'.$id.'" class="select2_icon">';
+            $select = '<select name="page_article_bg_'.$id.'" class="select2_icon">';
 	        $select .= '<option value="0"'. (($bg == 0) ? 'selected="selected"' : '').'>Без фона</option>';
 
         	foreach ($query->result() as $row) {
@@ -203,7 +206,7 @@ class Cms_articles extends CI_Model {
             foreach ($query->result() as $row)
             {
                 $text = $this->parser->parse_modules($row->article_text);
-                $view = $views[$row->article_view_id]['file'];
+                $view = (array_key_exists($row->article_view_id, $views)) ? $views[$row->article_view_id]['file'] : false;
                 $data['article_text'] = $text;
                 $data['article_bg'] = $this->_get_bg($row->article_bg_id);
                 if ($view) $articles[$row->article_place_id][] = $this->load->view('site/'.$view, $data, true);

@@ -1,3 +1,4 @@
+    <div class="container">
 		<div class="row">
             <div class="col-xs-8">
                 <?php echo @module('mod_menu_crumbs', array(1)); ?>
@@ -21,3 +22,4 @@
                 ?>
             </div>
         </div>
+    </div>

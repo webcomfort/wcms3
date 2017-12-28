@@ -1001,7 +1001,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		}
 
 		if ($this->display['form']) {
-            echo '<div class="row"><div class="col-xs-12"><div class="ui-block">',form_open_multipart($page_name, array('class' => $this->getCSSclass('form'), 'name' => $this->cgi['prefix']['sys'].'form')),"\n";
+            echo '<div class="row"><div class="col-xs-12"><div class="ui-block">',form_open_multipart($page_name, array('class' => $this->getCSSclass('form'), 'name' => $this->cgi['prefix']['sys'].'form', 'autocomplete' => 'off')),"\n";
 		}
 		return true;
 	} /* }}} */
