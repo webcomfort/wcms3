@@ -113,10 +113,12 @@ class Cms_inclusions extends CI_Model {
                     }
                 }
 
-                if($this->input->get('PME_sys_rec', TRUE))
+	            $rec = ($this->input->get('PME_sys_rec', TRUE)) ? $this->input->get('PME_sys_rec', TRUE) : $this->input->post('PME_sys_rec', TRUE);
+
+                if($rec)
                 {
                     $this->db->select('inc_value');
-                    $this->db->where('obj_id', $this->input->get('PME_sys_rec', TRUE));
+                    $this->db->where('obj_id', $rec);
                     $this->db->where('inc_id', $key);
                     $this->db->where('inc_type', $type);
                     $query = $this->db->get('w_includes');
