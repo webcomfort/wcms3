@@ -32,8 +32,6 @@ class Adm_gallery_photos extends CI_Model {
         $meta = '';
 	    // JS функции для модуля select2 - простой список
 	    $meta .= $this->Cms_myedit->get_ajax_default_format();
-	    // JS функции для модуля select2 - список с изображениями
-	    $meta .= $this->Cms_myedit->get_ajax_icon_format();
         return $meta;
     }
 
