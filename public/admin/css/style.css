@@ -150,6 +150,7 @@ td.pme-tab-selected a { text-decoration: none; }
 /*----------  2.8. Fields  ----------*/
 .field-div { background-color: #ecebeb; border: #dcdcdc 1px solid; padding: 5px 10px; margin-bottom: 5px; }
 .field-div label { font-weight: normal; }
+.field-div .form-group label { font-weight: bold; }
 .field-header { height: 30px; position: relative; }
 .field-title { position: absolute; top: 5px; left: 0; }
 .field-title label { font-weight: bold; }

@@ -314,12 +314,12 @@ class Adm_shop_fields extends CI_Model {
             'select'        => 'D',
             'options'       => 'LACPDV',
             'values2'       => array (
-                '0'         => 'Не выбрано',
+                '0'         => 'Не требуется',
                 '1'         => 'Числовой диапазон',
                 '2'         => 'Чекбоксы',
                 '3'         => 'Диапазон дат'
             ),
-            'default'       => 1,
+            'default'       => 0,
             'help'          => 'Выберите тип поля, наиболее удобный для подбора товара на сайте (фильтры)'
         );
         $opts['fdd']['field_label'] = array(

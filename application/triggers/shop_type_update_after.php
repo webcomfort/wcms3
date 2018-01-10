@@ -45,6 +45,7 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
     if (preg_match("/^field_([0-9]*)$/", $key, $matches))
 	{
         $changed[] = $matches[1];
+		$type = $this->CI->input->post('field_type_'.$matches[1]);
 
 	    $this->CI->db->select('tf.tf_id, f.field_name');
         $this->CI->db->from('w_shop_types_fields AS tf');
@@ -60,8 +61,13 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
             $this->CI->trigger->change_relative ($row->tf_id, $last_basket_element, 'w_shop_types_fields', 'tf_id', 'field_values', 'Изменение значений поля '.$row->field_name.' типа ', $oldvals['type_name']);
             $this->CI->trigger->change_relative ($row->tf_id, $last_basket_element, 'w_shop_types_fields', 'tf_id', 'field_default_values', 'Изменение значений по умолчанию поля '.$row->field_name.' типа ', $oldvals['type_name']);
 
-			$values = implode (",", $this->CI->input->post('field_values_'.$matches[1]));
-			$default_values = implode (",", $this->CI->input->post('field_default_values_'.$matches[1]));
+			if($type) {
+				$values         = implode( ",", $this->CI->input->post( 'field_values_' . $matches[1] ) );
+				$default_values = implode( ",", $this->CI->input->post( 'field_default_values_' . $matches[1] ) );
+			} else {
+				$values         = '';
+				$default_values = $this->CI->input->post( 'field_default_values_' . $matches[1] );
+			}
 
             $data = array(
 	            'field_values'          => $values,
@@ -76,8 +82,13 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 		}
 		else
 		{
-			$values = implode (",", $this->CI->input->post('field_values_'.$matches[1]));
-			$default_values = implode (",", $this->CI->input->post('field_default_values_'.$matches[1]));
+			if($type) {
+				$values         = implode( ",", $this->CI->input->post( 'field_values_' . $matches[1] ) );
+				$default_values = implode( ",", $this->CI->input->post( 'field_default_values_' . $matches[1] ) );
+			} else {
+				$values         = '';
+				$default_values = $this->CI->input->post( 'field_default_values_' . $matches[1] );
+			}
 
 			$data = array(
                 'tf_id'                 => '',

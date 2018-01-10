@@ -110,8 +110,6 @@ class Adm_shop_item extends CI_Model {
 
 	    // JS функции для модуля select2 - простой список
 	    $meta .= $this->Cms_myedit->get_ajax_default_format();
-	    // JS функции для модуля select2 - список с изображениями
-	    $meta .= $this->Cms_myedit->get_ajax_icon_format();
 
         return $meta;
     }
@@ -572,7 +570,7 @@ class Adm_shop_item extends CI_Model {
     function _get_field($field_id = 0, $id = 0, $field_text = '', $field_values = '', $field_default = '', $field_type = 0){
 
         $this->load->helper('form');
-        $field = '<div class="form-group">';
+        $field = '<div class="field-div"><div class="form-group">';
         $field_name = 'item_field_'.$field_id;
         $value = false;
         if($id && $field_id) $value = $this->_get_field_value($id, $field_id);
@@ -651,7 +649,7 @@ class Adm_shop_item extends CI_Model {
             $field .= $this->date_form_rus($value, $field_name);
         }
 
-        $field .= '</div>';
+        $field .= '</div></div>';
         return $field;
     }
 

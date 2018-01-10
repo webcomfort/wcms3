@@ -165,10 +165,12 @@ class Adm_shop_types extends CI_Model {
      */
     function _get_field_tpl($data)
     {
-        $response = '';
+    	$response = '';
         foreach ($data AS $key => $value) {
 
             $id = $key + 1;
+
+            $type = (in_array($value['type_back'], array('4', '5', '6', '7'))) ? 1 : 0;
 
             $response .= '<div class="field-div" data-id="' . $id . '">';
             $response .= '<div class="field-header">';
@@ -205,39 +207,46 @@ class Adm_shop_types extends CI_Model {
 
             $response .= '</div>';
 
+            if($type) {
+	            $response .= '<div class="field-form-group">';
+	            $response .= '<label class="field-label" for="field_values_' . $value['field_id'] . '">Значения для списка</label>';
+
+	            $values1  = ( $value['values'] != '' ) ? explode( ',', $value['values'] ) : array();
+	            $values1  = array_combine( $values1, $values1 );
+	            $response .= form_multiselect( 'field_values_' . $value['field_id'] . '[]', $values1, array_keys( $values1 ), 'class="field-values field_values_' . $value['field_id'] . '"' );
+	            $response .= '<script>
+		        $(document).ready(function () {
+		            $(".field_values_' . $value['field_id'] . '").select2({
+		            tags: true, 
+		            tokenSeparators: [","],
+		            language: "ru"
+		            });
+		        });
+		        </script>';
+
+	            $response .= '</div>';
+            }
+
             $response .= '<div class="field-form-group">';
-            $response .= '<label class="field-label" for="field_values_' . $value['field_id'] . '">Значения (для полей с выбором из нескольких значений)</label>';
+            $response .= '<label class="field-label" for="field_default_values_' . $value['field_id'] . '">Значение по умолчанию</label>';
 
-			$values1 = ($value['values'] != '') ? explode(',', $value['values']) : array();
-	        $values1 = array_combine($values1,$values1);
-	        $response .= form_multiselect('field_values_' . $value['field_id'].'[]', $values1, array_keys($values1), 'class="field-values field_values_' . $value['field_id'] . '"');
-	        $response .= '<script>
-	        $(document).ready(function () {
-	            $(".field_values_' . $value['field_id'] . '").select2({
-	            tags: true, 
-	            tokenSeparators: [","],
-	            language: "ru"
-	            });
-	        });
-	        </script>';
-
-
-            $response .= '</div>';
-            $response .= '<div class="field-form-group">';
-            $response .= '<label class="field-label" for="field_default_values_' . $value['field_id'] . '">Значения по умолчанию (для всех полей)</label>';
-
-	        $values2 = ($value['default_values'] != '') ? explode(',', $value['default_values']) : array();
-	        $values2 = array_combine($values2,$values2);
-	        $response .= form_multiselect('field_default_values_' . $value['field_id'].'[]', $values2, array_keys($values2), 'class="field-values field_default_values_' . $value['field_id'] . '"');
-	        $response .= '<script>
-	        $(document).ready(function () {
-	            $(".field_default_values_' . $value['field_id'] . '").select2({
-	            tags: true, 
-	            tokenSeparators: [","],
-	            language: "ru"
-	            });
-	        });
-	        </script>';
+	        if($type) {
+		        $values2  = ( $value['default_values'] != '' ) ? explode( ',', $value['default_values'] ) : array();
+		        $values2  = array_combine( $values2, $values2 );
+		        $response .= form_multiselect( 'field_default_values_' . $value['field_id'] . '[]', $values2, array_keys( $values2 ), 'class="field-values field_default_values_' . $value['field_id'] . '"' );
+		        $response .= '<script>
+		        $(document).ready(function () {
+		            $(".field_default_values_' . $value['field_id'] . '").select2({
+		            tags: true, 
+		            tokenSeparators: [","],
+		            language: "ru"
+		            });
+		        });
+		        </script>';
+	        } else {
+		        $values2  = ( $value['default_values'] != '' ) ? $value['default_values'] : '';
+		        $response .= form_input('field_default_values_' . $value['field_id'], $values2, 'class="pme-input form-control"');
+	        }
 
             $response .= '</div>';
 
@@ -245,6 +254,7 @@ class Adm_shop_types extends CI_Model {
 
 
             $response .= '<input type="hidden" class="field_order" name="field_order_' . $value['field_id'] . '" value="' . $id . '">';
+	        $response .= '<input type="hidden" name="field_type_' . $value['field_id'] . '" value="' . $type . '">';
             $response .= '</div>';
         }
 
