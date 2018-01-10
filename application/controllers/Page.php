@@ -163,7 +163,7 @@ class Page extends CI_Controller {
         $this->Cms_page->set_head($params->page_meta_additional);
 		$this->Cms_page->set_foot($params->page_footer_additional);
 		$this->Cms_page->set_canonical($this->uri->uri_string());
-        $this->Cms_page->set_articles($this->Cms_articles->get_articles($params->page_id, 'pages'));
+        $this->Cms_page->set_articles($this->Cms_articles->get_articles($params->page_id, 'pages', $params->page_view_id));
 
         $this->db->cache_on();
 

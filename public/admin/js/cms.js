@@ -121,11 +121,13 @@ $(document).ready(function () {
         var id = parent.data('id');
         var maxId = getMaximum('.article-div');
         var nextId = maxId + 1;
+        var trigger = $('#page_article_trigger').val();
+        var type = $('#page_article_type').val();
 
         $.ajax({
             method: "GET",
             url: "/cms_articles/p_get_html/",
-            data: { id: nextId }
+            data: { id: nextId, type: type, trigger: trigger }
         }).done(function(result) {
             var json = $.parseJSON(result);
             var article = json.div +
@@ -137,6 +139,20 @@ $(document).ready(function () {
 
             $(article).insertBefore(parent);
             CKEDITOR.replace('page_article_'+nextId);
+
+            //Selects
+            $("select[name=page_article_view_"+nextId+"]").select2({ language: "ru" });
+            $("select[name=page_article_place_"+nextId+"]").select2({ language: "ru" });
+
+            if ($("select[name=page_article_bg_"+nextId+"]")[0]){
+                $("select[name=page_article_bg_"+nextId+"]").select2({
+                    language: "ru",
+                    escapeMarkup: function (markup) { return markup; },
+                    templateResult: formatItems_icon,
+                    templateSelection: formatItemsSelection_icon
+                });
+            }
+
             firstAndLast(grandparent, $('.article-div'), 'article');
             recalcOrder('.page_article_order');
         });

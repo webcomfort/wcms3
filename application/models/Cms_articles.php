@@ -10,6 +10,7 @@ class Cms_articles extends CI_Model {
     function __construct()
     {
         parent::__construct();
+	    $this->load->model('Cms_myedit');
     }
 
     // ------------------------------------------------------------------------
@@ -24,21 +25,23 @@ class Cms_articles extends CI_Model {
      * @param   int - номер вида
      * @return  string
      */
-    function p_get_html($id=false, $article='', $bg=0, $view=1, $place=0)
+    function p_get_html($id=false, $type='pages', $trigger=1, $article='', $bg=0, $view=1, $place=0, $full=false)
     {
         if($this->input->get('id', TRUE)) $id = $this->input->get('id', TRUE);
+	    if($this->input->get('type', TRUE)) $type = $this->input->get('type', TRUE);
+	    if($this->input->get('trigger', TRUE)) $trigger = $this->input->get('trigger', TRUE);
 
         if($id){
 
             $response['div'] = '<div class="article-div" data-id="'.$id.'">';
 
-            $views = $this->_get_article_views();
+            $views = $this->_get_article_views($type, $trigger);
             $view  = (array_key_exists($view, $views)) ? $view : key($views);
 
             $response['selects'] = '<div class="article-selects-div">
             '.$this->_get_article_bg($id, $bg).'
-            '.form_dropdown('page_article_view_'.$id, $this->_get_article_views(), $view, 'class="select2"').'           
-            '.form_dropdown('page_article_place_'.$id, $this->_get_article_places(), $place, 'class="select2"').'
+            '.form_dropdown('page_article_view_'.$id, $this->_get_article_views($type, $trigger), $view, 'class="select2"').'           
+            '.form_dropdown('page_article_place_'.$id, $this->_get_article_places($type, $trigger), $place, 'class="select2"').'
             </div>';
 
             $response['buttons'] = '<div class="article-buttons-div">
@@ -47,28 +50,95 @@ class Cms_articles extends CI_Model {
 <button class="btn btn-default btn-xs article-button-move article-button-down" data-id="'.$id.'"  title="Вниз"><span class="glyphicon glyphicon-chevron-down"></span></button>
 <button class="btn btn-default btn-xs article-button-remove" data-id="'.$id.'" title="Удалить"><span class="glyphicon glyphicon-remove"></span></button>
 </div>';
-            $response['hidden'] = '<input type="hidden" class="page_article_order" name="page_article_order_'.$id.'" value="'.$id.'">';
+            $response['hidden']  = '<input type="hidden" class="page_article_order" name="page_article_order_'.$id.'" value="'.$id.'">';
             $response['textarea'] = '<textarea name="page_article_'.$id.'" class="htmleditor">'.$article.'</textarea>';
 
         }
 
-        if($this->input->get('id', TRUE)) echo json_encode($response);
+        if($this->input->get('id', TRUE) && $full === false) echo json_encode($response);
         else return $response;
     }
+
+	/**
+	 * Функция, генерирующая текстовые поля с возможностью редактирования (ajax)
+	 *
+	 * @access  public
+	 * @return  void
+	 */
+	function p_get_articles()
+	{
+		if($this->input->get('id', TRUE)) $id = $this->input->get('id', TRUE);
+		if($this->input->get('type', TRUE)) $type = $this->input->get('type', TRUE);
+		if($this->input->get('trigger', TRUE)) $trigger = $this->input->get('trigger', TRUE);
+
+		if(isset($id) && isset($type) && isset($trigger)){
+			echo $this->_get_article_editors($id, $type, $trigger, true);
+		}
+	}
+
+	/**
+	 * Функция, отдающая текстовые поля с возможностью редактирования
+	 *
+	 * @access  public
+	 * @param   int - id родителя
+	 * @param   string - тип родителя
+	 * @param   int - триггер, переключающий макеты
+	 * @return  string
+	 */
+    function get_article_editors($id, $type, $trigger = 1)
+	{
+		$data  = $this->config->item('cms_articles');
+		$type_trigger = $data[$type]['trigger'];
+		$script = '';
+		if($type_trigger){
+			$script = '<script>
+			$(document).ready(function () {
+				$( "#'.$type_trigger.'" ).change(function() {
+				    var trigger = $(this).val();
+				    $("#page_article_trigger").val(trigger);
+				    $.ajax({
+			            method: "GET",
+			            url: "/cms_articles/p_get_articles/",
+			            data: { id: "'.$id.'", type: "'.$type.'", trigger: trigger }
+			        }).done(function(result) {			           
+			            $( "#articles_area" ).html( result );
+			            
+			            $(".select2").select2({ language: "ru" });
+					    if ($(".select2_icon")[0]){
+					        $(".select2_icon").select2({
+					            language: "ru",
+					            escapeMarkup: function (markup) { return markup; },
+					            templateResult: formatItems_icon,
+					            templateSelection: formatItemsSelection_icon
+					        });
+					    }
+					    $(".htmleditor").each(function(index){
+					        CKEDITOR.replace( this, { customConfig: "/public/admin/third_party/ckeditor/config.js" });
+					    });
+			        });
+				});
+			});
+			</script>';
+		}
+
+		return $this->_get_article_editors($id, $type, $trigger).$this->Cms_myedit->get_ajax_icon_format($this->config->item('cms_bg_dir')).$script;
+	}
 
     /**
      * Функция, генерирующая текстовые поля с возможностью редактирования
      *
-     * @access  public
+     * @access  private
      * @param   int - id родителя
      * @param   string - тип родителя
+     * @param   int - триггер, переключающий макеты
+     * @param   bool - вариант вывода полей
      * @return  string
      */
-    function get_article_editors($id, $type)
+    function _get_article_editors($id, $type, $trigger = 1, $full=false)
     {
-	    $this->load->model('Cms_myedit');
     	$i = 1;
         $fields = '';
+	    $trigger_field = '<input type="hidden" id="page_article_trigger" name="page_article_trigger" value="'.$trigger.'"><input type="hidden" id="page_article_type" name="page_article_type" value="'.$type.'">';
 
         $this->db->select('article_text, article_bg_id, article_view_id, article_place_id');
         $this->db->where('article_pid', $id);
@@ -80,7 +150,7 @@ class Cms_articles extends CI_Model {
         {
             foreach ($query->result() as $row)
             {
-                $html = $this->p_get_html($i, $row->article_text, $row->article_bg_id, $row->article_view_id, $row->article_place_id);
+                $html = $this->p_get_html($i, $type, $trigger, $row->article_text, $row->article_bg_id, $row->article_view_id, $row->article_place_id, $full);
 
                 $fields .= $html['div'];
                 $fields .= $html['selects'];
@@ -94,7 +164,7 @@ class Cms_articles extends CI_Model {
         }
         else
         {
-            $html = $this->p_get_html($i);
+            $html = $this->p_get_html($i, $type, $trigger);
 
             $fields .= $html['div'];
             $fields .= $html['selects'];
@@ -104,7 +174,9 @@ class Cms_articles extends CI_Model {
             $fields .= '</div>';
         }
 
-        return '<div id="articles_area">'.$fields.'</div>'.$this->Cms_myedit->get_ajax_icon_format($this->config->item('cms_bg_dir'));
+	    $fields .= $trigger_field;
+
+        return '<div id="articles_area">'.$fields.'</div>';
     }
 
     /**
@@ -114,11 +186,12 @@ class Cms_articles extends CI_Model {
      * @return	array
      */
 
-    function _get_article_views()
+    function _get_article_views($type, $trigger)
     {
-        $views  = $this->config->item('cms_article_views');
+        $data  = $this->config->item('cms_articles');
+	    $type_data = $data[$type]['values'][$trigger]['views'];
 
-        foreach ($views as $key => $value)
+        foreach ($type_data as $key => $value)
         {
             $val_arr[$key] = $value['name'];
         }
@@ -133,11 +206,12 @@ class Cms_articles extends CI_Model {
      * @return	array
      */
 
-    function _get_article_places()
+    function _get_article_places($type, $trigger)
     {
-        $places  = $this->config->item('cms_article_places');
+	    $data  = $this->config->item('cms_articles');
+	    $type_data = $data[$type]['values'][$trigger]['places'];
 
-        foreach ($places as $key => $value)
+        foreach ($type_data as $key => $value)
         {
             $val_arr[$key] = $value;
         }
@@ -150,12 +224,6 @@ class Cms_articles extends CI_Model {
      *
      * @access	private
      * @return	string
-     *
-     * <select name="page_article_view_1" class="select2 select2-hidden-accessible" tabindex="-1" aria-hidden="true">
-    <option value="1" selected="selected">В контейнере</option>
-    <option value="2">На всю ширину</option>
-    </select>
-     *
      */
 
     function _get_article_bg($id, $bg=0)
@@ -187,10 +255,11 @@ class Cms_articles extends CI_Model {
      * @param   int
      * @return  array
      */
-    function get_articles($id, $type='pages')
+    function get_articles($id, $type='pages', $trigger=1)
     {
         $articles = array();
-        $views = $this->config->item('cms_article_views');
+	    $data  = $this->config->item('cms_articles');
+	    $views = $data[$type]['values'][$trigger]['views'];
 
         $this->db->select('article_id, article_bg_id, article_view_id, article_place_id, article_text');
         $this->db->where('article_pid', $id);

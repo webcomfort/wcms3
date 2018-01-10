@@ -77,9 +77,6 @@ $config['cms_site_menues'] = array(
     )
 );
 
-// Возможные места статей
-$config['cms_article_places'] = array('Основной блок','Сайдбар');
-
 // Макеты страниц
 $config['cms_site_views'] = array(
     '1' => array(
@@ -102,16 +99,88 @@ $config['cms_site_views'] = array(
     )
 );
 
-// Макеты статей
-$config['cms_article_views'] = array(
-    '1' => array(
-        'file'      => 'article_default',
-        'name'      => 'В контейнере'
-    ),
-    '2' => array(
-        'file'      => 'article_with_bg',
-        'name'      => 'На всю ширину'
-    )
+// Статьи
+$config['cms_articles'] = array(
+	'pages' => array(
+		'trigger' => 'PME_data_page_view_id',
+		'values'  => array(
+			'1' => array(
+				'places' => array('Основной блок','Сайдбар'),
+				'views' => array(
+					'1' => array(
+						'file'      => 'article_default',
+						'name'      => 'В контейнере'
+					),
+					'2' => array(
+						'file'      => 'article_wide',
+						'name'      => 'На всю ширину'
+					)
+				)
+			),
+			'2' => array(
+				'places' => array('Основной блок','Сайдбар'),
+				'views' => array(
+					'1' => array(
+						'file'      => 'article_default',
+						'name'      => 'В контейнере'
+					),
+					'2' => array(
+						'file'      => 'article_wide',
+						'name'      => 'На всю ширину'
+					)
+				)
+			),
+			'3' => array(
+				'places' => array('Основной блок'),
+				'views' => array(
+					'1' => array(
+						'file'      => 'article_default',
+						'name'      => 'В контейнере'
+					),
+					'2' => array(
+						'file'      => 'article_wide',
+						'name'      => 'На всю ширину'
+					)
+				)
+			)
+		)
+	),
+	'news' => array(
+		'trigger' => false,
+		'values'  => array(
+			'1' => array(
+				'places' => array('Основной блок'),
+				'views' => array(
+					'1' => array(
+						'file'      => 'article_default',
+						'name'      => 'В контейнере'
+					),
+					'2' => array(
+						'file'      => 'article_wide',
+						'name'      => 'На всю ширину'
+					)
+				)
+			)
+		)
+	),
+	'shop' => array(
+		'trigger' => false,
+		'values'  => array(
+			'1' => array(
+				'places' => array('Основной блок'),
+				'views' => array(
+					'1' => array(
+						'file'      => 'article_default',
+						'name'      => 'В контейнере'
+					),
+					'2' => array(
+						'file'      => 'article_wide',
+						'name'      => 'На всю ширину'
+					)
+				)
+			)
+		)
+	)
 );
 
 // Подключения

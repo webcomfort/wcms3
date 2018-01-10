@@ -219,7 +219,19 @@ class Adm_pages extends CI_Model {
             elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
             else $id = 0;
 
-            return $this->Cms_articles->get_article_editors($id, 'pages');
+            $trigger = 1;
+
+	        if($id) {
+		        $this->db->select( 'page_view_id' );
+		        $this->db->where( 'page_id', $id );
+		        $query = $this->db->get( 'w_pages' );
+		        if ( $query->num_rows() > 0 ) {
+			        $row = $query->row();
+		        	$trigger = $row->page_view_id;
+		        }
+	        }
+
+            return $this->Cms_articles->get_article_editors($id, 'pages', $trigger);
         }
     }
 
