@@ -291,24 +291,24 @@ $config['cms_banners_places'] = array(
 |--------------------------------------------------------------------------
 */
 $config['cms_gallery_dir'] = '/public/upload/gallery/';
+$config['cms_gallery_sizes'] = array(
+	'_thumb' => array(
+		'width'     => 150,
+		'height'    => 0,
+		'class'     => '',
+		'rel'       => ''
+	),
+	'_big' => array(
+		'width'     => 750,
+		'height'    => 400,
+		'class'     => '',
+		'rel'       => ''
+	)
+);
 $config['cms_gallery_views'] = array(
     '1' => array(
         'file'  => 'gallery_index',
-        'name'  => 'Слайдер',
-        'img'   => array(
-            '_thumb' => array(
-                'width'     => 150,
-                'height'    => 0,
-                'class'     => '',
-                'rel'       => ''
-            ),
-            '_big' => array(
-                'width'     => 750,
-                'height'    => 400,
-                'class'     => '',
-                'rel'       => ''
-            )
-        )
+        'name'  => 'Слайдер'
     )
 );
 

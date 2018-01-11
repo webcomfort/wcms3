@@ -143,7 +143,7 @@ class Adm_gallery_photos extends CI_Model {
         if($gal_id == 0) $gal_id = $this->session->userdata('photo_filter');
 
         $this->load->library('image_lib');
-        $params = $this->config->item('cms_gallery_views');
+	    $dimensions = $this->config->item('cms_gallery_sizes');
         $path = FCPATH.substr($this->config->item('cms_gallery_dir'), 1);
         if(!is_dir($path)) mkdir($path, 0, true);
 
@@ -156,7 +156,6 @@ class Adm_gallery_photos extends CI_Model {
         if ($query->num_rows() > 0)
         {
             $row = $query->row();
-            $dimensions = $params[$row->vid]['img'];
             $i = 1;
 
             foreach ($_FILES['galfile']['tmp_name'] as $key => $value)
