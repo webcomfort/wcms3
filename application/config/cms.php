@@ -105,41 +105,71 @@ $config['cms_articles'] = array(
 		'trigger' => 'PME_data_page_view_id',
 		'values'  => array(
 			'1' => array(
-				'places' => array('Основной блок','Сайдбар'),
-				'views' => array(
-					'1' => array(
-						'file'      => 'article_default',
-						'name'      => 'В контейнере'
+				'places' => array(
+					'0' => array(
+						'name'  => 'Основной блок',
+						'views' => array(
+							'1' => array(
+								'file'      => 'article_default',
+								'name'      => 'В контейнере'
+							),
+							'2' => array(
+								'file'      => 'article_wide',
+								'name'      => 'На всю ширину'
+							)
+						)
 					),
-					'2' => array(
-						'file'      => 'article_wide',
-						'name'      => 'На всю ширину'
+					'1' => array(
+						'name'  => 'Сайдбар',
+						'views' => array(
+							'1' => array(
+								'file'      => 'article_default',
+								'name'      => 'В контейнере'
+							)
+						)
 					)
 				)
 			),
 			'2' => array(
-				'places' => array('Основной блок','Сайдбар'),
-				'views' => array(
-					'1' => array(
-						'file'      => 'article_default',
-						'name'      => 'В контейнере'
+				'places' => array(
+					'0' => array(
+						'name'  => 'Основной блок',
+						'views' => array(
+							'1' => array(
+								'file'      => 'article_default',
+								'name'      => 'В контейнере'
+							),
+							'2' => array(
+								'file'      => 'article_wide',
+								'name'      => 'На всю ширину'
+							)
+						)
 					),
-					'2' => array(
-						'file'      => 'article_wide',
-						'name'      => 'На всю ширину'
+					'1' => array(
+						'name'  => 'Сайдбар',
+						'views' => array(
+							'1' => array(
+								'file'      => 'article_default',
+								'name'      => 'В контейнере'
+							)
+						)
 					)
 				)
 			),
 			'3' => array(
-				'places' => array('Основной блок'),
-				'views' => array(
-					'1' => array(
-						'file'      => 'article_default',
-						'name'      => 'В контейнере'
-					),
-					'2' => array(
-						'file'      => 'article_wide',
-						'name'      => 'На всю ширину'
+				'places' => array(
+					'0' => array(
+						'name'  => 'Основной блок',
+						'views' => array(
+							'1' => array(
+								'file'      => 'article_default',
+								'name'      => 'В контейнере'
+							),
+							'2' => array(
+								'file'      => 'article_wide',
+								'name'      => 'На всю ширину'
+							)
+						)
 					)
 				)
 			)
@@ -149,15 +179,19 @@ $config['cms_articles'] = array(
 		'trigger' => false,
 		'values'  => array(
 			'1' => array(
-				'places' => array('Основной блок'),
-				'views' => array(
-					'1' => array(
-						'file'      => 'article_default',
-						'name'      => 'В контейнере'
-					),
-					'2' => array(
-						'file'      => 'article_wide',
-						'name'      => 'На всю ширину'
+				'places' => array(
+					'0' => array(
+						'name'  => 'Основной блок',
+						'views' => array(
+							'1' => array(
+								'file'      => 'article_default',
+								'name'      => 'В контейнере'
+							),
+							'2' => array(
+								'file'      => 'article_wide',
+								'name'      => 'На всю ширину'
+							)
+						)
 					)
 				)
 			)
@@ -167,15 +201,19 @@ $config['cms_articles'] = array(
 		'trigger' => false,
 		'values'  => array(
 			'1' => array(
-				'places' => array('Основной блок'),
-				'views' => array(
-					'1' => array(
-						'file'      => 'article_default',
-						'name'      => 'В контейнере'
-					),
-					'2' => array(
-						'file'      => 'article_wide',
-						'name'      => 'На всю ширину'
+				'places' => array(
+					'0' => array(
+						'name'  => 'Основной блок',
+						'views' => array(
+							'1' => array(
+								'file'      => 'article_default',
+								'name'      => 'В контейнере'
+							),
+							'2' => array(
+								'file'      => 'article_wide',
+								'name'      => 'На всю ширину'
+							)
+						)
 					)
 				)
 			)

@@ -35,13 +35,13 @@ class Cms_articles extends CI_Model {
 
             $response['div'] = '<div class="article-div" data-id="'.$id.'">';
 
-            $views = $this->_get_article_views($type, $trigger);
+            $views = $this->_get_article_views($type, $trigger, $place);
             $view  = (array_key_exists($view, $views)) ? $view : key($views);
 
             $response['selects'] = '<div class="article-selects-div">
             '.$this->_get_article_bg($id, $bg).'
-            '.form_dropdown('page_article_view_'.$id, $this->_get_article_views($type, $trigger), $view, 'class="select2"').'           
-            '.form_dropdown('page_article_place_'.$id, $this->_get_article_places($type, $trigger), $place, 'class="select2"').'
+            '.form_dropdown('page_article_place_'.$id, $this->_get_article_places($type, $trigger), $place, 'data-id="'.$id.'" data-trigger="'.$trigger.'" data-type="'.$type.'" class="select2 place-select"').'
+            '.form_dropdown('page_article_view_'.$id, $this->_get_article_views($type, $trigger, $place), $view, 'id="page_article_view_'.$id.'" class="select2 view-select"').'
             </div>';
 
             $response['buttons'] = '<div class="article-buttons-div">
@@ -67,9 +67,9 @@ class Cms_articles extends CI_Model {
 	 */
 	function p_get_articles()
 	{
-		if($this->input->get('id', TRUE)) $id = $this->input->get('id', TRUE);
-		if($this->input->get('type', TRUE)) $type = $this->input->get('type', TRUE);
-		if($this->input->get('trigger', TRUE)) $trigger = $this->input->get('trigger', TRUE);
+		if($this->input->get('id', TRUE) || $this->input->get('id', TRUE) == 0) $id = $this->input->get('id', TRUE);
+		if($this->input->get('type', TRUE) || $this->input->get('type', TRUE) == 0) $type = $this->input->get('type', TRUE);
+		if($this->input->get('trigger', TRUE) || $this->input->get('trigger', TRUE) == 0) $trigger = $this->input->get('trigger', TRUE);
 
 		if(isset($id) && isset($type) && isset($trigger)){
 			echo $this->_get_article_editors($id, $type, $trigger, true);
@@ -117,11 +117,52 @@ class Cms_articles extends CI_Model {
 					    });
 			        });
 				});
+				
+				$( ".place-select" ).change(function() {
+				    
+				    var id = $(this).data( "id" );
+				    var trigger = $(this).data( "trigger" );
+				    var type = $(this).data( "type" );
+				    var place = $(this).val();
+				    var select = $("#page_article_view_" + id);				   
+				    
+				    $.ajax({
+			            method: "GET",
+			            url: "/cms_articles/p_get_views/",
+			            data: { id: id, type: type, trigger: trigger, place: place }
+			        }).done(function(result) {
+			            select.empty().append(result);
+			        });
+				});
 			});
 			</script>';
 		}
 
 		return $this->_get_article_editors($id, $type, $trigger).$this->Cms_myedit->get_ajax_icon_format($this->config->item('cms_bg_dir')).$script;
+	}
+
+	/**
+	 * Функция, генерирующая значения селектов для ajax вызовов
+	 *
+	 * @access  public
+	 * @return  void
+	 */
+	function p_get_views(){
+		if($this->input->get('id', TRUE) || $this->input->get('id', TRUE) == 0) $id = $this->input->get('id', TRUE);
+		if($this->input->get('type', TRUE) || $this->input->get('type', TRUE) == 0) $type = $this->input->get('type', TRUE);
+		if($this->input->get('trigger', TRUE) || $this->input->get('trigger', TRUE) == 0) $trigger = $this->input->get('trigger', TRUE);
+		if($this->input->get('place', TRUE) || $this->input->get('place', TRUE) == 0) $place = $this->input->get('place', TRUE);
+
+		if(isset($id) && isset($type) && isset($trigger) && isset($place)){
+			$data  = $this->config->item('cms_articles');
+			$views = $data[$type]['values'][$trigger]['places'][$place]['views'];
+			$options = '';
+			foreach ($views as $key => $value)
+			{
+				$options .= '<option value="'.$key.'">'.$value['name'].'</option>';
+			}
+			echo $options;
+		}
 	}
 
     /**
@@ -186,10 +227,10 @@ class Cms_articles extends CI_Model {
      * @return	array
      */
 
-    function _get_article_views($type, $trigger)
+    function _get_article_views($type, $trigger, $place)
     {
         $data  = $this->config->item('cms_articles');
-	    $type_data = $data[$type]['values'][$trigger]['views'];
+	    $type_data = $data[$type]['values'][$trigger]['places'][$place]['views'];
 
         foreach ($type_data as $key => $value)
         {
@@ -213,7 +254,7 @@ class Cms_articles extends CI_Model {
 
         foreach ($type_data as $key => $value)
         {
-            $val_arr[$key] = $value;
+            $val_arr[$key] = $value['name'];
         }
 
         return $val_arr;
@@ -259,7 +300,6 @@ class Cms_articles extends CI_Model {
     {
         $articles = array();
 	    $data  = $this->config->item('cms_articles');
-	    $views = $data[$type]['values'][$trigger]['views'];
 
         $this->db->select('article_id, article_bg_id, article_view_id, article_place_id, article_text');
         $this->db->where('article_pid', $id);
@@ -275,7 +315,8 @@ class Cms_articles extends CI_Model {
             foreach ($query->result() as $row)
             {
                 $text = $this->parser->parse_modules($row->article_text);
-                $view = (array_key_exists($row->article_view_id, $views)) ? $views[$row->article_view_id]['file'] : false;
+	            $views_array = $data[$type]['values'][$trigger]['places'][$row->article_place_id]['views'];
+                $view = (array_key_exists($row->article_view_id, $views_array)) ? $views_array[$row->article_view_id]['file'] : false;
                 $data['article_text'] = $text;
                 $data['article_bg'] = $this->_get_bg($row->article_bg_id);
                 if ($view) $articles[$row->article_place_id][] = $this->load->view('site/'.$view, $data, true);
