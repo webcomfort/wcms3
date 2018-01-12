@@ -156,7 +156,11 @@ class Adm_gallery_photos extends CI_Model {
         if ($query->num_rows() > 0)
         {
             $row = $query->row();
-            $i = 1;
+	        $where = array(
+		        'field' => 'photo_gallery_id',
+		        'value' => $gal_id
+	        );
+	        $i = $this->Cms_utils->get_max_sort('photo_sort', 'w_gallery_photos', $where);
 
             foreach ($_FILES['galfile']['tmp_name'] as $key => $value)
             {
@@ -164,7 +168,7 @@ class Adm_gallery_photos extends CI_Model {
                    'photo_id'           => '',
                    'photo_gallery_id'   => $gal_id,
                    'photo_name'         => $row->name,
-                   'photo_sort'         => time()+$i,
+                   'photo_sort'         => $i,
                    'photo_active'       => '1',
                    'photo_lang_id'      => $this->session->userdata('w_alang')
                 );
@@ -185,7 +189,7 @@ class Adm_gallery_photos extends CI_Model {
                     $this->image_lib->thumb_create($this->config->item('cms_gallery_dir'), $id, $dkey, $dvalue['width'], $dvalue['height']);
                 }
 
-                $i++;
+	            $i = $i+10;
             }
         }
     }
