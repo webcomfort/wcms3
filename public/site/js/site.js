@@ -1,6 +1,14 @@
 /************************************************
  ------- Contacts
  *************************************************/
+$( document ).ready(function() {
+    $('#contacts_form').submit(function (event) {
+        event.preventDefault();
+        grecaptcha.reset();
+        grecaptcha.execute();
+    });
+});
+
 function onSubmit(token) {
     var formData = $('#contacts_form').serialize();
     $.ajax({
@@ -19,35 +27,3 @@ function onSubmit(token) {
         alert('SYSTEM ERROR, TRY LATER AGAIN');
     });
 }
-
-/************************************************
- ------- Replace all SVG images with inline SVG
- *************************************************/
-jQuery('.svg').each(function(){
-    var $cont = jQuery(this);
-    var contID = $cont.attr('id');
-    var contClass = $cont.attr('class');
-    var svgURL = $cont.attr('data-src');
-
-    jQuery.get(svgURL, function(data) {
-        // Get the SVG tag, ignore the rest
-        var $svg = jQuery(data).find('svg');
-
-        // Add replaced tag's ID to the new SVG
-        if(typeof contID !== 'undefined') {
-            $svg = $svg.attr('id', contID);
-        }
-        // Add replaced tag's classes to the new SVG
-        if(typeof contClass !== 'undefined') {
-            $svg = $svg.attr('class', contClass+' replaced-svg');
-        }
-
-        // Remove any invalid XML tags as per http://validator.w3.org
-        $svg = $svg.removeAttr('xmlns:a');
-
-        // Replace image with new SVG
-        $cont.replaceWith($svg);
-
-    }, 'xml');
-
-});

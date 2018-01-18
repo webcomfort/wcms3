@@ -319,7 +319,7 @@ class Cms_articles extends CI_Model {
                 $view = (array_key_exists($row->article_view_id, $views_array)) ? $views_array[$row->article_view_id]['file'] : false;
                 $data['article_text'] = $text;
                 $data['article_bg'] = $this->_get_bg($row->article_bg_id);
-                if ($view) $articles[$row->article_place_id][] = $this->load->view('site/'.$view, $data, true);
+                if ($view && $text != '') $articles[$row->article_place_id][] = $this->load->view('site/'.$view, $data, true);
             }
 
             return $articles;

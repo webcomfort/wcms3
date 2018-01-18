@@ -1,6 +1,6 @@
         <div class="container">
             <div class="row">
-                <div class="col-xs-12">
+                <div class="col-md-12 mt-2">
                     <?php echo @module('mod_menu_crumbs', array(1)); ?>
                 </div>
             </div>
@@ -14,7 +14,7 @@
 
         <div class="container">
             <div class="row">
-                <div class="col-xs-12">
+                <div class="col-md-12">
 			        <?php echo @$inc_module_1; ?>
 			        <?php echo @$inc_module_2; ?>
 			        <?php echo @$inc_module_3; ?>

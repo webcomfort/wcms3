@@ -138,6 +138,7 @@ class Mod_news extends CI_Model {
         $config['uri_segment']  = 2;
 	    $config['suffix']       = $suffix;
 	    $config['first_url']    = $config['base_url'] . '/0/' . $config['suffix'];
+	    $config['attributes']   = array('class' => 'page-link');
         $this->pagination->initialize($config);
         $pages = $this->pagination->create_links();
 
@@ -176,7 +177,7 @@ class Mod_news extends CI_Model {
                     'news_url'  => '/post/'.$row->news_url,
                     'news_date' => date_format_rus ( $row->news_date, 'date' ),
                     'news_cut'  => $row->news_cut,
-                    'news_img'  => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-responsive'),
+                    'news_img'  => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-fluid'),
 	                'news_tags' => $this->Cms_tags->get_tags_by_item($row->news_id,'news')
                 );
             }
@@ -248,7 +249,7 @@ class Mod_news extends CI_Model {
                 'news_name'     => $row->news_name,
                 'news_date'     => date_format_rus ( $row->news_date, 'date' ),
                 'news_articles' => $articles,
-                'news_img'      => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-responsive'),
+                'news_img'      => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-fluid'),
                 'news_tags' => $this->Cms_tags->get_tags_by_item($row->news_id,'news'),
 	            'news_list_url' => '/'.$this->Cms_news->get_news_page($row->news_cat_id)
             );

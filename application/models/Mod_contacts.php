@@ -36,7 +36,7 @@ class Mod_contacts extends CI_Model {
 
         $email  = $this->input->post('contacts_email', TRUE);
         $name = $this->input->post('contacts_name', TRUE);
-        $subject = $this->input->post('contacts_subject', TRUE);
+        $subject = $this->lang->line('contacts_subject');
         $message = $this->input->post('contacts_message', TRUE);
 
         if ($this->input->post('g-recaptcha-response', TRUE))

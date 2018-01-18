@@ -41,7 +41,7 @@ class Mod_menu_top extends CI_Model {
             $this->tree->set_top ($forest, 'page_id', 'page_pid', PAGE_ID);
             $top = $this->tree->get_top ();
             
-            return get_bootstrap_menu ($forest, 'page_id', 'page_pid', 'page_name', 'page_url', 'page_link_title', $link = '/', 'page_status', 3, $top, 'active', '', 0, false);
+            return get_bootstrap4_menu ($forest, 'page_id', 'page_pid', 'page_name', 'page_url', 'page_link_title', $link = '/', 'page_status', 3, $top, 'active', '', 0, false);
         }
     }
 }

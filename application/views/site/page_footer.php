@@ -1,14 +1,18 @@
     <div class="container">
 
-        <div class="row mt10">
-            <div class="col-xs-12 bottom-special"><?php echo @module('mod_banner', array(1)); ?></div>
-        </div>
-        
-        <hr>
-        
-        <div class="footer">
+        <footer>
+
+            <hr>
+
+            <div class="row mt-2">
+                <div class="col-md-12 text-center"><?php echo @module('mod_banner', array(1)); ?></div>
+            </div>
+
+            <hr>
+
             <?php echo @module('mod_cross_blocks', array('copy')); ?>
-        </div>
+
+        </footer>
 
     </div>
 	<?php echo @$page_foot; ?>

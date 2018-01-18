@@ -1,1 +1,7 @@
-<div style="padding: 20px; color: #fff; background-image:url(<?php echo $article_bg; ?>);"><?php echo $article_text; ?></div>
+<div class="container-fluid pr-3 pl-3 pt-3"<?php if($article_bg != ''){ echo ' style="background-image:url('.$article_bg.');"';} ?>>
+    <div class="row">
+        <div class="col-md-12">
+			<?php echo $article_text; ?>
+        </div>
+    </div>
+</div>
