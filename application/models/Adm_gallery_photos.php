@@ -251,9 +251,6 @@ class Adm_gallery_photos extends CI_Model {
     function get_filters()
     {
         $filter_values = array();
-
-        // Загружаем файлы
-        if (isset($_FILES['galfile']) && $_FILES['galfile']['tmp_name'][0] != '') $this->_upload_files();
 		
 		// Создаем галерею
         if (isset($_POST['gal_name']) && $_POST['gal_name'] != '') $this->_add_gallery();
@@ -306,25 +303,10 @@ class Adm_gallery_photos extends CI_Model {
         <div class="row"><div class="col-xs-12"><div class="p20 ui-block">
 		
 		<div class="row">
-            <div class="col-xs-4">'.
+            <div class="col-xs-8">'.
                 $this->load->view('admin/filter_default', $data, true)
-            .'</div>
-            <div class="col-xs-3">
-                <h6 class="m0 mb10">Быстрая загрузка фотографий</h6>
-                '.form_open_multipart('/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/', array('class' => 'm0')).'
-                <span class="file-value" id="gal-value"></span>
-                <input id="gal_trigger" type="button" name="download" value="Выбрать файлы" class="btn btn-success" />
-                <input type="submit" name="submit" value="Загрузить" class="btn btn-primary" />
-                <input type="file" min="1" max="9999" name="galfile[]" multiple="true" class="file-input" id="gal_input" />
-                <script>
-                    $(document).ready(function () {
-                        document.getElementById(\'gal_trigger\').onclick = function(){ document.getElementById(\'gal_input\').click(); }
-                        $(\'#gal_input\').change(function() { $(\'#gal-value\').html( $(\'#gal_input\').val() ) });
-                    });
-                </script>
-                </form>
-            </div>
-			<div class="col-xs-5">
+            .'</div>          
+			<div class="col-xs-4">
                 <h6 class="m0 mb10">Быстрое создание галереи</h6>
                 '.form_open('/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/', array('class' => 'm0 form-inline', 'role' => 'form')).'
                 <div class="form-group">
@@ -339,10 +321,173 @@ class Adm_gallery_photos extends CI_Model {
         </div>
 		
 		</div> </div> </div>
+		<div class="row"><div class="col-xs-12"><div class="p20 ui-block">
+		<input type="hidden" name="'.$this->security->get_csrf_token_name().'" id="token" value="'.$this->security->get_csrf_hash().'">
+		<div class="dropzonearea" id="galleryDropzone"><div class="dz-default dz-message"><span>Перетащите сюда файлы для загрузки</span></div></div>
+		</div> </div> </div>
+		
+		<script>
+		    $(document).ready(function () {
+			    var galleryDropzone = new Dropzone("div#galleryDropzone", {
+			        url: "/adm_gallery_photos/p_drop_upload/",
+			        paramName: "file",
+			        parallelUploads: 1,
+			        chunking: true,
+			        chunkSize: 5242880,
+			        retryChunks: true, 
+			        retryChunksLimit: 3,
+			        init: function() {
+			            this.on("sending", function (file, xhr, formData) {
+			                formData.set("'.$this->security->get_csrf_token_name().'", "'.$this->security->get_csrf_hash().'");
+			                formData.set("gallery_id", "'.$this->session->userdata('photo_filter').'");
+			                formData.set("file_name", file.name);
+			            });
+			            this.on("success", function(file) {
+			                $.ajax({
+					            method: "GET",
+					            url: "/adm_gallery_photos/p_get_output/",
+					            data: {url: "/'.urlencode($this->uri->segment(1).'/'.$this->uri->segment(2)).'"}
+					        }).done(function(result) {
+					            $("#admin_interface").html(result);
+					        });
+			            });
+			        }
+			    });
+            });
+		</script>
+		
         ';
 
         return $filters;
     }
+
+	/**
+	 * Функция, загружающая файлы из дроп-зоны
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+    function p_drop_upload(){
+	    $rights = $this->cms_user->get_user_rights();
+
+	    if ( is_array($rights) && (isset($rights[basename(__FILE__)])) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
+	    {
+		    $gal_id = $this->input->post("gallery_id", TRUE);
+	    	if($gal_id == 0) $gal_id = $this->session->userdata('photo_filter');
+
+		    $this->load->library('image_lib');
+		    $dimensions = $this->config->item('cms_gallery_sizes');
+		    $path = FCPATH.substr($this->config->item('cms_gallery_dir'), 1);
+		    if(!is_dir($path)) mkdir($path, 0, true);
+
+		    $this->db->select('gallery_name AS name, gallery_view_id AS vid');
+		    $this->db->from('w_galleries');
+		    $this->db->where('gallery_id', $gal_id);
+
+		    $query = $this->db->get();
+
+		    if ($query->num_rows() > 0) {
+
+			    $chunk = ($this->input->post('dzchunkindex', TRUE) != '') ? $this->input->post('dzchunkindex', TRUE) : false;
+
+			    if($chunk !== false){
+				    $chunkcount = $this->input->post('dztotalchunkcount', TRUE);
+				    $out = @fopen($path.$this->input->post('file_name', TRUE), ($chunk != 0) ? "ab" : "wb");
+				    $in = @fopen($_FILES["file"]["tmp_name"], "rb");
+				    while ($buff = fread($in, 4096)) {
+					    fwrite($out, $buff);
+				    }
+				    fclose($out);
+				    fclose($in);
+
+				    if($chunkcount == $chunk+1){
+					    $row   = $query->row();
+					    $where = array(
+						    'field' => 'photo_gallery_id',
+						    'value' => $gal_id
+					    );
+					    $i     = $this->Cms_utils->get_max_sort( 'photo_sort', 'w_gallery_photos', $where );
+					    $data = array(
+						    'photo_id'         => '',
+						    'photo_gallery_id' => $gal_id,
+						    'photo_name'       => $row->name,
+						    'photo_sort'       => $i,
+						    'photo_active'     => '1',
+						    'photo_lang_id'    => $this->session->userdata( 'w_alang' )
+					    );
+					    $this->db->insert( 'w_gallery_photos', $data );
+					    $id  = $this->db->insert_id();
+					    $iid = ceil( intval( $id ) / 1000 );
+					    if ( ! is_dir( $path . $iid . '/' ) ) {
+						    mkdir( $path . $iid . '/', 0, true );
+					    }
+					    $pieces    = explode( ".", $_FILES['file']['name'] );
+					    $extension = strtolower( $pieces[ count( $pieces ) - 1 ] );
+					    $file_path = $path . $iid . '/' . $id . '.' . $extension;
+					    rename($path.$this->input->post('file_name', TRUE), $file_path);
+
+					    $this->image_lib->src_img_convert( $this->config->item( 'cms_gallery_dir' ), $id );
+
+					    foreach ( $dimensions as $dkey => $dvalue ) {
+						    $this->image_lib->thumb_create( $this->config->item( 'cms_gallery_dir' ), $id, $dkey, $dvalue['width'], $dvalue['height'] );
+					    }
+				    }
+			    } else {
+
+				    $row   = $query->row();
+				    $where = array(
+					    'field' => 'photo_gallery_id',
+					    'value' => $gal_id
+				    );
+				    $i     = $this->Cms_utils->get_max_sort( 'photo_sort', 'w_gallery_photos', $where );
+
+				    $data = array(
+					    'photo_id'         => '',
+					    'photo_gallery_id' => $gal_id,
+					    'photo_name'       => $row->name,
+					    'photo_sort'       => $i,
+					    'photo_active'     => '1',
+					    'photo_lang_id'    => $this->session->userdata( 'w_alang' )
+				    );
+				    $this->db->insert( 'w_gallery_photos', $data );
+				    $id  = $this->db->insert_id();
+				    $iid = ceil( intval( $id ) / 1000 );
+				    if ( ! is_dir( $path . $iid . '/' ) ) {
+					    mkdir( $path . $iid . '/', 0, true );
+				    }
+
+				    $pieces    = explode( ".", $_FILES['file']['name'] );
+				    $extension = strtolower( $pieces[ count( $pieces ) - 1 ] );
+				    $file_path = $path . $iid . '/' . $id . '.' . $extension;
+				    move_uploaded_file( $_FILES['file']['tmp_name'], $file_path );
+
+				    $this->image_lib->src_img_convert( $this->config->item( 'cms_gallery_dir' ), $id );
+
+				    foreach ( $dimensions as $dkey => $dvalue ) {
+					    $this->image_lib->thumb_create( $this->config->item( 'cms_gallery_dir' ), $id, $dkey, $dvalue['width'], $dvalue['height'] );
+				    }
+			    }
+		    }
+	    }
+    }
+
+	/**
+	 * Функция, отдающая основной интерфейс через аякс
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+
+	function p_get_output()
+	{
+		$rights = $this->cms_user->get_user_rights();
+
+		if ( is_array($rights) && (isset($rights[basename(__FILE__)])) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) ) {
+			$this->load->library( 'myedit', $this->_get_crud_model() );
+
+			echo $this->myedit->get_output();
+		}
+	}
 	
 	// ------------------------------------------------------------------------
 

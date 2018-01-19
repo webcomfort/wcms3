@@ -13,6 +13,8 @@
     <script src="/public/admin/third_party/select2/js/i18n/ru.js"></script>
     <!-- JsTree -->
     <script src="/public/admin/third_party/jstree/dist/jstree.min.js"></script>
+    <!-- Dropzone -->
+    <script src="/public/admin/third_party/dropzone/dropzone.js"></script>
     <!-- CKeditor -->
     <script src="/public/admin/third_party/ckeditor/ckeditor.js"></script>
     <!-- CKeditor JQuery adapter -->

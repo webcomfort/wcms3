@@ -27,7 +27,7 @@ class Cms_myedit extends CI_Model {
 		$opts = array();
 
         // Базовый урл для формирования ссылок
-        $opts['page_name'] = '/'.$this->uri->segment(1).'/'.$this->uri->segment(2);
+        $opts['page_name'] = ($this->input->get("url", true)) ? $this->input->get("url", true) : '/'.$this->uri->segment(1).'/'.$this->uri->segment(2);
 
         // Передаем соединение с базой
         $opts['dbh'] = $this->db->conn_id;

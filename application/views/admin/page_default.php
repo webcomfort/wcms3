@@ -50,8 +50,8 @@
 			<div class="col-xs-12"><h4><?php echo $admin_name; ?></h4></div>
 		</div>
 		
-		<?php echo $admin_filters; ?>
-		<?php echo $admin_interface; ?>
+        <div id="admin_filters"><?php echo $admin_filters; ?></div>
+        <div id="admin_interface"><?php echo $admin_interface; ?></div>
 
 		<footer class="mt20">
 			<p>&copy; <a href="http://www.webcomfort.ru" class="white">Webcomfort CMS</a></p>
