@@ -269,6 +269,8 @@ class Cms_articles extends CI_Model {
 
     function _get_article_bg($id, $bg=0)
     {
+        $select = '';
+
         $this->db->select('bg_id, bg_name');
         $this->db->where('bg_active', 1);
         $this->db->order_by('bg_name', 'ASC');
