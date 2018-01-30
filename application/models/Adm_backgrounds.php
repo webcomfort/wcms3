@@ -204,7 +204,8 @@ class Adm_backgrounds extends CI_Model {
             'file'          => array (
                 'tn'        => '_thumb',
                 'url'       => $this->config->item('cms_bg_dir'),
-                'multiple'  => false
+                'multiple'  => false,
+	            'accepted'  => 'image/*',
             ),
             'help'          => 'Выберите фон на своем компьютере для загрузки. Удаление фона из режима редактирования приводит к его безвозвратному удалению.'
         );

@@ -53,7 +53,11 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 
     if (preg_match("/^page_article_order_([1-9][0-9]*)$/", $key, $matches))
 	{
-        $this->CI->db->select('article_id');
+		$bg     = $this->CI->input->post('page_article_bg_'.$matches[1]);
+		$view   = $this->CI->input->post('page_article_view_'.$matches[1]);
+		$place  = $this->CI->input->post('page_article_place_'.$matches[1]);
+
+		$this->CI->db->select('article_id');
         $this->CI->db->where('article_pid', $id);
         $this->CI->db->where('article_pid_type', 'pages');
         $this->CI->db->where('article_order', $value);
@@ -67,9 +71,9 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 
 			$data = array(
                 'article_order'     => $value,
-                'article_bg_id'     => $this->CI->input->post('page_article_bg_'.$matches[1]),
-                'article_view_id'   => $this->CI->input->post('page_article_view_'.$matches[1]),
-                'article_place_id'  => $this->CI->input->post('page_article_place_'.$matches[1]),
+                'article_bg_id'     => ($bg) ? $bg : '',
+                'article_view_id'   => ($view) ? $view : '',
+                'article_place_id'  => ($place) ? $place : '',
                 'article_text'      => $this->CI->input->post('page_article_'.$matches[1], false)
             );
             $this->CI->db->where('article_id', $row->article_id);
@@ -82,9 +86,9 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
                 'article_pid'	    => $id,
                 'article_pid_type'  => 'pages',
                 'article_order' 	=> $value,
-                'article_bg_id'     => $this->CI->input->post('page_article_bg_'.$matches[1]),
-                'article_view_id'   => $this->CI->input->post('page_article_view_'.$matches[1]),
-                'article_place_id'  => $this->CI->input->post('page_article_place_'.$matches[1]),
+                'article_bg_id'     => ($bg) ? $bg : '',
+                'article_view_id'   => ($view) ? $view : '',
+                'article_place_id'  => ($place) ? $place : '',
                 'article_text' 		=> $this->CI->input->post('page_article_'.$matches[1])
             );
 

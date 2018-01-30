@@ -474,7 +474,7 @@ var Dropzone = function (_Emitter) {
          * Displayed if `maxFiles` is st and exceeded.
          * The string `{{maxFiles}}` will be replaced by the configuration value.
          */
-        dictMaxFilesExceeded: "Вы не можете одновременно загружать более {{maxFiles}} файлов.",
+        dictMaxFilesExceeded: "Превышен лимит на загрузку.",
 
         /**
          * Allows you to translate the different units. Starting with `tb` for terabytes and going down to

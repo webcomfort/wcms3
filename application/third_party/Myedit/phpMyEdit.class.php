@@ -1103,18 +1103,63 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
                 echo $this->fdd[$k]['add_display'];
 			} else {
                 if(isset($this->fdd[$k]['file']) && is_array($this->fdd[$k]['file'])) {
-	            	echo '<a id="'.$this->fds[$k].'_trigger" class="btn btn-success"><i class="glyphicon glyphicon-upload icon-white"></i> '.$this->labels['Upload'].'</a><input type="file" id="'.$this->fds[$k].'" name="'.$this->fds[$k];
-                    if (@$this->fdd[$k]['file']['multiple']) echo '[]';
-                    echo '" class="file-input"';
-                    if (@$this->fdd[$k]['file']['multiple']) echo ' multiple="true"';
-                    echo '/><span class="file-value" id="file-value-'.$this->fds[$k].'"></span><script>document.getElementById(\''.$this->fds[$k].'_trigger\').onclick = function(){ document.getElementById(\''.$this->fds[$k].'\').click(); }</script><br />';
+                	$maxFiles = (@$this->fdd[$k]['file']['multiple'] !== true) ? 'maxFiles: 1,' : '';
+                	$acceptedFiles = (@$this->fdd[$k]['file']['accepted'] != '') ? 'acceptedFiles: "'.@$this->fdd[$k]['file']['accepted'].'",' : '';
+
+	                echo '<div class="dropzonearea" id="fileDropzone_'.$this->fds[$k].'"><div class="dz-default dz-message"><span>Перетащите сюда файлы для загрузки</span></div></div>';
 
 	                echo '
-	                    <script>
-	                    $(document).ready(function () {
-                          $(\'#'.$this->fds[$k].'\').change(function() { $(\'#file-value-'.$this->fds[$k].'\').html( $(\'#'.$this->fds[$k].'\').val() ) });
-                        });
-	                    </script>
+<script>
+    $(document).ready(function () {
+	    var galleryDropzone_'.$this->fds[$k].' = new Dropzone("div#fileDropzone_'.$this->fds[$k].'", {
+	        url: "/cms_myedit/p_drop_upload/",
+	        paramName: "file",
+	        '. $maxFiles .'
+	        '. $acceptedFiles .'
+	        parallelUploads: 1,
+	        chunking: true,
+	        addRemoveLinks: true,
+	        chunkSize: 3145728,
+	        retryChunks: true, 
+	        retryChunksLimit: 3,
+	        renameFile: function(file){
+                var fname = file.name;
+	            var ext = fname.slice((Math.max(0, fname.lastIndexOf(".")) || Infinity) + 1);
+                return getRandom(1,1000)+"_"+hashCode(file.name)+"."+ext;
+            },
+	        init: function() {
+	            this.on("sending", function (file, xhr, formData) {
+	                formData.set("'.$this->CI->security->get_csrf_token_name().'", "'.$this->CI->security->get_csrf_hash().'");
+	                formData.set("module", "'.$this->module.'");
+	                formData.set("file_name", file.upload.filename);
+	            });
+	            this.on("success", function (file, response) {
+	                $("#PME_data_'.$this->fds[$k].'_alert").append($(\'<input type="hidden" \' +
+                                      \'name="'.$this->fds[$k].'_files[]" \' +
+                                      \'value="\' + file.upload.filename + \'">\'));
+	            });
+	            this.on("removedfile", function (file) {
+	                var filename;
+	                if (typeof file.upload === "undefined"){
+					    filename = file.name;
+					} else {
+						filename = file.upload.filename;
+					}
+	                $.ajax({
+			            method: "POST",
+			            url: "/cms_myedit/p_drop_delete/",
+			            data: {
+			            "'.$this->CI->security->get_csrf_token_name().'": "'.$this->CI->security->get_csrf_hash().'",
+			            "module": "'.$this->module.'",
+			            "file_name": filename
+			            }
+			        });
+	                $("input[value=\'"+filename+"\']").remove();
+	            });	                	              
+	        }
+	    });
+    });
+</script>
 	                ';
             	}
             	else {
@@ -1301,63 +1346,180 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		} else {
             if(isset($this->fdd[$k]['file']) && is_array($this->fdd[$k]['file'])) {
                 if($this->operation != $this->labels['Copy']) {
-                	echo '<div id="'.$this->fds[$k].'_file_area" class="file-area">'.$this->get_file ($k, $row['qf'.$this->key_num]).'</div>';
 
-	                echo '<div class="wrapper-left"><a id="'.$this->fds[$k].'_trigger" class="btn btn-success"><i class="glyphicon glyphicon-upload icon-white"></i> ';
+                	$maxFiles  = (@$this->fdd[$k]['file']['multiple'] !== true) ? 'maxFiles: 1,' : '';
+	                $maxFiles2 = (@$this->fdd[$k]['file']['multiple'] !== true) ? 'if(result.length > 0){ thisDropzone.options.maxFiles = 0; }' : '';
+	                $maxFiles3 = (@$this->fdd[$k]['file']['multiple'] !== true) ? 'if(thisDropzone.files.length == 0){ thisDropzone.options.maxFiles = 1; }' : '';
+	                $acceptedFiles = (@$this->fdd[$k]['file']['accepted'] != '') ? 'acceptedFiles: "'.@$this->fdd[$k]['file']['accepted'].'",' : '';
+	                $multiple = ($this->fdd[$k]['file']['multiple']) ? 1: 0;
+	                $tn = (isset($this->fdd[$k]['file']['tn'])) ? $this->fdd[$k]['file']['tn'] : false;
+	                $iid = ceil( intval( $row['qf'.$this->key_num] ) / 1000 );
+	                $dir = ($multiple) ? $this->fdd[$k]['file']['url'] . $iid . '/' . $row['qf'.$this->key_num] . '/' : $this->fdd[$k]['file']['url'] . $iid . '/';
 
-                    if($this->check_file($this->fdd[$k]['file']['url'], $row['qf'.$this->key_num])) { echo $this->labels['Reload']; }
-                    else { echo $this->labels['Upload']; }
-
-                    echo '</a><input type="file" id="'.$this->fds[$k].'" name="'.$this->fds[$k];
-                    if (@$this->fdd[$k]['file']['multiple']) echo '[]';
-                    echo '" class="file-input"';
-                    if (@$this->fdd[$k]['file']['multiple']) echo ' multiple="true"';
-                    echo '/><span class="file-value" id="file-value-'.$this->fds[$k].'"></span><script>document.getElementById(\''.$this->fds[$k].'_trigger\').onclick = function(){ document.getElementById(\''.$this->fds[$k].'\').click(); }</script><br />';
-
-	                echo '
-	                    <script>
-	                        $(document).ready(function () {
-                                $(\'#'.$this->fds[$k].'\').change(function() { $(\'#file-value-'.$this->fds[$k].'\').html( $(\'#'.$this->fds[$k].'\').val() ) });
-                            });
-	                    </script>
-	                ';
-
-	                if($this->check_file($this->fdd[$k]['file']['url'], $row['qf'.$this->key_num])) {
-	                    echo '<a id="'.$this->fds[$k].'_delete" class="btn btn-danger mt5"><i class="glyphicon glyphicon-remove icon-white"></i> '.$this->labels['Delete_file'].'</a>';
-	                }
-
-	                echo '</div>';
+	                echo '<div class="dropzonearea" id="fileDropzone_'.$this->fds[$k].'"><div class="dz-default dz-message"><span>Перетащите сюда файлы для загрузки</span></div></div>';
 
 	                echo '
-	                    <script>
-	                    $(document).ready(function () {
-                            $(\'#'.$this->fds[$k].'_delete\').click(function(){
-                                if(confirm("'.$this->labels['Delete_confirm'].'")){
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "'.$this->url['filedel'].'",
-                                        data: { folder: "'.$this->fdd[$k]['file']['url'].'", id: "'.$row['qf'.$this->key_num].'", module: "'.$this->module.'", '.$this->CI->security->get_csrf_token_name().': "'.$this->CI->security->get_csrf_hash().'" }
-                                    }).done(function(result) {
-                                        if (result == \'true\') {
-                                            $(\'#'.$this->fds[$k].'_file_area\').hide();
-                                            $(\'#'.$this->fds[$k].'_delete\').hide();
-                                        }
-                                    });
-                                }
-                            });
-                        });
-	                    </script>
+<script>
+    $(document).ready(function () {
+	    var galleryDropzone_'.$this->fds[$k].' = new Dropzone("div#fileDropzone_'.$this->fds[$k].'", {
+	        url: "/cms_myedit/p_drop_update/",
+	        paramName: "file",
+	        '. $maxFiles .'
+	        '. $acceptedFiles .'
+	        parallelUploads: 1,
+	        chunking: true,
+	        addRemoveLinks: true,
+	        chunkSize: 3145728,
+	        retryChunks: true, 
+	        retryChunksLimit: 3,
+	        clickable: true,
+	        renameFile: function(file){
+                var fname = file.name;
+	            var ext = fname.slice((Math.max(0, fname.lastIndexOf(".")) || Infinity) + 1);
+                return getRandom(1,1000)+"_"+hashCode(file.name)+"."+ext;
+            },
+	        init: function() {	            	            
+	            	            
+	            // File list	  	          
+	            thisDropzone = this;	            
+	            
+		        $.ajax({
+				  method: "POST",
+				  url: "/cms_myedit/p_drop_get_files/",
+				  data: {
+			            "'.$this->CI->security->get_csrf_token_name().'": "'.$this->CI->security->get_csrf_hash().'",
+			            "module": "'.$this->module.'",
+			            "path": "'.$this->fdd[$k]['file']['url'].'",
+			            "id": "'.$row['qf'.$this->key_num].'",
+			            "tn": "'.$tn.'",
+			            "multiple": "'.$multiple.'"
+			            }
+				}).done(function(result) {
+				    $.each(result, function(key,value){		                
+		                var mockFile = { name: value.name, size: value.size };		                 
+		                thisDropzone.emit("addedfile", mockFile);
+		                thisDropzone.emit("thumbnail", mockFile, value.tn);
+                        thisDropzone.emit("complete", mockFile);
+                        thisDropzone.files.push(mockFile);                       
+		            });
+		            '.$maxFiles2.'
+				});
+	            	           
+	            this.on("sending", function (file, xhr, formData) {	                
+	                formData.set("'.$this->CI->security->get_csrf_token_name().'", "'.$this->CI->security->get_csrf_hash().'");
+	                formData.set("module", "'.$this->module.'");
+	                formData.set("file_name", file.upload.filename);
+	                formData.set("path", "'.$this->fdd[$k]['file']['url'].'");
+	                formData.set("id", "'.$row['qf'.$this->key_num].'");
+	                formData.set("multiple", "'.$multiple.'");
+	            });
+	            
+	            this.on("success", function (file, response) {
+	                $("#PME_data_'.$this->fds[$k].'_alert").append($(\'<input type="hidden" \' +
+                                      \'name="'.$this->fds[$k].'_files[]" \' +
+                                      \'value="\' + file.upload.filename + \'">\'));
+	            });
+	            
+	            this.on("addedfile", function (file, response) {
+	                var filename;
+	                if (typeof file.upload === "undefined"){
+					    filename = file.name;
+					} else {
+						filename = "'.$dir.'"+file.upload.filename;
+					}				          
+	                file.previewElement.addEventListener("click", function() {
+					    window.open(filename, "_blank");
+					});
+	            });
+	            
+	            this.on("removedfile", function (file) {
+	                var filename;
+	                if (typeof file.upload === "undefined"){
+					    filename = file.name;
+					} else {
+						filename = file.upload.filename;
+					}
+					
+	                $.ajax({
+			            method: "POST",
+			            url: "/cms_myedit/p_drop_update_delete/",
+			            data: {
+			            "'.$this->CI->security->get_csrf_token_name().'": "'.$this->CI->security->get_csrf_hash().'",
+			            "module": "'.$this->module.'",
+			            "file_name": filename,
+			            "path": "'.$this->fdd[$k]['file']['url'].'",
+			            "tn": "'.$tn.'",
+			            "id": "'.$row['qf'.$this->key_num].'",
+			            "multiple": "'.$multiple.'"
+			            }
+			        }).done(function() {				    
+			            '.$maxFiles3.'
+					});
+	                $("input[value=\'"+filename+"\']").remove();
+	            });	 
+	            
+	        }
+	    });
+    });
+</script>
 	                ';
+
+
+
+
+
+
+
+
+
 	            }
 	            else {
-	            	echo '<a id="'.$this->fds[$k].'_trigger" class="btn btn-success"><i class="glyphicon glyphicon-upload icon-white"></i> '.$this->labels['Upload'].'</a><input type="file" id="'.$this->fds[$k].'" name="'.$this->fds[$k].'" class="file-input" /><span class="file-value" id="file-value-'.$this->fds[$k].'"></span><script>document.getElementById(\''.$this->fds[$k].'_trigger\').onclick = function(){ document.getElementById(\''.$this->fds[$k].'\').click(); }</script><br />';
+		            $maxFiles = (@$this->fdd[$k]['file']['multiple'] !== true) ? 'maxFiles: 1,' : '';
+		            $acceptedFiles = (@$this->fdd[$k]['file']['accepted'] != '') ? 'acceptedFiles: "'.@$this->fdd[$k]['file']['accepted'].'",' : '';
 
-	                echo '
-	                    <script>
-	                        $(document).ready(function () {
-	                            $(\'#'.$this->fds[$k].'\').change(function() { $(\'#file-value-'.$this->fds[$k].'\').html( $(\'#'.$this->fds[$k].'\').val() ) });
-	                        });
-	                    </script>
+		            echo '<div class="dropzonearea" id="fileDropzone_'.$this->fds[$k].'"><div class="dz-default dz-message"><span>Перетащите сюда файлы для загрузки</span></div></div>';
+
+		            echo '
+<script>
+    $(document).ready(function () {
+	    var galleryDropzone_'.$this->fds[$k].' = new Dropzone("div#fileDropzone_'.$this->fds[$k].'", {
+	        url: "/cms_myedit/p_drop_upload/",
+	        paramName: "file",
+	        '. $maxFiles .'
+	        '. $acceptedFiles .'
+	        parallelUploads: 1,
+	        chunking: true,
+	        addRemoveLinks: true,
+	        chunkSize: 3145728,
+	        retryChunks: true, 
+	        retryChunksLimit: 3,
+	        init: function() {
+	            this.on("sending", function (file, xhr, formData) {
+	                formData.set("'.$this->CI->security->get_csrf_token_name().'", "'.$this->CI->security->get_csrf_hash().'");
+	                formData.set("module", "'.$this->module.'");
+	                formData.set("file_name", file.name);
+	            });
+	            this.on("success", function (file, response) {
+	                $("#PME_data_'.$this->fds[$k].'_alert").append($(\'<input type="hidden" \' +
+                                      \'name="'.$this->fds[$k].'_files[]" \' +
+                                      \'value="\' + file.name + \'">\'));
+	            });
+	            this.on("removedfile", function (file) {
+	                $.ajax({
+			            method: "POST",
+			            url: "/cms_myedit/p_drop_delete/",
+			            data: {
+			            "'.$this->CI->security->get_csrf_token_name().'": "'.$this->CI->security->get_csrf_hash().'",
+			            "module": "'.$this->module.'",
+			            "file_name": file.name
+			            }
+			        });
+	                $("input[value=\'"+file.name+"\']").remove();
+	            });	                	              
+	        }
+	    });
+    });
+</script>
 	                ';
 	            }
             } else {
@@ -2954,6 +3116,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 	{
 		// Preparing query
 		$query       = '';
+		$query2      = '';
 		$key_col_val = '';
 		$newvals     = array();
         $oldvals     = array();

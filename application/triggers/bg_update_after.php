@@ -13,9 +13,11 @@ $this->CI->db->cache_delete_all();
 // ------------------------------------------------------------------------
 
 // Изображения
-if ($_FILES['pic']['tmp_name'] != '')
+$files = $this->CI->input->post('pic_files', true);
+if (is_array($files))
 {
-    $this->CI->load->library('image_lib');
-    $this->CI->image_lib->src_img_convert($this->CI->config->item('cms_bg_dir'), $id);
-    $this->CI->image_lib->thumb_create($this->CI->config->item('cms_bg_dir'), $id, '_thumb', 150, 150);
+	$this->CI->load->library( 'image_lib' );
+	foreach ($files as $value) {
+		$this->CI->image_lib->src_file_move ($value, $this->CI->config->item( 'cms_bg_dir' ), $id, false, true, array('_thumb' => array('width'=>150,'height'=>150)), false);
+	}
 }

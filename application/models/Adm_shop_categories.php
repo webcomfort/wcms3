@@ -12,10 +12,10 @@ class Adm_shop_categories extends CI_Model {
 
     function __construct()
     {
-        if($this->input->post('PME_sys_rec', TRUE) === '0' || $this->input->post('PME_sys_savecopy', TRUE) || $this->input->post('PME_sys_savedelete', TRUE)) header ('Location: /admin/'.$this->uri->segment(2));
+        /*if($this->input->post('PME_sys_rec', TRUE) === '0' || $this->input->post('PME_sys_savecopy', TRUE) || $this->input->post('PME_sys_savedelete', TRUE)) header ('Location: /admin/'.$this->uri->segment(2));
 	    if($this->input->post('PME_sys_morechange', TRUE)) {
 		    header ('Location: /admin/'.$this->uri->segment(2).'/?PME_sys_operation=PME_op_Change&PME_sys_rec='.$this->input->post('PME_sys_rec', TRUE).(($this->input->post('PME_sys_cur_tab', TRUE)) ? '&PME_sys_cur_tab='.$this->input->post('PME_sys_cur_tab', TRUE) : ''));
-	    }
+	    }*/
         parent::__construct();
         $this->load->helper( array('string') );
         $this->load->model('Cms_shop');
@@ -401,6 +401,8 @@ class Adm_shop_categories extends CI_Model {
 		// $this->opts['triggers']['insert']['after'] = '';
 		// $this->opts['triggers']['update']['after'] = '';
 		// $this->opts['triggers']['delete']['before'] = '';
+		$opts['triggers']['insert']['after']  = APPPATH.'triggers/shop_cat_insert_after.php';
+		$opts['triggers']['update']['after']  = APPPATH.'triggers/shop_cat_update_after.php';
         $opts['triggers']['delete']['after']  = APPPATH.'triggers/shop_cat_delete_after.php';
 
         // Логирование: общее название класса и поле где хранится название объекта
@@ -541,7 +543,8 @@ class Adm_shop_categories extends CI_Model {
             'file'          => array (
                 'tn'        => '',
                 'url'       => $this->config->item('cms_shop_cat_dir'),
-                'multiple'  => false
+                'multiple'  => false,
+                'accepted'  => 'image/*'
             ),
             'help'          => 'Выберите иконку на своем компьютере для загрузки.'
         );

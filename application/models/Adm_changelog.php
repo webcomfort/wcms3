@@ -133,6 +133,9 @@ class Adm_changelog extends CI_Model {
         {
             $this->db->query("TRUNCATE TABLE w_changelog");
 
+	        $tmp = FCPATH.'tmp/';
+	        delete_files($tmp, TRUE);
+
             $dir = FCPATH.'public/upload/';
             $handle = opendir($dir);
 

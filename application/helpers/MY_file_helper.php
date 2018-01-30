@@ -42,11 +42,11 @@ if ( ! function_exists('file_delete'))
 */
 if ( ! function_exists('files_delete'))
 {
-	function files_delete ($path, $filename, $iid = false)
+	function files_delete ($path, $filename, $lid = false)
     {
-        $dir = FCPATH.substr($path, 1);
-        $trash_path = ($iid) ? FCPATH.substr($path, 1).'trash/'.$iid.'/' : FCPATH.substr($path, 1).'trash/';
-
+	    $iid = ceil( intval( $filename ) / 1000 );
+    	$dir = FCPATH.substr($path, 1).$iid.'/';
+        $trash_path = ($lid) ? FCPATH.substr($path, 1).$iid.'/'.'trash/'.$lid.'/' : FCPATH.substr($path, 1).$iid.'/'.'trash/';
         if (!is_dir($trash_path)) mkdir($trash_path, 0750);
 
         if ($handle = opendir($dir))

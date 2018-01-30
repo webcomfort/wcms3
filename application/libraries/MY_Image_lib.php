@@ -94,6 +94,81 @@ class MY_Image_lib extends CI_Image_lib {
 		return $res;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Получение значения счетчика для файлов в директории
+	 *
+	 * @access	public
+	 * @param   string - директория
+	 * @return	int
+	 */
+	function get_counter($path){
+		if (is_dir($path) && $handle = opendir($path)) {
+			$num = array();
+			while ( false !== ( $file = readdir( $handle ) ) ) {
+				if ( preg_match( "/^[0-9]*\.([[:alnum:]])*$/", $file ) ) {
+					$pieces = explode(".", $file);
+					$digit = $pieces[0];
+					$num[] = $digit;
+				}
+			}
+			if(count($num) > 0){
+				rsort($num);
+				return intval($num[0]) + 1;
+			} else {
+				return 1;
+			}
+		}
+	}
+
+	/**
+	 * Перемещение загруженного файла
+	 *
+	 * @access	public
+	 * @param   string - имя файла
+	 * @param   string - месторасположение итогового файла
+	 * @param   int    - id элемента в базе, к которому имеет отношение загруженное изображение
+	 * @param   bool   - мультизагрузка
+	 * @param   bool   - конвертировать в jpg?
+	 * @param   array  - параметры иконок
+	 * @return	bool
+	 */
+	function src_file_move ($name, $path, $id, $multiple = false, $convert = false, $thumbs = array(), $tmp = true) {
+
+		$iid = ceil( intval( $id ) / 1000 );
+
+		if ( $multiple ) {
+			$dir = FCPATH . substr( $path, 1 ) . $iid . '/' . $id . '/';
+			if(!is_dir($dir)) mkdir($dir, 0, true);
+			$i = $this->get_counter($dir);
+		} else {
+			$dir = FCPATH . substr( $path, 1 ) . $iid . '/';
+			if(!is_dir($dir)) mkdir($dir, 0, true);
+		}
+
+		$resdir = ($tmp) ? FCPATH . 'tmp/' : $dir;
+
+		if(is_file($resdir.$name)) {
+
+			$pieces    = explode( ".", $name );
+			$extension = strtolower( $pieces[ count( $pieces ) - 1 ] );
+			$pic_path  = ( !$multiple ) ? $dir . $id . '.' . $extension : $dir . $i . '.' . $extension;
+			rename( $resdir . $name, $pic_path );
+
+			if($convert && getimagesize ($pic_path)) $converted = $this->src_img_convert ($pic_path);
+			if($convert && count($thumbs) > 0 && isset($converted) && getimagesize ($converted)) {
+				foreach ($thumbs as $key => $value) {
+					$this->thumb_create( $converted, $key, $value['width'], $value['height'] );
+				}
+			}
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
     // ------------------------------------------------------------------------
 
     /**
@@ -101,46 +176,44 @@ class MY_Image_lib extends CI_Image_lib {
     *
     * @access	public
     * @param    string - месторасположение файла
-    * @param    int - id элемента в базе, к которому имеет отношение загруженное изображение
-    * @param    string - постфикс для созданного изображения
-    * @return	void
+    * @return	mixed
     */
-	function src_img_convert ($path, $id, $postfix = '_src')
+	function src_img_convert ($path)
     {
-        $iid = ceil(intval($id)/1000);
-        $dir = FCPATH.substr($path, 1).$iid.'/';
+	    if(is_file($path)) {
 
-        if (is_dir($dir) && $handle = opendir($dir))
-        {
-            while (false !== ($file = readdir($handle)))
-            {
-                if (preg_match("/^".$id."\.([[:alnum:]])*$/", $file))
-                {
-                    $pieces = explode(".", $file);
-                    $extension = strtolower($pieces[count($pieces)-1]);
+	    	$path_parts = pathinfo( $path );
+		    $extension  = $path_parts['extension'];
+		    $filename   = $path_parts['filename'];
+		    $dir        = $path_parts['dirname'];
 
-                    $pic_path = $dir . $file;
-                    $src_pic_path = $dir . $id . $postfix . '.' . $extension;
-                    $ready_pic_path = $dir . $id . '.jpg';
+		    $src_pic_path   = $dir . DIRECTORY_SEPARATOR . $filename . '_src' . '.' . $extension;
+		    $ready_pic_path = $dir . DIRECTORY_SEPARATOR . $filename . '.jpg';
 
-                    if($extension == 'jpeg')
-                    {
-                        copy($pic_path, $ready_pic_path);
-                        rename($pic_path, $src_pic_path);
-                    }
+		    if ( $extension == 'jpeg' ) {
+			    copy( $path, $ready_pic_path );
+			    rename( $path, $src_pic_path );
+		    }
 
-                    if ($extension == 'gif' || $extension == 'bmp' || $extension == 'png')
-                    {
-                        if($extension == 'gif') $ee = imagecreatefromgif ($pic_path);
-                        if($extension == 'bmp') $ee = $this->imagecreatefrombmp ($pic_path);
-                        if($extension == 'png') $ee = imagecreatefrompng ($pic_path);
+		    if ( $extension == 'gif' || $extension == 'bmp' || $extension == 'png' ) {
+			    if ( $extension == 'gif' ) {
+				    $ee = imagecreatefromgif( $path );
+			    }
+			    if ( $extension == 'bmp' ) {
+				    $ee = $this->imagecreatefrombmp( path );
+			    }
+			    if ( $extension == 'png' ) {
+				    $ee = imagecreatefrompng( $path );
+			    }
 
-                        ImageJPEG ($ee, $ready_pic_path, 100);
-                        rename($pic_path, $src_pic_path);
-                    }
-                }
-            }
-        }
+			    ImageJPEG( $ee, $ready_pic_path, 100 );
+			    rename( $path, $src_pic_path );
+		    }
+
+		    return $ready_pic_path;
+	    } else {
+	    	return false;
+	    }
 	}
 
     // ------------------------------------------------------------------------
@@ -152,26 +225,26 @@ class MY_Image_lib extends CI_Image_lib {
     *
     * @access	public
     * @param    string - месторасположение файла
-    * @param    int - id элемента в базе, к которому имеет отношение загруженное изображение
     * @param    string - постфикс
     * @param    int - ширина
     * @param    int - высота
     * @return	void
     */
-	function thumb_create ($path, $id, $prefix='_thumb', $x=0, $y=0)
+	function thumb_create ($path, $prefix='_thumb', $x=0, $y=0)
     {
-        $iid = ceil(intval($id)/1000);
-        $dir = FCPATH.substr($path, 1).$iid.'/';
-        $src_file = $dir . $id . '.jpg';
-        $dst_file = $dir . $id . $prefix . '.jpg';
+	    $path_parts     = pathinfo($path);
+	    $filename       = $path_parts['filename'];
+	    $dir            = $path_parts['dirname'];
 
-        if (is_file($src_file) || ($x != 0 && $y != 0))
+	    $dst_file = $dir . DIRECTORY_SEPARATOR . $filename . $prefix . '.jpg';
+
+        if (is_file($path) || ($x != 0 && $y != 0))
         {
-            $size = getimagesize ($src_file);
+            $size = getimagesize ($path);
             $xsize = $size[0];
             $ysize = $size[1];
 
-            $config['source_image'] = $src_file;
+            $config['source_image'] = $path;
             $config['new_image'] = $dst_file;
             $config['image_library'] = 'gd2';
             $config['maintain_ratio'] = TRUE;

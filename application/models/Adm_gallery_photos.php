@@ -47,7 +47,7 @@ class Adm_gallery_photos extends CI_Model {
     function _get_inc_form($inc_id)
     {
         $this->session->unset_userdata('photo_filter');
-        return '
+        $modal = '
             <div class="form-group">
                 <label for="gallery_name">Галерея</label>
                 <input type="text" class="form-control" id="gallery_name" name="gallery_name" placeholder="Введите название галереи">
@@ -58,18 +58,63 @@ class Adm_gallery_photos extends CI_Model {
             </div>
             <div class="form-group">
                 <label for="galfile">Выберите фотографии</label><br>
-                <span class="file-value" id="gal-value-'.$inc_id.'"></span>
-                <input type="hidden" name="inc_id" value="'.$inc_id.'">
-                <input id="gal_trigger-'.$inc_id.'" type="button" name="download" value="Выбрать файлы" class="btn btn-success" />
-                <input type="file" min="1" max="9999" name="galfile[]" multiple="true" class="file-input" id="gal_input-'.$inc_id.'" />
-                <script>
-                    $(document).ready(function () {
-                        document.getElementById(\'gal_trigger-'.$inc_id.'\').onclick = function(){ document.getElementById(\'gal_input-'.$inc_id.'\').click(); }
-                        $(\'#gal_input-'.$inc_id.'\').change(function() { $(\'#gal-value-'.$inc_id.'\').html( $(\'#gal_input-'.$inc_id.'\').val() ) });
-                    });
-                </script>
-            </div>
-            ';
+				<div class="dropzonearea" id="galleryDropzone'.$inc_id.'"><div class="dz-default dz-message"><span>Перетащите сюда файлы для загрузки</span></div></div>
+				<div id="gallery_hidden'.$inc_id.'">
+			</div>
+			
+			<script>
+			    $(document).ready(function () {
+				    var galleryDropzone'.$inc_id.' = new Dropzone("div#galleryDropzone'.$inc_id.'", {
+				        url: "/cms_myedit/p_drop_upload/",
+				        paramName: "file",
+				        parallelUploads: 1,
+		                acceptedFiles: "image/*",
+		                addRemoveLinks: true,
+				        chunking: true,
+				        chunkSize: 3145728,
+				        retryChunks: true, 
+				        retryChunksLimit: 3,
+				        renameFile: function(file){
+			                var fname = file.name;
+				            var ext = fname.slice((Math.max(0, fname.lastIndexOf(".")) || Infinity) + 1);
+			                return getRandom(1,1000)+"_"+hashCode(file.name)+"."+ext;
+			            },
+				        init: function() {
+				            this.on("sending", function (file, xhr, formData) {
+				                formData.set("' . $this->security->get_csrf_token_name() . '", "' . $this->security->get_csrf_hash() . '");
+				                formData.set("module", "'.basename(__FILE__).'");
+				                formData.set("file_name", file.upload.filename);
+				            });
+				            this.on("success", function (file, response) {
+				                $("#gallery_hidden'.$inc_id.'").append($(\'<input type="hidden" \' +
+			                                      \'name="gallery_hidden_files[]" \' +
+			                                      \'value="\' + file.upload.filename + \'">\'));
+				            });
+				            this.on("removedfile", function (file) {
+				                var filename;
+				                if (typeof file.upload === "undefined"){
+								    filename = file.name;
+								} else {
+									filename = file.upload.filename;
+								}
+				                $.ajax({
+						            method: "POST",
+						            url: "/cms_myedit/p_drop_delete/",
+						            data: {
+						            "'.$this->security->get_csrf_token_name().'": "'.$this->security->get_csrf_hash().'",
+						            "module": "'.basename(__FILE__).'",
+						            "file_name": filename
+						            }
+						        });
+				                $("input[value=\'"+filename+"\']").remove();
+				            });	
+				        }
+				    });
+	            });
+			</script>		
+	        ';
+
+	    return $modal;
     }
 
     // ------------------------------------------------------------------------
@@ -119,7 +164,11 @@ class Adm_gallery_photos extends CI_Model {
             );
 
             $this->db->insert('w_galleries', $data);
-            if (isset($_FILES['galfile']) && $_FILES['galfile']['tmp_name'][0] != '') $this->_upload_files($this->db->insert_id());
+	        $files = $this->input->post('gallery_hidden_files', true);
+	        if (is_array($files))
+	        {
+	        	$this->_upload_files($this->db->insert_id(), $files, $this->input->post('gallery_name', TRUE));
+	        }
 
             echo '<div class="alert alert-success" role="alert">Галерея была успешно добавлена!</div>'.$this->_get_inc_form($this->input->post('inc_id', TRUE));
         }
@@ -138,59 +187,26 @@ class Adm_gallery_photos extends CI_Model {
      * @return  void
      */
 
-    function _upload_files($gal_id=0)
+    function _upload_files($gal_id = 0, $files = array(), $name = '')
     {
-        if($gal_id == 0) $gal_id = $this->session->userdata('photo_filter');
-
-        $this->load->library('image_lib');
-	    $dimensions = $this->config->item('cms_gallery_sizes');
-        $path = FCPATH.substr($this->config->item('cms_gallery_dir'), 1);
-        if(!is_dir($path)) mkdir($path, 0, true);
-
-        $this->db->select('gallery_name AS name, gallery_view_id AS vid');
-        $this->db->from('w_galleries');
-        $this->db->where('gallery_id', $gal_id);
-
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0)
-        {
-            $row = $query->row();
-	        $where = array(
-		        'field' => 'photo_gallery_id',
-		        'value' => $gal_id
-	        );
-	        $i = $this->Cms_utils->get_max_sort('photo_sort', 'w_gallery_photos', $where);
-
-            foreach ($_FILES['galfile']['tmp_name'] as $key => $value)
-            {
-                $data = array(
-                   'photo_id'           => '',
-                   'photo_gallery_id'   => $gal_id,
-                   'photo_name'         => $row->name,
-                   'photo_sort'         => $i,
-                   'photo_active'       => '1',
-                   'photo_lang_id'      => $this->session->userdata('w_alang')
-                );
-                $this->db->insert('w_gallery_photos', $data);
-                $id = $this->db->insert_id();
-                $iid = ceil(intval($id)/1000);
-                if(!is_dir($path.$iid.'/')) mkdir($path.$iid.'/', 0, true);
-
-                $pieces     = explode(".", $_FILES['galfile']['name'][$key]);
-                $extension  = strtolower($pieces[count($pieces)-1]);
-                $file_path  =  $path . $iid . '/' . $id . '.' . $extension;
-                move_uploaded_file($_FILES['galfile']['tmp_name'][$key], $file_path);
-
-                $this->image_lib->src_img_convert($this->config->item('cms_gallery_dir'), $id);
-
-                foreach ($dimensions as $dkey => $dvalue)
-                {
-                    $this->image_lib->thumb_create($this->config->item('cms_gallery_dir'), $id, $dkey, $dvalue['width'], $dvalue['height']);
-                }
-
-	            $i = $i+10;
-            }
+        if($gal_id) {
+	        $this->load->library( 'image_lib' );
+	        $dimensions = $this->config->item( 'cms_gallery_sizes' );
+	        $i = 10;
+	        foreach ( $files as $value ) {
+		        $data = array(
+			        'photo_id'         => '',
+			        'photo_gallery_id' => $gal_id,
+			        'photo_name'       => $name,
+			        'photo_sort'       => $i,
+			        'photo_active'     => '1',
+			        'photo_lang_id'    => $this->session->userdata( 'w_alang' )
+		        );
+		        $this->db->insert( 'w_gallery_photos', $data );
+		        $id  = $this->db->insert_id();
+		        $this->image_lib->src_file_move ($value, $this->config->item( 'cms_gallery_dir' ), $id, false, true, $dimensions, true);
+		        $i = $i + 10;
+	        }
         }
     }
 
@@ -320,43 +336,51 @@ class Adm_gallery_photos extends CI_Model {
             </div>
         </div>
 		
-		</div> </div> </div>
-		<div class="row"><div class="col-xs-12"><div class="p20 ui-block">
-		<input type="hidden" name="'.$this->security->get_csrf_token_name().'" id="token" value="'.$this->security->get_csrf_hash().'">
-		<div class="dropzonearea" id="galleryDropzone"><div class="dz-default dz-message"><span>Перетащите сюда файлы для загрузки</span></div></div>
-		</div> </div> </div>
-		
-		<script>
-		    $(document).ready(function () {
-			    var galleryDropzone = new Dropzone("div#galleryDropzone", {
-			        url: "/adm_gallery_photos/p_drop_upload/",
-			        paramName: "file",
-			        parallelUploads: 1,
-			        chunking: true,
-			        chunkSize: 5242880,
-			        retryChunks: true, 
-			        retryChunksLimit: 3,
-			        init: function() {
-			            this.on("sending", function (file, xhr, formData) {
-			                formData.set("'.$this->security->get_csrf_token_name().'", "'.$this->security->get_csrf_hash().'");
-			                formData.set("gallery_id", "'.$this->session->userdata('photo_filter').'");
-			                formData.set("file_name", file.name);
-			            });
-			            this.on("success", function(file) {
-			                $.ajax({
-					            method: "GET",
-					            url: "/adm_gallery_photos/p_get_output/",
-					            data: {url: "/'.urlencode($this->uri->segment(1).'/'.$this->uri->segment(2)).'"}
-					        }).done(function(result) {
-					            $("#admin_interface").html(result);
-					        });
-			            });
-			        }
-			    });
-            });
-		</script>
-		
-        ';
+		</div> </div> </div>';
+
+        if(!$this->input->get('PME_sys_operation') && !$this->input->post('PME_sys_operation')) {
+			$filters .= '<div class="row"><div class="col-xs-12"><div class="p20 ui-block">
+			<input type="hidden" name="' . $this->security->get_csrf_token_name() . '" id="token" value="' . $this->security->get_csrf_hash() . '">
+			<div class="dropzonearea" id="galleryDropzone"><div class="dz-default dz-message"><span>Перетащите сюда файлы для загрузки</span></div></div>
+			</div> </div> </div>
+			
+			<script>
+			    $(document).ready(function () {
+				    var galleryDropzone = new Dropzone("div#galleryDropzone", {
+				        url: "/adm_gallery_photos/p_drop_upload/",
+				        paramName: "file",
+				        parallelUploads: 1,
+		                acceptedFiles: "image/*",
+				        chunking: true,
+				        chunkSize: 3145728,
+				        retryChunks: true, 
+				        retryChunksLimit: 3,
+				        renameFile: function(file){
+			                var fname = file.name;
+				            var ext = fname.slice((Math.max(0, fname.lastIndexOf(".")) || Infinity) + 1);
+			                return getRandom(1,1000)+"_"+hashCode(file.name)+"."+ext;
+			            },
+				        init: function() {
+				            this.on("sending", function (file, xhr, formData) {
+				                formData.set("' . $this->security->get_csrf_token_name() . '", "' . $this->security->get_csrf_hash() . '");
+				                formData.set("gallery_id", "' . $this->session->userdata( 'photo_filter' ) . '");
+				                formData.set("file_name", file.upload.filename);
+				            });
+				            this.on("success", function(file) {
+				                $.ajax({
+						            method: "GET",
+						            url: "/adm_gallery_photos/p_get_output/",
+						            data: {url: "/' . urlencode( $this->uri->segment( 1 ) . '/' . $this->uri->segment( 2 ) ) . '"}
+						        }).done(function(result) {
+						            $("#admin_interface").html(result);
+						        });
+				            });
+				        }
+				    });
+	            });
+			</script>		
+	        ';
+		}
 
         return $filters;
     }
@@ -373,6 +397,7 @@ class Adm_gallery_photos extends CI_Model {
 	    if ( is_array($rights) && (isset($rights[basename(__FILE__)])) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
 	    {
 		    $gal_id = $this->input->post("gallery_id", TRUE);
+		    $file_name = $this->input->post('file_name', TRUE);
 	    	if($gal_id == 0) $gal_id = $this->session->userdata('photo_filter');
 
 		    $this->load->library('image_lib');
@@ -389,59 +414,16 @@ class Adm_gallery_photos extends CI_Model {
 		    if ($query->num_rows() > 0) {
 
 			    $chunk = ($this->input->post('dzchunkindex', TRUE) != '') ? $this->input->post('dzchunkindex', TRUE) : false;
+			    $chunkcount = ($this->input->post('dzchunkindex', TRUE) != '') ? $this->input->post('dztotalchunkcount', TRUE) : false;
 
-			    if($chunk !== false){
-				    $chunkcount = $this->input->post('dztotalchunkcount', TRUE);
-				    $out = @fopen($path.$this->input->post('file_name', TRUE), ($chunk != 0) ? "ab" : "wb");
-				    $in = @fopen($_FILES["file"]["tmp_name"], "rb");
-				    while ($buff = fread($in, 4096)) {
-					    fwrite($out, $buff);
-				    }
-				    fclose($out);
-				    fclose($in);
-
-				    if($chunkcount == $chunk+1){
-					    $row   = $query->row();
-					    $where = array(
-						    'field' => 'photo_gallery_id',
-						    'value' => $gal_id
-					    );
-					    $i     = $this->Cms_utils->get_max_sort( 'photo_sort', 'w_gallery_photos', $where );
-					    $data = array(
-						    'photo_id'         => '',
-						    'photo_gallery_id' => $gal_id,
-						    'photo_name'       => $row->name,
-						    'photo_sort'       => $i,
-						    'photo_active'     => '1',
-						    'photo_lang_id'    => $this->session->userdata( 'w_alang' )
-					    );
-					    $this->db->insert( 'w_gallery_photos', $data );
-					    $id  = $this->db->insert_id();
-					    $iid = ceil( intval( $id ) / 1000 );
-					    if ( ! is_dir( $path . $iid . '/' ) ) {
-						    mkdir( $path . $iid . '/', 0, true );
-					    }
-					    $pieces    = explode( ".", $_FILES['file']['name'] );
-					    $extension = strtolower( $pieces[ count( $pieces ) - 1 ] );
-					    $file_path = $path . $iid . '/' . $id . '.' . $extension;
-					    rename($path.$this->input->post('file_name', TRUE), $file_path);
-
-					    $this->image_lib->src_img_convert( $this->config->item( 'cms_gallery_dir' ), $id );
-
-					    foreach ( $dimensions as $dkey => $dvalue ) {
-						    $this->image_lib->thumb_create( $this->config->item( 'cms_gallery_dir' ), $id, $dkey, $dvalue['width'], $dvalue['height'] );
-					    }
-				    }
-			    } else {
-
+			    if($chunk === false || $chunkcount == $chunk+1) {
 				    $row   = $query->row();
 				    $where = array(
 					    'field' => 'photo_gallery_id',
 					    'value' => $gal_id
 				    );
 				    $i     = $this->Cms_utils->get_max_sort( 'photo_sort', 'w_gallery_photos', $where );
-
-				    $data = array(
+				    $data  = array(
 					    'photo_id'         => '',
 					    'photo_gallery_id' => $gal_id,
 					    'photo_name'       => $row->name,
@@ -455,17 +437,24 @@ class Adm_gallery_photos extends CI_Model {
 				    if ( ! is_dir( $path . $iid . '/' ) ) {
 					    mkdir( $path . $iid . '/', 0, true );
 				    }
+			    }
 
-				    $pieces    = explode( ".", $_FILES['file']['name'] );
-				    $extension = strtolower( $pieces[ count( $pieces ) - 1 ] );
-				    $file_path = $path . $iid . '/' . $id . '.' . $extension;
-				    move_uploaded_file( $_FILES['file']['tmp_name'], $file_path );
-
-				    $this->image_lib->src_img_convert( $this->config->item( 'cms_gallery_dir' ), $id );
-
-				    foreach ( $dimensions as $dkey => $dvalue ) {
-					    $this->image_lib->thumb_create( $this->config->item( 'cms_gallery_dir' ), $id, $dkey, $dvalue['width'], $dvalue['height'] );
+			    if($chunk !== false){
+				    $out = @fopen($path.'/'.$this->input->post('file_name', TRUE), ($chunk != 0) ? "ab" : "wb");
+				    $in = @fopen($_FILES["file"]["tmp_name"], "rb");
+				    while ($buff = fread($in, 4096)) {
+					    fwrite($out, $buff);
 				    }
+				    fclose($out);
+				    fclose($in);
+				    if($chunkcount == $chunk+1){
+					    rename($path.'/'.$this->input->post('file_name', TRUE), $path.'/'.$iid.'/'.$this->input->post('file_name', TRUE));
+				    	$this->image_lib->src_file_move ($file_name, $this->config->item('cms_gallery_dir'), $id, false, true, $dimensions, false);
+				    }
+			    } else {
+				    $file_path = $path . $iid . '/' . $file_name;
+				    move_uploaded_file( $_FILES['file']['tmp_name'], $file_path );
+				    $this->image_lib->src_file_move ($file_name, $this->config->item('cms_gallery_dir'), $id, false, true, $dimensions, false);
 			    }
 		    }
 	    }
@@ -758,7 +747,8 @@ class Adm_gallery_photos extends CI_Model {
             'file'          => array (
                 'tn'        => '_thumb',
                 'url'       => $this->config->item('cms_gallery_dir'),
-                'multiple'  => false
+                'multiple'  => false,
+                'accepted'  => 'image/*',
             ),
             'help'          => 'Выберите фото на своем компьютере для загрузки. Удаление фото из режима редактирования приводит к его безвозвратному удалению.'
         );

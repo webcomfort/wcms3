@@ -7,7 +7,9 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Cms_myedit extends CI_Model {
 
-    function __construct()
+    private $icons = '/public/admin/img/icons/filetype/';
+
+	function __construct()
     {
         parent::__construct();
     }
@@ -35,7 +37,7 @@ class Cms_myedit extends CI_Model {
         // Адреса, где хранятся ресурсы и адреса аякс-вызовов
         $opts['url'] = array(
             'images'    => '/public/admin/img/icons/',
-            'icons'     => '/public/admin/img/icons/filetype/',
+            'icons'     => $this->icons,
             'filedel'   => '/cms_myedit/p_delete'
         );
 
@@ -76,6 +78,238 @@ class Cms_myedit extends CI_Model {
         $opts['logtable'] = 'w_changelog';
 
 		return $opts;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Функция, загружающая файлы из дроп-зоны в tmp
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function p_drop_upload(){
+		$module = $this->input->post( 'module', true );
+		$rights = $this->cms_user->get_user_rights();
+		if ( is_array( $rights ) && $rights[ $module ] != '' ) {
+			$path = FCPATH . 'tmp/';
+			if ( ! is_dir( $path ) ) {
+				mkdir( $path, 0, true );
+			}
+
+			$chunk = ( $this->input->post( 'dzchunkindex', true ) != '' ) ? $this->input->post( 'dzchunkindex', true ) : false;
+
+			if ( $chunk !== false ) {
+				$out = @fopen( $path . $this->input->post( 'file_name', true ), ( $chunk != 0 ) ? "ab" : "wb" );
+				$in  = @fopen( $_FILES["file"]["tmp_name"], "rb" );
+				while ( $buff = fread( $in, 4096 ) ) {
+					fwrite( $out, $buff );
+				}
+				fclose( $out );
+				fclose( $in );
+			} else {
+				$file_path = $path . $this->input->post( 'file_name', true );
+				move_uploaded_file( $_FILES['file']['tmp_name'], $file_path );
+			}
+		}
+	}
+
+	/**
+	 * Функция, загружающая файлы из дроп-зоны в папку модуля
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function p_drop_update(){
+		$module = $this->input->post( 'module', true );
+		$rights = $this->cms_user->get_user_rights();
+		if ( is_array( $rights ) && $rights[ $module ] != '' ) {
+
+			$this->load->library( 'image_lib' );
+			$id = $this->input->post( 'id', true );
+			$iid = ceil( intval( $id ) / 1000 );
+			$storeFolder = $this->input->post( 'path', true );
+			$multiple = intval($this->input->post( 'multiple', true ));
+			$file_name = $this->input->post('file_name', TRUE);
+
+			if($multiple){
+				$path   = FCPATH . substr( $storeFolder, 1 ) . $iid . '/' . $id . '/';
+			} else {
+				$path   = FCPATH . substr( $storeFolder, 1 ) . $iid . '/';
+			}
+
+			if ( ! is_dir( $path ) ) {
+				mkdir( $path, 0, true );
+			}
+
+			$file_path = $path . $file_name;
+
+			$chunk = ( $this->input->post( 'dzchunkindex', true ) != '' ) ? $this->input->post( 'dzchunkindex', true ) : false;
+
+			if ( $chunk !== false ) {
+				$out = @fopen( $file_path, ( $chunk != 0 ) ? "ab" : "wb" );
+				$in  = @fopen( $_FILES["file"]["tmp_name"], "rb" );
+				while ( $buff = fread( $in, 4096 ) ) {
+					fwrite( $out, $buff );
+				}
+				fclose( $out );
+				fclose( $in );
+			} else {
+				move_uploaded_file( $_FILES['file']['tmp_name'], $file_path );
+			}
+		}
+	}
+
+	/**
+	 * Функция, для вывода списка файлов
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function p_drop_get_files(){
+		$module = $this->input->post( 'module', true );
+		$rights = $this->cms_user->get_user_rights();
+		if ( is_array( $rights ) && $rights[ $module ] != '' ) {
+			$result  = array();
+			$id = $this->input->post( 'id', true );
+			$tn = $this->input->post( 'tn', true );
+			$iid = ceil( intval( $id ) / 1000 );
+			$storeFolder = $this->input->post( 'path', true );
+			$multiple = intval($this->input->post( 'multiple', true ));
+
+			if($multiple) {
+				$dir   = FCPATH . substr( $storeFolder, 1 ) . $iid . '/' . $id . '/';
+				$files = scandir( $dir );
+				if ( false !== $files ) {
+					foreach ( $files as $file ) {
+						if ( preg_match( "/^[0-9]*\.([[:alnum:]])*$/", $file ) && is_file($dir . $file)) {
+
+							$path_parts = pathinfo( $dir . $file );
+							$extension  = $path_parts['extension'];
+							$filename   = $path_parts['filename'];
+							$obj['name'] = $storeFolder . $iid . '/' . $id . '/' . $file;
+							$size = getimagesize ($dir . $file);
+
+							if($tn){
+								$obj['tn']   = $storeFolder . $iid . '/' . $id . '/' . $filename . $tn . '.' . $extension . '?' . time();
+							} elseif ($size && $size[2] != 13){
+								$obj['tn']   = $storeFolder . $iid . '/' . $id . '/' . $file . '?' . time();
+							} else {
+								$icon = FCPATH.substr( $this->icons, 1 ) . $extension . '.png';
+								$icon_url = $this->icons . $extension . '.png';
+								$obj['tn']   = (is_file($icon)) ? $icon_url : $obj['name'];
+							}
+
+							$obj['size'] = filesize( $dir . $file );
+							$result[]    = $obj;
+						}
+					}
+				}
+			} else {
+				$dir   = FCPATH . substr( $storeFolder, 1 ) . $iid . '/';
+				$files = scandir( $dir );
+				if ( false !== $files ) {
+					foreach ( $files as $file ) {
+						if ( preg_match( "/^" . $id . "\.([[:alnum:]])*$/", $file ) && is_file($dir . $file)) {
+							$path_parts = pathinfo( $dir . $file );
+							$extension  = $path_parts['extension'];
+							$filename   = $path_parts['filename'];
+							$obj['name'] = $storeFolder . $iid . '/' . $file;
+							$size = getimagesize ($dir . $file);
+							if($tn){
+								$obj['tn'] = $storeFolder . $iid . '/' . $filename . $tn . '.' . $extension . '?' . time();
+							} elseif ($size && $size[2] != 13){
+								$obj['tn']   = $storeFolder . $iid . '/' . $file . '?' . time();
+							} else {
+								$icon = FCPATH.substr( $this->icons, 1 ) . $extension . '.png';
+								$icon_url = $this->icons . $extension . '.png';
+								$obj['tn']   = (is_file($icon)) ? $icon_url : $obj['name'];
+							}
+							$obj['size'] = filesize( $dir . $file );
+							$result[]    = $obj;
+						}
+					}
+				}
+			}
+
+			header('Content-type: text/json');
+			header('Content-type: application/json');
+			echo json_encode($result);
+		}
+	}
+
+	/**
+	 * Функция, удаляющая файлы, загруженные из дроп-зоны в tmp
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function p_drop_delete(){
+		$module = $this->input->post('module', TRUE);
+		$rights = $this->cms_user->get_user_rights();
+		$path = FCPATH.'tmp/';
+		if(!is_dir($path)) mkdir($path, 0, true);
+		if ( is_array($rights) && $rights[$module] != '' )
+		{
+			if(is_file($path.$this->input->post('file_name', TRUE))) unlink ($path.$this->input->post('file_name', TRUE));
+		}
+	}
+
+	/**
+	 * Функция, удаляющая файлы, из папки модуля
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function p_drop_update_delete(){
+
+		$module = $this->input->post('module', TRUE);
+		$rights = $this->cms_user->get_user_rights();
+		$id = $this->input->post( 'id', true );
+		$iid = ceil( intval( $id ) / 1000 );
+		$storeFolder = $this->input->post( 'path', true );
+		$multiple = intval($this->input->post( 'multiple', true ));
+		$tn = $this->input->post( 'tn', true );
+		$filedel = $this->input->post('file_name', TRUE);
+
+		if ( is_array($rights) && $rights[$module] != '' )
+		{
+			if($multiple){
+				$dir   = FCPATH . substr( $storeFolder, 1 ) . $iid . '/' . $id . '/';
+				$path_parts = pathinfo( $dir . $filedel );
+				$filename   = $path_parts['filename'];
+
+				if(preg_int($filename)) {
+					if ( $handle = opendir( $dir ) ) {
+						while ( false !== ( $file = readdir( $handle ) ) ) {
+							if ( preg_match( "/^" . intval( $filename ) . "\.([[:alnum:]])*$/", $file ) || preg_match( "/^" . intval( $filename ) . "_([[:alnum:]])*\.([[:alnum:]])*$/", $file ) ) {
+								unlink( $dir . $file );
+							}
+						}
+					}
+				}
+
+				if(preg_string($filename) && is_file($dir . $filedel)) unlink ($dir.$filedel);
+
+			} else {
+				$dir   = FCPATH . substr( $storeFolder, 1 ) . $iid . '/';
+				$path_parts = pathinfo( $dir . $filedel );
+				$filename   = $path_parts['filename'];
+
+				if(preg_int($filename)) {
+					if ( $handle = opendir( $dir ) ) {
+						while ( false !== ( $file = readdir( $handle ) ) ) {
+							if ( preg_match( "/^" . intval( $id ) . "\.([[:alnum:]])*$/", $file ) || preg_match( "/^" . intval( $id ) . "_([[:alnum:]])*\.([[:alnum:]])*$/", $file ) ) {
+								unlink( $dir . $file );
+							}
+						}
+					}
+				}
+
+				if(preg_string($filename) && is_file($dir . $filedel)) unlink ($dir.$filedel);
+			}
+
+		}
 	}
 
     // ------------------------------------------------------------------------

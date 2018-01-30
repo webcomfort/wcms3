@@ -27,15 +27,13 @@ $this->CI->db->cache_delete_all();
 // ------------------------------------------------------------------------
 
 // Изображения
-if ($_FILES['pic']['tmp_name'] != '')
+$files = $this->CI->input->post('pic_files', true);
+if (is_array($files))
 {
-    $this->CI->load->library('image_lib');
-    $dimensions = $this->CI->config->item('cms_shop_images');
-    $this->CI->image_lib->src_img_convert($this->CI->config->item('cms_shop_dir'), $id);
-    foreach ($dimensions as $key => $value)
-    {
-        $this->CI->image_lib->thumb_create($this->CI->config->item('cms_shop_dir'), $id, $key, $value['width'], $value['height']);
-    }
+	$this->CI->load->library( 'image_lib' );
+	foreach ($files as $value) {
+		$this->CI->image_lib->src_file_move ($value, $this->CI->config->item( 'cms_shop_dir' ), $id, false, true, $this->CI->config->item( 'cms_shop_images' ), true);
+	}
 }
 
 // ------------------------------------------------------------------------
@@ -68,18 +66,20 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 
     if (preg_match("/^page_article_order_([1-9][0-9]*)$/", $key, $matches))
     {
-        $data = array(
+        $bg     = $this->CI->input->post('page_article_bg_'.$matches[1]);
+	    $view   = $this->CI->input->post('page_article_view_'.$matches[1]);
+        $place  = $this->CI->input->post('page_article_place_'.$matches[1]);
+
+    	$data = array(
             'article_id' 		=> '',
             'article_pid'	    => $id,
             'article_pid_type'  => 'shop',
             'article_order' 	=> $value,
-            'article_bg_id'     => $this->CI->input->post('page_article_bg_'.$matches[1]),
-            'article_view_id'   => $this->CI->input->post('page_article_view_'.$matches[1]),
-            'article_place_id'  => $this->CI->input->post('page_article_place_'.$matches[1]),
+            'article_bg_id'     => ($bg) ? $bg : '',
+            'article_view_id'   => ($view) ? $view : '',
+            'article_place_id'  => ($place) ? $place : '',
             'article_text' 		=> $this->CI->input->post('page_article_'.$matches[1], false)
         );
-
-        echo '<pre>'.print_r($data, true).'</pre>';
 
         $this->CI->db->insert('w_pages_articles', $data);
 

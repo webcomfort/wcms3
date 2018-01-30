@@ -1047,7 +1047,8 @@ class Adm_shop_item extends CI_Model {
             'file'          => array (
                 'tn'        => '_thumb',
                 'url'       => $this->config->item('cms_shop_dir'),
-                'multiple'  => false
+                'multiple'  => false,
+                'accepted'  => 'image/*'
             ),
             'help'          => 'Выберите картинку на своем компьютере для загрузки. Удаление картинки из режима редактирования приводит к ее безвозвратному удалению.'
         );

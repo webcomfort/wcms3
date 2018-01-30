@@ -28,14 +28,18 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 
     if (preg_match("/^page_article_order_([1-9][0-9]*)$/", $key, $matches))
 	{
-        $data = array(
+		$bg     = $this->CI->input->post('page_article_bg_'.$matches[1]);
+		$view   = $this->CI->input->post('page_article_view_'.$matches[1]);
+		$place  = $this->CI->input->post('page_article_place_'.$matches[1]);
+
+		$data = array(
             'article_id' 		=> '',
             'article_pid'	    => $id,
             'article_pid_type'  => 'pages',
             'article_order' 	=> $value,
-            'article_bg_id'     => $this->CI->input->post('page_article_bg_'.$matches[1]),
-            'article_view_id'   => $this->CI->input->post('page_article_view_'.$matches[1]),
-            'article_place_id'  => $this->CI->input->post('page_article_place_'.$matches[1]),
+            'article_bg_id'     => ($bg) ? $bg : '',
+            'article_view_id'   => ($view) ? $view : '',
+            'article_place_id'  => ($place) ? $place : '',
             'article_text' 		=> $this->CI->input->post('page_article_'.$matches[1], false)
         );
 

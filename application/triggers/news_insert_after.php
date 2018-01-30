@@ -26,16 +26,12 @@ $this->CI->db->cache_delete_all();
 // ------------------------------------------------------------------------
 
 // Изображения
-if ($_FILES['pic']['tmp_name'] != '')
+$files = $this->CI->input->post('pic_files', true);
+if (is_array($files))
 {
-	$this->CI->load->library('image_lib');
-	$dimensions = $this->CI->config->item('cms_news_images');
-
-    $this->CI->image_lib->src_img_convert($this->CI->config->item('cms_news_dir'), $id);
-
-    foreach ($dimensions as $key => $value)
-    {
-	    $this->CI->image_lib->thumb_create($this->CI->config->item('cms_news_dir'), $id, $key, $value['width'], $value['height']);
+	$this->CI->load->library( 'image_lib' );
+	foreach ($files as $value) {
+		$this->CI->image_lib->src_file_move ($value, $this->CI->config->item( 'cms_news_dir' ), $id, false, true, $this->CI->config->item('cms_news_images'), true);
 	}
 }
 

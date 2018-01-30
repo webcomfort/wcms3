@@ -172,6 +172,8 @@ class Adm_banners extends CI_Model {
 		// $this->opts['triggers']['insert']['after'] = '';
 		// $this->opts['triggers']['update']['after'] = '';
 		// $this->opts['triggers']['delete']['before'] = '';
+		$opts['triggers']['insert']['after']  = APPPATH.'triggers/banner_insert_after.php';
+		$opts['triggers']['update']['after']  = APPPATH.'triggers/banner_update_after.php';
 
         // Логирование: общее название класса и поле где хранится название объекта
         $opts['logtable_title'] = 'Баннер';
@@ -274,7 +276,8 @@ class Adm_banners extends CI_Model {
             'file'          => array (
                 'tn'        => '',
                 'url'       => $this->config->item('cms_banners_dir'),
-                'multiple'  => false
+                'multiple'  => false,
+	            'accepted'  => 'image/*, application/x-shockwave-flash'
             ),
             'help'          => 'Выберите баннер на своем компьютере для загрузки. Он может быть в формате .jpg, .gif, .swf, .png, .bmp. Удаление баннера из режима редактирования приводит к его безвозвратному удалению.'
         );
