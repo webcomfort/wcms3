@@ -1381,7 +1381,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 	        init: function() {	            	            
 	            	            
 	            // File list	  	          
-	            thisDropzone = this;	            
+	            var thisDropzone = this;	            
 	            
 		        $.ajax({
 				  method: "POST",
