@@ -124,8 +124,9 @@ class Adm_shop_item extends CI_Model {
 	 */
     function get_filters()
     {
-        $filter_values = $this->categories;
-        $filter_values[999999999] = 'Не подключены';
+	    $filter_values = array();
+	    $filter_values[999999999] = 'Не подключены';
+    	$filter_values = array_merge($filter_values, $this->categories);
 
         // Сессия
         if (!$this->session->userdata('sitem_filter'))
@@ -803,34 +804,17 @@ class Adm_shop_item extends CI_Model {
                     }
                 }
             } else {
-                $this->db->distinct();
-                $this->db->select('item_id AS id');
-                $this->db->from('w_shop_items_cats');
-                $query_a = $this->db->get();
+	            $this->db->select('w_shop_items.item_id');
+	            $this->db->from('w_shop_items');
+	            $this->db->join('w_shop_items_cats', 'w_shop_items_cats.item_id = w_shop_items.item_id', 'left');
+	            $this->db->where('w_shop_items_cats.item_id IS NULL');
+	            $query = $this->db->get();
 
-                $n_ids = 0;
-                if ($query_a->num_rows() > 0)
-                {
-                    foreach ($query_a->result() as $row_a)
-                    {
-                        $a_ids[] = $row_a->id;
-                    }
-
-                    $n_ids = join(',',$a_ids);
-                }
-
-                if($n_ids) {
-                    $this->db->select('item_id AS id');
-                    $this->db->from('w_shop_items');
-                    $this->db->where('item_id NOT IN (' . $n_ids . ')');
-                    $query = $this->db->get();
-
-                    if ($query->num_rows() > 0) {
-                        foreach ($query->result() as $row) {
-                            $cat_ids[] = $row->id;
-                        }
-                    }
-                }
+	            if ($query->num_rows() > 0) {
+		            foreach ($query->result() as $row) {
+			            $cat_ids[] = $row->item_id;
+		            }
+	            }
             }
         }
 

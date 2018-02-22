@@ -437,34 +437,17 @@ class Adm_news extends CI_Model {
                     }
                 }
             } else {
-                $this->db->distinct();
-                $this->db->select('news_id AS id');
-                $this->db->from('w_news_categories_cross');
-                $query_a = $this->db->get();
+	            $this->db->select( 'w_news.news_id' );
+	            $this->db->from( 'w_news' );
+	            $this->db->join( 'w_news_categories_cross', 'w_news_categories_cross.news_id = w_news.news_id', 'left' );
+	            $this->db->where( 'w_news_categories_cross.news_id IS NULL' );
+	            $query = $this->db->get();
 
-                $n_ids = 0;
-                if ($query_a->num_rows() > 0)
-                {
-                    foreach ($query_a->result() as $row_a)
-                    {
-                        $a_ids[] = $row_a->id;
-                    }
-
-                    $n_ids = join(',',$a_ids);
-                }
-
-                if($n_ids) {
-                    $this->db->select('news_id AS id');
-                    $this->db->from('w_news');
-                    $this->db->where('news_id NOT IN (' . $n_ids . ')');
-                    $query = $this->db->get();
-
-                    if ($query->num_rows() > 0) {
-                        foreach ($query->result() as $row) {
-                            $rub_ids[] = $row->id;
-                        }
-                    }
-                }
+	            if ( $query->num_rows() > 0 ) {
+		            foreach ( $query->result() as $row ) {
+			            $rub_ids[] = $row->news_id;
+		            }
+	            }
             }
         }
 
