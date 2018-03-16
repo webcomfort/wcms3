@@ -32,7 +32,7 @@ CKEDITOR.editorConfig = function( config ) {
     config.emailProtection = 'encode';
     config.extraPlugins = 'btgrid,pastecode';
     config.startupOutlineBlocks = true;
-    config.allowedContent = 'span div p h1 h2 h3 h4 h5 h6 ul ol li strong em blockquote mark del s ins small abbr address footer dl dt code kbd pre var samp i [class,id,title,role]{float}(*); a [href,class,title,name,download,target,id,rel,role]{float}(*); hr table tr th; td [colspan,rowspan,class]{float}(*);img[!src,alt,width,height,class]{float}(*); iframe [*]{*}(*); button [class,type,id,data-toggle]{*}(*);';
+    config.allowedContent = 'span div p h1 h2 h3 h4 h5 h6 ul ol li strong em blockquote mark del s ins small abbr address footer dl dt code kbd pre var samp i [class,id,title,role]{float}(*); a [href,class,title,name,download,target,id,rel,role]{float}(*); hr table tr th td [colspan,rowspan,class]{float}(*);img[!src,alt,width,height,class]{float}(*); iframe [*]{*}(*); button [class,type,id,data-toggle]{*}(*);';
 
     config.basicEntities = false;
     config.entities = false;
