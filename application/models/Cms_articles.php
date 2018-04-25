@@ -27,11 +27,19 @@ class Cms_articles extends CI_Model {
      */
     function p_get_html($id=false, $type='pages', $trigger=1, $article='', $bg=0, $view=1, $place=0, $full=false)
     {
-        if($this->input->get('id', TRUE)) $id = $this->input->get('id', TRUE);
+        if($this->input->get('id', TRUE) && $id === false) $id = $this->input->get('id', TRUE);
 	    if($this->input->get('type', TRUE)) $type = $this->input->get('type', TRUE);
 	    if($this->input->get('trigger', TRUE)) $trigger = $this->input->get('trigger', TRUE);
+	    $response = array(
+		    'div'       => '',
+		    'selects'   => '',
+		    'buttons'   => '',
+		    'hidden'    => '',
+		    'textarea'  => ''
+	    );
+	    $article_data  = $this->config->item('cms_articles');
 
-        if($id){
+	    if($id && isset($article_data[$type]['values'][$trigger]['places'][$place]['views'])){
 
             $response['div'] = '<div class="article-div" data-id="'.$id.'">';
 
@@ -205,7 +213,7 @@ class Cms_articles extends CI_Model {
         }
         else
         {
-            $html = $this->p_get_html($i, $type, $trigger);
+        	$html = $this->p_get_html($i, $type, $trigger);
 
             $fields .= $html['div'];
             $fields .= $html['selects'];
@@ -231,13 +239,15 @@ class Cms_articles extends CI_Model {
     {
         $data  = $this->config->item('cms_articles');
 	    $type_data = $data[$type]['values'][$trigger]['places'][$place]['views'];
+        if(is_array($type_data)) {
+	        foreach ( $type_data as $key => $value ) {
+		        $val_arr[ $key ] = $value['name'];
+	        }
 
-        foreach ($type_data as $key => $value)
-        {
-            $val_arr[$key] = $value['name'];
+	        return $val_arr;
+        } else {
+        	return array();
         }
-
-        return $val_arr;
     }
 
     /**

@@ -23,16 +23,25 @@ CKEDITOR.editorConfig = function( config ) {
             ['NumberedList','BulletedList','-','Outdent','Indent','Blockquote','CreateDiv'],
             ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
             ['Link','Unlink','Anchor'],
-            ['Image','Flash','PasteCode','Table','SpecialChar'],
+            ['Image','Flash','Html5audio','PasteCode','Table','SpecialChar'],
             ['Format','Styles']
         ];
 
     config.width = '100%';
     config.height = '500';
     config.emailProtection = 'encode';
-    config.extraPlugins = 'btgrid,pastecode';
+    config.extraPlugins = 'btgrid,pastecode,html5audio';
     config.startupOutlineBlocks = true;
-    config.allowedContent = true;
+    config.allowedContent = {
+        $1: {
+            // Use the ability to specify elements as an object.
+            elements: CKEDITOR.dtd,
+            attributes: true,
+            styles: true,
+            classes: true
+        }
+    };
+    config.disallowedContent = 'img{width,height}';
 
     config.basicEntities = false;
     config.entities = false;
@@ -46,6 +55,9 @@ CKEDITOR.editorConfig = function( config ) {
 
     config.stylesSet = [
         { name: 'Сделать кнопку', element: 'a', attributes: {'class': 'btn'} },
+        { name: 'Масштабируемое', element: 'img', attributes: { 'class': 'img-fluid' } },
+        { name: 'Слева', element: 'img', attributes: { 'class': 'float-left mb10 mt10 mr20' } },
+        { name: 'Справа', element: 'img', attributes: { 'class': 'float-right mb10 mt10 ml20' } },
         { name: 'Курсив', element: 'em' }
     ];
 };
