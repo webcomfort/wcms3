@@ -125,16 +125,17 @@ class Adm_shop_item extends CI_Model {
     function get_filters()
     {
 	    $filter_values = array();
+	    $filter_values[0] = 'Все позиции';
 	    $filter_values[999999999] = 'Не подключены';
-    	$filter_values = array_merge($filter_values, $this->categories);
+    	$filter_values = $filter_values + $this->categories;
 
         // Сессия
-        if (!$this->session->userdata('sitem_filter'))
+        if (!$this->session->userdata('sitem_filter') && $this->session->userdata('sitem_filter') != 0)
         {
             $this->session->set_userdata(array('sitem_filter' => current(array_keys($filter_values))));
         }
 
-        if($this->input->post('sitem_filter', true) && preg_int($this->input->post('sitem_filter', true)))
+        if(($this->input->post('sitem_filter', true) || $this->input->post('sitem_filter', true) == '0') && preg_int($this->input->post('sitem_filter', true)))
         {
             $this->session->set_userdata(array('sitem_filter' => $this->input->post('sitem_filter', true)));
         }
@@ -497,9 +498,11 @@ class Adm_shop_item extends CI_Model {
 
         if($key == 0 && $this->session->userdata('sitem_filter') != 999999999) {
             $query_active = $this->db->query('SELECT cat_id AS id, cat_name AS name FROM w_shop_categories WHERE cat_id = "'.$this->session->userdata('sitem_filter').'"');
-            $row_active = $query_active->row();
-            $val_arr[$row_active->id] = $row_active->name;
-            $val_arr_active[] = $row_active->id;
+	        if ($query_active->num_rows() > 0) {
+		        $row_active                 = $query_active->row();
+		        $val_arr[ $row_active->id ] = $row_active->name;
+		        $val_arr_active[]           = $row_active->id;
+	        }
         }
 
         // Active
