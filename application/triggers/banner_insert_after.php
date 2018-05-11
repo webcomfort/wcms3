@@ -7,8 +7,8 @@
  * @mode	after
  */
 
-$this->CI->db->select_max('bg_id', 'id');
-$query = $this->CI->db->get('w_backgrounds');
+$this->CI->db->select_max('banner_id', 'id');
+$query = $this->CI->db->get('w_banners');
 $row = $query->row();
 $id = $row->id;
 $this->CI->db->cache_delete_all();

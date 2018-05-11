@@ -33,7 +33,7 @@ $query = $this->CI->db->get();
 
 if ($query->num_rows() > 0)
 {
-    $forest =& $this->CI->tree->get_tree('cat_id', 'cat_pid', $query->result_array(), $id);
+    @$forest =& $this->CI->tree->get_tree('cat_id', 'cat_pid', $query->result_array(), $id);
     $parameters_array = array(
         'table'         => 'w_shop_items_cats',
         'table_pid'     => 'cat_id',
