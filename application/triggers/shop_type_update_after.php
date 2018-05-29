@@ -62,8 +62,8 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
             $this->CI->trigger->change_relative ($row->tf_id, $last_basket_element, 'w_shop_types_fields', 'tf_id', 'field_default_values', 'Изменение значений по умолчанию поля '.$row->field_name.' типа ', $oldvals['type_name']);
 
 			if($type) {
-				$values         = implode( ",", $this->CI->input->post( 'field_values_' . $matches[1] ) );
-				$default_values = implode( ",", $this->CI->input->post( 'field_default_values_' . $matches[1] ) );
+				$values         = (is_array($this->CI->input->post( 'field_values_' . $matches[1] ))) ? implode( ",", $this->CI->input->post( 'field_values_' . $matches[1] ) ) : '';
+				$default_values = (is_array($this->CI->input->post( 'field_default_values_' . $matches[1] ))) ? implode( ",", $this->CI->input->post( 'field_default_values_' . $matches[1] ) ) : '';
 			} else {
 				$values         = '';
 				$default_values = $this->CI->input->post( 'field_default_values_' . $matches[1] );
@@ -83,8 +83,8 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 		else
 		{
 			if($type) {
-				$values         = implode( ",", $this->CI->input->post( 'field_values_' . $matches[1] ) );
-				$default_values = implode( ",", $this->CI->input->post( 'field_default_values_' . $matches[1] ) );
+				$values         = (is_array($this->CI->input->post( 'field_values_' . $matches[1] ))) ? implode( ",", $this->CI->input->post( 'field_values_' . $matches[1] ) ) : '';
+				$default_values = (is_array($this->CI->input->post( 'field_default_values_' . $matches[1] ))) ? implode( ",", $this->CI->input->post( 'field_default_values_' . $matches[1] ) ) : '';
 			} else {
 				$values         = '';
 				$default_values = $this->CI->input->post( 'field_default_values_' . $matches[1] );

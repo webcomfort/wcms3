@@ -27,8 +27,8 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 	    $type = $this->CI->input->post('field_type_'.$matches[1]);
 
 	    if($type) {
-		    $values         = implode( ",", $this->CI->input->post( 'field_values_' . $matches[1] ) );
-		    $default_values = implode( ",", $this->CI->input->post( 'field_default_values_' . $matches[1] ) );
+		    $values         = (is_array($this->CI->input->post( 'field_values_' . $matches[1] ))) ? implode( ",", $this->CI->input->post( 'field_values_' . $matches[1] ) ) : '';
+		    $default_values = (is_array($this->CI->input->post( 'field_default_values_' . $matches[1] ))) ? implode( ",", $this->CI->input->post( 'field_default_values_' . $matches[1] ) ) : '';
 	    } else {
 		    $values         = '';
 		    $default_values = $this->CI->input->post( 'field_default_values_' . $matches[1] );
