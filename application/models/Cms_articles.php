@@ -213,7 +213,7 @@ class Cms_articles extends CI_Model {
         }
         else
         {
-        	$html = $this->p_get_html($i, $type, $trigger);
+	        $html = $this->p_get_html($i, $type, $trigger, '', 0, 1, 0, true);
 
             $fields .= $html['div'];
             $fields .= $html['selects'];
