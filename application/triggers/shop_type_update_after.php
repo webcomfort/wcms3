@@ -71,7 +71,7 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 
             $data = array(
 	            'field_values'          => $values,
-	            'field_default_values'  => $default_values,
+	            'field_default_values'  => (!is_null($default_values)) ? $default_values : '',
                 'field_filter'          => $this->CI->input->post('field_filter_'.$matches[1]),
                 'field_modification'    => $this->CI->input->post('field_modification_'.$matches[1]),
                 'field_table'           => $this->CI->input->post('field_table_'.$matches[1]),
@@ -95,7 +95,7 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
                 'type_id'               => $id,
                 'field_id'              => $matches[1],
                 'field_values'          => $values,
-                'field_default_values'  => $default_values,
+                'field_default_values'  => (!is_null($default_values)) ? $default_values : '',
                 'field_filter'          => ($this->CI->input->post('field_filter_'.$matches[1])) ? 1 : 0,
                 'field_modification'    => ($this->CI->input->post('field_modification_'.$matches[1])) ? 1 : 0,
                 'field_table'           => ($this->CI->input->post('field_table_'.$matches[1])) ? 1 : 0,
