@@ -341,6 +341,7 @@ class Adm_shop_item extends CI_Model {
         // Получаем данные
         $this->db->select('type_id AS id, type_name AS name')
             ->from('w_shop_types')
+	        ->where('type_lang_id', $this->session->userdata('w_alang'))
             ->order_by("type_name", "asc");
 
         $query  = $this->db->get();
@@ -906,14 +907,14 @@ class Adm_shop_item extends CI_Model {
         // F - присутствует в фильтрах
         // ------------------------------------------------------------------------
 
-        $opts['fdd']['go'] = array(
+        /*$opts['fdd']['go'] = array(
             'name'          => '',
             'css'           => array('postfix'=>'nav'),
             'nodb'          => true,
             'options'       => 'L',
             'cell_display'   => '<a href="'.$opts['page_name'].'/parent/$key" class="btn btn-sm btn-warning" rel="tooltip" title="Подуровни"><i class="glyphicon glyphicon-folder-open icon-white"></i></a>',
             'sort'          => false,
-        );
+        );*/
         $opts['fdd']['go2'] = array(
             'name'          => '',
             'css'           => array('postfix'=>'nav'),
@@ -954,12 +955,11 @@ class Adm_shop_item extends CI_Model {
             ),
             'help'          => 'Введите название товара.'
         );
-        $shop_page = $this->Cms_shop->get_shop_page();
         $opts['fdd']['item_url'] = array(
             'name'          => 'URL',
             'options'       => 'LACPDV',
             'select'        => 'T',
-            'URL'           => '/'.$shop_page.'/item/$value',
+            'URL'           => '/item/$value',
             'URLdisp'       => 'На сайте',
             'URLtarget'     => '_blank',
             'maxlen'        => 65535,
@@ -1046,7 +1046,7 @@ class Adm_shop_item extends CI_Model {
 
         // ------------------------------------------------------------------------
 
-        $opts['fdd']['item_price'] = array(
+        /*$opts['fdd']['item_price'] = array(
             'name'          => 'Цена',
             'options'       => 'LACPDV',
             'select'        => 'T',
@@ -1086,7 +1086,7 @@ class Adm_shop_item extends CI_Model {
                 '0'         => 'Не в наличии'
             ),
             'save'          => true,
-            'default'       => 0,
+            'default'       => 1,
             'help'          => 'Товар, которого нет в наличии нельзя положить в корзину, но он присутствует в каталоге.'
         );
         $opts['fdd']['item_label'] = array(
@@ -1102,7 +1102,7 @@ class Adm_shop_item extends CI_Model {
             'save'          => true,
             'default'       => 0,
             'help'          => 'Выберите дополнительную маркировку товара.'
-        );
+        ); */
 		// Tags
 		$opts = array_merge_recursive((array)$opts, (array)$this->Cms_tags->get_admin_opts($id, 'shop'));
         if($publish)
@@ -1116,7 +1116,7 @@ class Adm_shop_item extends CI_Model {
                     '0'         => 'Неактивен'
                 ),
                 'save'          => true,
-                'default'       => 0,
+                'default'       => 1,
                 'help'          => 'Статус на сайте. Если вы хотите, чтобы товар не было видно на сайте - сделайте его неактивным, т.е. совсем не обязательно удалять товар, чтобы его скрыть.'
             );
         }

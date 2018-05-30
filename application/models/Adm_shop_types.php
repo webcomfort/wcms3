@@ -94,6 +94,7 @@ class Adm_shop_types extends CI_Model {
         $this->db->select('f.field_id, f.field_type_back, f.field_type_front, f.field_name');
         $this->db->from('w_shop_fields AS f');
         $this->db->where('f.field_active', 1);
+	    $this->db->where('f.field_lang_id', $this->session->userdata('w_alang'));
         $this->db->order_by("f.field_name", "asc");
         $query = $this->db->get();
 
@@ -310,6 +311,8 @@ class Adm_shop_types extends CI_Model {
 
         // Фильтрация вывода
         $opts['filters'] = array ();
+		// Фильтр по языкам
+		$opts['filters'][] = "type_lang_id = '" . $this->session->userdata('w_alang') . "'";
 
         // Триггеры
 		// $this->opts['triggers']['insert']['after'] = '';
@@ -410,6 +413,17 @@ class Adm_shop_types extends CI_Model {
             'sort' => false,
             'help' => 'Выберите требуемые поля и параметры для товаров данного типа. Отсортируйте их в нужном порядке.'
         );
+
+		// ------------------------------------------------------------------------
+
+		$opts['fdd']['type_lang_id'] = array(
+			'name'          => 'Язык',
+			'select'        => 'T',
+			'options'       => 'ACPH',
+			'maxlen'        => 3,
+			'default'       => $this->session->userdata('w_alang'),
+			'sort'          => false
+		);
 
         // ------------------------------------------------------------------------
 

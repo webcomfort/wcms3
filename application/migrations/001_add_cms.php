@@ -1156,6 +1156,10 @@ class Migration_Add_cms extends CI_Migration {
 		    'type_name' => array(
 			    'type' => 'text',
 		    ),
+		    'type_lang_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
 	    ));
 	    $this->dbforge->add_key('type_id', TRUE);
 	    $this->dbforge->create_table('w_shop_types', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));

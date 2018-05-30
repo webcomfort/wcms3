@@ -180,7 +180,7 @@ class Cms_tags extends CI_Model {
 							$value = trim($value);
 
 							if(!preg_int($value)){
-								$query_check = $this->db->query('SELECT tag_id AS id FROM w_tags WHERE tag_name = \''.$value.'\' LIMIT 1');
+								$query_check = $this->db->query('SELECT tag_id AS id FROM w_tags WHERE tag_name = \''.$value.'\' AND tag_lang_id = \''.$this->session->userdata('w_alang').'\' LIMIT 1');
 								if ($query_check->num_rows() > 0) {
 									$row_check = $query_check->row();
 									$value = $row_check->id;
@@ -243,7 +243,7 @@ class Cms_tags extends CI_Model {
 						$value = trim($value);
 
 						if(!preg_int($value)){
-							$query_check = $this->db->query('SELECT tag_id AS id FROM w_tags WHERE tag_name = \''.$value.'\' LIMIT 1');
+							$query_check = $this->db->query('SELECT tag_id AS id FROM w_tags WHERE tag_name = \''.$value.'\' AND tag_lang_id = \''.$this->session->userdata('w_alang').'\' LIMIT 1');
 							if ($query_check->num_rows() > 0) {
 								$row_check = $query_check->row();
 								$value = $row_check->id;

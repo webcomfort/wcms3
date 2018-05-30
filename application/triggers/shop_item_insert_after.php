@@ -137,7 +137,7 @@ $this->CI->db->select('tf.field_id, field_type_back')
 $query  = $this->CI->db->get();
 if ($query->num_rows() > 0) {
     foreach ($query->result() as $row) {
-        if(!$this->CI->input->post('item_field_'.$row->field_id, TRUE) && $row->field_type_back != 8){
+	    if(!$this->CI->input->post('item_field_'.$row->field_id, TRUE) && $this->CI->input->post('item_field_'.$row->field_id, TRUE) != 0 && $row->field_type_back != 8){
             $data = array(
                 'par_id' => '',
                 'item_id' => $id,
