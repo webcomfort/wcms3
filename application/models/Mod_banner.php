@@ -59,7 +59,7 @@ class Mod_banner extends CI_Model {
                     'id'        => $row->banner_id,
                     'code'      => $row->banner_code,
                     'url'       => '/mod_banner/p_click/'.$row->banner_id,
-                    'img'       => $this->_get_banner_code($row->banner_id, $row->banner_link),
+                    'img'       => $this->_get_banner_code($row->banner_id, $row->banner_link, 'img-fluid'),
                     'blank'     => ($row->banner_blank == 1) ? true : false,
                     'i'         => $i
                 );
@@ -86,9 +86,10 @@ class Mod_banner extends CI_Model {
      * @access  private
      * @param   int
      * @param   string
+     * @param   mixed
      * @return  string
      */
-    function _get_banner_code($banner_id, $link)
+    function _get_banner_code($banner_id, $link, $class=false)
     {
         $iid = ceil(intval($banner_id)/1000);
         $url = $this->config->item('cms_banners_dir').$iid.'/';
@@ -106,7 +107,7 @@ class Mod_banner extends CI_Model {
 
                     if ($extension != 'swf')
                     {
-                        return '<img src="'.$url.$file.'" ' . $params[3] . '>';
+                        return '<img src="'.$url.$file.'" ' . $params[3] . (($class)?' class="'.$class.'"':'') . '>';
                     }
                     else
                     {
