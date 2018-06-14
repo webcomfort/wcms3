@@ -156,6 +156,8 @@ class Page extends CI_Controller {
         $view       = $views[$params->page_view_id];
 		
 		// Параметры страницы
+	    $this->Cms_page->set_crumbs($this->config->item('cms_site_crumbs'));
+	    $this->Cms_page->set_name($params->page_name);
         $this->Cms_page->set_title($params->page_meta_title);
 		$this->Cms_page->set_link_title($params->page_link_title);
         $this->Cms_page->set_keywords($params->page_meta_keywords);
@@ -171,7 +173,8 @@ class Page extends CI_Controller {
 
         // Подключения
         $data = array_merge_recursive((array)$data, (array)$this->Cms_inclusions->get_inclusions($params->page_id, 'pages'));
-
+	    $data['page_crumbs']       = $this->load->view('site/menu_crumbs', array('crumbs_array'=>$this->Cms_page->get_crumbs()), true);
+	    $data['page_name']         = $this->Cms_page->get_name();
         $data['page_title']        = $this->Cms_page->get_title();
 		$data['page_link_title']   = $this->Cms_page->get_link_title();
         $data['page_keywords']     = $this->Cms_page->get_keywords();

@@ -7,7 +7,9 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Cms_inclusions extends CI_Model {
 
-    function __construct()
+    private $active_inclusions = array();
+
+	function __construct()
     {
         parent::__construct();
     }
@@ -41,6 +43,7 @@ class Cms_inclusions extends CI_Model {
                     $model = $inclusions[$row->inc_id]['file'];
                     $this->load->model($model);
                     $data['inc_module_'.$row->inc_id] = $this->$model->get_output(array($row->inc_value));
+                    $this->active_inclusions[$row->inc_id] = $row->inc_value;
                 }
                 else
                 {
@@ -51,6 +54,19 @@ class Cms_inclusions extends CI_Model {
 
         return $data;
     }
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Активные включения
+	 *
+	 * @access  public
+	 * @return  array
+	 */
+	function get_active_inclusions()
+	{
+		return $this->active_inclusions;
+	}
 
     // ------------------------------------------------------------------------
 

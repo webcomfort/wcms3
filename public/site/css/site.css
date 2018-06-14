@@ -20,6 +20,20 @@ img.captcha { margin-top: -5px; margin-bottom: -5px; }
 
 /* #Tag
 ================================================== */
+.catalog-tags {
+    margin: 20px 0;
+}
+.all-tags {
+	margin-top: 10px;
+}
+.tag-item {
+	font-size: 0.875rem;
+}
+.tag-count {
+	font-size: 0.8rem;
+	color: #d5d5d5;
+	padding-left: 0.2rem;
+}
 a.tag {
 	border: solid 1px #ddd;
 	padding: 3px 5px;

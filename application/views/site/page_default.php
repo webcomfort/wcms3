@@ -1,7 +1,7 @@
     <div class="container">
 		<div class="row mt-2">
             <div class="col-md-8">
-                <?php echo @module('mod_menu_crumbs', array(1)); ?>
+	            <?php echo $page_crumbs; ?>
                 <?php
                 if(isset($page_articles) && is_array($page_articles) && isset($page_articles[0])){
                     foreach ($page_articles[0] as $value) echo @$value;
@@ -12,9 +12,21 @@
                 <?php echo @$inc_module_3; ?>
             </div>
             <div class="col-md-4">
+
                 <?php echo @module('mod_menu_second', array(1, '')); ?>
-				<hr class="mt-2">
-                <?php echo @module('mod_news_latest', array(1, 2, 'news_latest')); ?>
+
+	            <?php
+	            if(($news_latest = @module('mod_news_latest', array(1, 2, 'news_latest'))) != ''){
+		            echo $news_latest;
+	            }
+	            ?>
+
+                <?php
+                if(($tags_list = @module('mod_tags_list', array())) != ''){
+                    echo $tags_list;
+                }
+                ?>
+
                 <?php
                 if(isset($page_articles) && is_array($page_articles) && isset($page_articles[1])){
                     foreach ($page_articles[1] as $value) echo @$value;

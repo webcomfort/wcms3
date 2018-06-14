@@ -66,6 +66,7 @@ $config['cms_lang'] = array(
 $config['cms_bg_dir'] = '/public/upload/backgrounds/';
 
 // Меню
+$config['cms_site_crumbs'] = 1;
 $config['cms_site_menues'] = array(
     '1' => array(
         'map'    => true,
@@ -240,7 +241,8 @@ $config['cms_articles'] = array(
 // Подключения
 $config['cms_site_inclusions'] = array(
     '1' => array(
-        'file'          => 'cms_module',
+        'label'         => '',
+    	'file'          => 'cms_module',
         'name'          => 'Модуль',
         'help'          => 'Выберите из списка модуль для подключения.',
         'table'         => 'w_cms_modules',
@@ -248,10 +250,12 @@ $config['cms_site_inclusions'] = array(
         'filter'        => '$filters = "module_active = \'1\' AND module_type = \'1\'";',
         'description'   => 'module_name',
         'orderby'       => 'module_sort',
-        'where'         => array('pages', 'news')
+        'where'         => array('pages', 'news'),
+	    'tags'          => false,
     ),
     '2' => array(
-        'file'          => 'mod_news',
+	    'label'         => 'news',
+    	'file'          => 'mod_news',
         'name'          => 'Новостная рубрика',
         'help'          => 'Выберите из списка новостную рубрику для подключения.',
         'table'         => 'w_news_categories',
@@ -262,10 +266,15 @@ $config['cms_site_inclusions'] = array(
         'where'         => array('pages'),
         'add_code'      => '<a class="btn btn-primary btn-inc" href="#" role="button" data-toggle="modal" data-target="#NewsModal" id="add_news_button">Создать</a>',
         'modal_code'    => 'admin/inc_news',
-        'adm_model'     => 'Adm_news'
+        'adm_model'     => 'Adm_news',
+	    'tags'          => array(
+	    	'model' => 'Cms_news',
+		    'method'=> 'get_tag_items'
+	    )
     ),
     '3' => array(
-        'file'          => 'mod_gallery',
+	    'label'         => 'gallery',
+    	'file'          => 'mod_gallery',
         'name'          => 'Галерея',
         'help'          => 'Выберите из списка галерею для подключения.',
         'table'         => 'w_galleries',
@@ -276,7 +285,24 @@ $config['cms_site_inclusions'] = array(
         'where'         => array('pages', 'news', 'shop'),
         'add_code'      => '<a class="btn btn-primary btn-inc" href="#" role="button" data-toggle="modal" data-target="#GalleryModal3" id="add_gallery_button_3">Создать</a>',
         'modal_code'    => 'admin/inc_gallery',
-        'adm_model'     => 'Adm_gallery_photos'
+        'adm_model'     => 'Adm_gallery_photos',
+	    'tags'          => false,
+    ),
+    '4' => array(
+	    'label'         => 'shop',
+    	'file'          => 'mod_catalog',
+	    'name'          => 'Категория каталога',
+	    'help'          => 'Выберите из списка категорию для подключения.',
+	    'table'         => 'w_shop_categories',
+	    'key'           => 'cat_id',
+	    'filter'        => '$filters = "cat_lang_id=\'{$this->session->userdata(\'w_alang\')}\'";',
+	    'description'   => 'cat_name',
+	    'orderby'       => 'cat_pid, cat_sort',
+	    'where'         => array('pages'),
+	    'tags'          => array(
+		    'model' => 'Cms_shop',
+		    'method'=> 'get_tag_items'
+	    )
     )
 );
 
@@ -296,7 +322,7 @@ $config['cms_banners_places'] = array(
     '1' => array(
         'name'      => 'Первый баннер под большим слайдером на главной',
         'list'      => false,
-        'class'     => false,
+        'class'     => 'img-fluid',
         'view'      => 'banner_xxx' // макет списка
     )
 );
@@ -333,7 +359,7 @@ $config['cms_gallery_views'] = array(
 | Новости
 |--------------------------------------------------------------------------
 */
-$config['cms_news_limit'] = 1;
+$config['cms_news_limit'] = 3;
 $config['cms_news_dir'] = '/public/upload/news/';
 $config['cms_news_images'] = array(
     '_thumb' => array(

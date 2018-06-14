@@ -71,6 +71,32 @@ class Cms_news extends CI_Model {
         }
     }
 
+	/**
+	 * Записи, которые нужно учитывать в тегах
+	 *
+	 * @access	public
+	 * @param   int
+	 * @return	array
+	 */
+	function get_tag_items ($cat_id){
+		$this->db->select('w_news.news_id as id');
+		$this->db->from('w_news_categories_cross');
+		$this->db->join('w_news', 'w_news.news_id = w_news_categories_cross.news_id');
+		$this->db->where('news_cat_id', $cat_id);
+		$this->db->where_in('news_active', array(1));
+		$this->db->where('news_lang_id', LANG);
+		//----------------------------------------------------------------------------------
+		$query = $this->db->get();
+
+		$ids = array(0);
+		if ($query->num_rows() > 0) {
+			foreach ($query->result() as $row) {
+				$ids[] = $row->id;
+			}
+		}
+		return $ids;
+	}
+
     /**
      * Изображения
      *

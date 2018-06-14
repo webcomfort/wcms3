@@ -27,7 +27,7 @@ class Mod_news extends CI_Model {
     {
         $id = (isset($params[0])) ? $params[0] : false;
 
-        if (!$this->uri->segment(2) || ($this->uri->segment(2) && preg_int ($this->uri->segment(2))) || ($this->uri->segment(2) && preg_int ($this->uri->segment(2)) && $this->uri->segment(3) && $this->uri->segment(3) == 'tag' && $this->uri->segment(4) && preg_int ($this->uri->segment(4)))) $output = $this->_get_list($id);
+        if (!$this->uri->segment(2) || ($this->uri->segment(2) && preg_int ($this->uri->segment(2)))) $output = $this->_get_list($id);
         if ($this->uri->segment(1) && $this->uri->segment(1) == 'post' && $this->uri->segment(2) && preg_ext_string ($this->uri->segment(2))) $output = $this->_get_news($id, $this->uri->segment(2));
 
         return $output;
@@ -83,25 +83,23 @@ class Mod_news extends CI_Model {
      */
     function _get_list($id)
     {
-        if($this->uri->segment(3) && $this->uri->segment(3) == 'tag' && $this->uri->segment(4) && preg_int($this->uri->segment(4))){
-	        $tag = $this->Cms_tags->get_items_by_tag($this->uri->segment(4),'news', 'w_news', 'news_id', array(
-		        'news_active' => 1,
-		        'news_lang_id' => LANG,
-		        'w_news_categories_cross.news_cat_id' => $id,
-	        ), array(
-		        'news_date' => 'desc',
-	        ), array(
-		        'table' => 'w_news_categories_cross',
-		        'field' => 'news_id',
-	        ));
-	        $tag_items = $tag['result'];
-	        $tag_name  = $tag['name'];
-	        $suffix = '/tag/'.$this->uri->segment(4);
-        } else {
-	        $tag_items = array();
-	        $tag_name  = false;
-	        $suffix = '';
-        }
+	    if($this->input->get('tag', true) && preg_int($this->input->get('tag', true))){
+		    $tag = $this->Cms_tags->get_items_by_tag($this->input->get('tag', true),'news', 'w_news', 'news_id', array(
+			    'news_active' => 1,
+			    'news_lang_id' => LANG,
+			    'w_news_categories_cross.news_cat_id' => $id,
+		    ), array(
+			    'news_date' => 'desc',
+		    ), array(
+			    'table' => 'w_news_categories_cross',
+			    'field' => 'news_id',
+		    ));
+		    $tag_items = $tag['result'];
+		    $tag_name  = $tag['name'];
+	    } else {
+		    $tag_items = array();
+		    $tag_name  = false;
+	    }
 
     	$page_url   = $this->uri->segment(1);
         $cat        = $this->Cms_news->get_cat_params($id);
@@ -136,8 +134,7 @@ class Mod_news extends CI_Model {
         $config['next_link']    = $this->lang->line('pagination_next_link');
         $config['prev_link']    = $this->lang->line('pagination_prev_link');
         $config['uri_segment']  = 2;
-	    $config['suffix']       = $suffix;
-	    $config['first_url']    = $config['base_url'] . '/0/' . $config['suffix'];
+	    $config['reuse_query_string'] = TRUE;
 	    $config['attributes']   = array('class' => 'page-link');
         $this->pagination->initialize($config);
         $pages = $this->pagination->create_links();
@@ -232,9 +229,25 @@ class Mod_news extends CI_Model {
             $this->load->library('parser');
             $this->load->helper('date');
 
+	        $news_page = $this->Cms_news->get_news_page($row->news_cat_id);
+	        $news_cat  = $this->Cms_news->get_cat_params($row->news_cat_id);
+
             if($row->news_meta_title != '') $this->Cms_page->set_title($row->news_meta_title);
             if($row->news_meta_keywords != '') $this->Cms_page->set_keywords($row->news_meta_keywords);
             if($row->news_meta_description != '') $this->Cms_page->set_description($row->news_meta_description);
+	        $this->Cms_page->set_name($this->lang->line('news_name'));
+	        if(isset($news_cat['name']) && $news_cat['name'] != '') $this->Cms_page->add_crumbs(Array(
+		        'page_id' => $row->news_id,
+		        'page_pid' => 0,
+		        'page_name' => $news_cat['name'],
+		        'page_url' => $news_page,
+	        ));
+	        if($row->news_name != '') $this->Cms_page->add_crumbs(Array(
+		        'page_id' => $row->news_id,
+		        'page_pid' => 0,
+		        'page_name' => $row->news_name,
+		        'page_url' => '/post/'.$row->news_url,
+	        ));
 
             // Тексты
             $articles = $this->Cms_articles->get_articles($row->news_id, 'news');

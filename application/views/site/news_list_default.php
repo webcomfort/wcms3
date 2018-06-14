@@ -19,7 +19,7 @@ else
     <?php if (isset($value['news_tags']) && is_array($value['news_tags']) && count($value['news_tags'])) { ?>
         <div class="tags">
 		<?php foreach ($value['news_tags'] as $tag_id => $tag_name) { ?>
-            <a href="<?php echo $news_list_url; ?>/0/tag/<?php echo $tag_id; ?>" class="badge badge-success" title="<?php echo $tag_name; ?>"><?php echo $tag_name; ?></a>
+            <a href="<?php echo $news_list_url; ?>?tag=<?php echo $tag_id; ?>" class="badge badge-success" title="<?php echo $tag_name; ?>"><?php echo $tag_name; ?></a>
 		<?php } ?>
         </div>
 	<?php } ?>

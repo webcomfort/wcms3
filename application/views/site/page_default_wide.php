@@ -1,7 +1,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12 mt-2">
-                    <?php echo @module('mod_menu_crumbs', array(1)); ?>
+	                <?php echo $page_crumbs; ?>
                 </div>
             </div>
         </div>

@@ -28,7 +28,7 @@ class Mod_banner extends CI_Model {
         $views   = $this->config->item('cms_banners_views');
         $list    = $places[$id]['list'];
         $view    = $places[$id]['view'];
-        $class   = ($places[$id]['class']) ? $places[$id]['class'] : '';
+        $class   = ($places[$id]['class']) ? $places[$id]['class'] : false;
         $banners = array();
 
         $this->db->where('banner_place_id', $id);
@@ -59,7 +59,7 @@ class Mod_banner extends CI_Model {
                     'id'        => $row->banner_id,
                     'code'      => $row->banner_code,
                     'url'       => '/mod_banner/p_click/'.$row->banner_id,
-                    'img'       => $this->_get_banner_code($row->banner_id, $row->banner_link, 'img-fluid'),
+                    'img'       => $this->_get_banner_code($row->banner_id, $row->banner_link, $class),
                     'blank'     => ($row->banner_blank == 1) ? true : false,
                     'i'         => $i
                 );
@@ -70,8 +70,7 @@ class Mod_banner extends CI_Model {
             }
 
             $data = array(
-                'banners'   => $banners,
-                'class'     => $class
+                'banners'   => $banners
             );
 
             if ($view) return $this->load->view('site/'.$view, $data, true);

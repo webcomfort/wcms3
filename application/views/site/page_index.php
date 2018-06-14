@@ -18,7 +18,11 @@
             </div>
             
 			<div class="col-md-4">
-                <?php echo @module('mod_news_latest', array(1, 2, 'news_latest')); ?>
+				<?php
+				if(($news_latest = @module('mod_news_latest', array(1, 2, 'news_latest'))) != ''){
+					echo $news_latest;
+				}
+				?>
                 <?php
                 if(isset($page_articles) && is_array($page_articles) && isset($page_articles[1])){
 	                foreach ($page_articles[1] as $value) echo @$value;

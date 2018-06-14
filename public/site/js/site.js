@@ -27,3 +27,14 @@ function onSubmit(token) {
         alert('SYSTEM ERROR, TRY LATER AGAIN');
     });
 }
+
+
+/************************************************
+ ------- Tags
+ *************************************************/
+$( document ).ready(function() {
+    $( ".all-tags" ).click(function() {
+        $( ".tag-container" ).removeClass( "d-none" );
+        $( ".all-tags" ).hide();
+    });
+});
