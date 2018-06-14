@@ -112,7 +112,7 @@ $config['cms_articles'] = array(
 						'views' => array(
 							'1' => array(
 								'file'      => 'article_default',
-								'name'      => 'Статья без отступов и фона'
+								'name'      => 'Статья с темным текстом на светлом фоне'
 							),
 							'2' => array(
 								'file'      => 'article_default_white',
@@ -125,7 +125,7 @@ $config['cms_articles'] = array(
 						'views' => array(
 							'1' => array(
 								'file'      => 'article_default',
-								'name'      => 'Статья без отступов и фона'
+								'name'      => 'Статья с темным текстом на светлом фоне'
 							),
 							'2' => array(
 								'file'      => 'article_default_white',
@@ -142,7 +142,7 @@ $config['cms_articles'] = array(
 						'views' => array(
 							'1' => array(
 								'file'      => 'article_default',
-								'name'      => 'Статья без отступов и фона'
+								'name'      => 'Статья с темным текстом на светлом фоне'
 							),
 							'2' => array(
 								'file'      => 'article_default_white',
@@ -155,7 +155,7 @@ $config['cms_articles'] = array(
 						'views' => array(
 							'1' => array(
 								'file'      => 'article_default',
-								'name'      => 'Статья без отступов и фона'
+								'name'      => 'Статья с темным текстом на светлом фоне'
 							),
 							'2' => array(
 								'file'      => 'article_default_white',
@@ -172,19 +172,19 @@ $config['cms_articles'] = array(
 						'views' => array(
 							'1' => array(
 								'file'      => 'article_wide',
-								'name'      => 'Статья c фоном, текст на всю ширину'
+								'name'      => 'Статья с темным текстом на светлом фоне, текст на всю ширину'
 							),
 							'2' => array(
 								'file'      => 'article_wide_white',
-								'name'      => 'Статья c фоном, белый текст на всю ширину'
+								'name'      => 'Статья с белым текстом на темном фоне, белый текст на всю ширину'
 							),
 							'3' => array(
 								'file'      => 'article_container',
-								'name'      => 'Статья c фоном, текст в контейнере'
+								'name'      => 'Статья с темным текстом на светлом фоне, текст в контейнере'
 							),
 							'4' => array(
 								'file'      => 'article_container_white',
-								'name'      => 'Статья c фоном, белый текст в контейнере'
+								'name'      => 'Статья с белым текстом на темном фоне, белый текст в контейнере'
 							)
 						)
 					)
@@ -202,7 +202,7 @@ $config['cms_articles'] = array(
 						'views' => array(
 							'1' => array(
 								'file'      => 'article_default',
-								'name'      => 'Статья без отступов и фона'
+								'name'      => 'Статья с темным текстом на светлом фоне'
 							),
 							'2' => array(
 								'file'      => 'article_default_white',
@@ -224,7 +224,7 @@ $config['cms_articles'] = array(
 						'views' => array(
 							'1' => array(
 								'file'      => 'article_default',
-								'name'      => 'Статья без отступов и фона'
+								'name'      => 'Статья с темным текстом на светлом фоне'
 							),
 							'2' => array(
 								'file'      => 'article_default_white',

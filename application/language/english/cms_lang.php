@@ -33,6 +33,7 @@ $lang['contacts_success'] = 'Thank you, your message was sent. We will reply you
 |--------------------------------------------------------------------------
 */
 $lang['news_name']          = 'Post';
+$lang['news_name_pl']       = 'News';
 $lang['news_latest_link']   = 'Read all news';
 $lang['news_content_link']  = 'Back to the news list';
 $lang['news_page']          = 'page';

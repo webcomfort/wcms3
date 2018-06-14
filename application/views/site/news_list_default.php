@@ -7,7 +7,7 @@
 else
 {
 ?>
-<h2><?php echo PAGE_NAME; ?><?php if($tag_name){ echo '<small>'.lang('tags_with').'&laquo;'.$tag_name.'&raquo;'.' [<a href="'.$news_list_url.'">'.lang('tags_cancel').'</a>]</small>'; } ?></h2>
+<h2><?php echo lang('news_name_pl'); ?><?php if($tag_name){ echo '<small>'.lang('tags_with').'&laquo;'.$tag_name.'&raquo;'.' [<a href="'.$news_list_url.'">'.lang('tags_cancel').'</a>]</small>'; } ?></h2>
 
 <?php foreach ($news_list as $value) { ?>
 
