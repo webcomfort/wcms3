@@ -11,7 +11,7 @@ class MY_Parser extends CI_Parser {
     
     function parse_modules($template)
 	{
-		preg_match_all('~\{@\s?module\s?(.+)@\}~', $template, $matches);
+		preg_match_all('~\{@\s?module\s?(.+?)@\}~', $template, $matches);
         
         if(count($matches[1]))
         {
