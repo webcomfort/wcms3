@@ -37,11 +37,11 @@ CKEDITOR.editorConfig = function( config ) {
             // Use the ability to specify elements as an object.
             elements: CKEDITOR.dtd,
             attributes: true,
-            styles: true,
+            styles: false,
             classes: true
         }
     };
-    config.disallowedContent = 'img{width,height}';
+    config.disallowedContent = 'img{width,height}; font';
 
     config.basicEntities = false;
     config.entities = false;
