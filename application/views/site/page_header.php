@@ -9,6 +9,8 @@
         <meta name="description" content="<?php echo @$page_description; ?>">
         <meta name="author" content="WebComfort">
 
+	    <?php echo @$page_meta; ?>
+
         <!-- Icons -->
         <link rel="shortcut icon" href="/public/admin/img/favicon.png">
         <link rel="apple-touch-icon" sizes="57?57" href="/public/admin/img/apple-touch-icon-57-precomposed.png">

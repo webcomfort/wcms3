@@ -66,37 +66,24 @@ class Sitemap extends CI_Controller {
      */
     function _get_news()
     {
-        $this->load->model('Cms_news');
+	    // Новости
+	    $this->db->select('news_id, news_url');
+	    $this->db->from('w_news');
+	    $this->db->where('news_active', 1);
+	    $this->db->where('news_date <=', date('Y-m-d H:i:00'));
+	    $this->db->order_by('news_date', 'desc');
+	    $query = $this->db->get();
 
-        // Ленты
-        $this->db->select('news_cat_id');
-        $this->db->from('w_news_categories');
-        $query_lenta = $this->db->get();
+	    if ($query->num_rows() > 0)
+	    {
+		    foreach ($query->result() as $row)
+		    {
+			    $this->load->model('Cms_articles');
+			    $articles = $this->Cms_articles->get_articles($row->news_id, 'news');
+			    if(count($articles)>0) $urls[] = 'http://'.$_SERVER["HTTP_HOST"].'/post/'.$row->news_url;
+		    }
+	    }
 
-        if ($query_lenta->num_rows() > 0)
-        {
-            foreach ($query_lenta->result() as $row_lenta)
-            {
-                $pages[$row_lenta->news_cat_id] = $this->Cms_news->get_news_page($row_lenta->news_cat_id);
-            }
-        }
-
-        // Новости
-        $this->db->select('news_url, news_main_cat');
-        $this->db->from('w_news');
-        $this->db->where('news_active', 1);
-        $this->db->where('news_date <=', date('Y-m-d H:i:00'));
-        $this->db->order_by('news_date', 'desc');
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0)
-        {
-            foreach ($query->result() as $row)
-            {
-                $urls[] = 'http://'.$_SERVER["HTTP_HOST"].'/'.$pages[$row->news_main_cat].'/'.$row->news_url;
-            }
-        }
-
-        return $urls;
+	    return $urls;
     }
 }
