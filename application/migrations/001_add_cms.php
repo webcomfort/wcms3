@@ -23,6 +23,9 @@ class Migration_Add_cms extends CI_Migration {
                 'default' => '1',
             ),
         ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+
         $this->dbforge->add_key('bg_id', TRUE);
         $this->dbforge->add_key('bg_active');
         $this->dbforge->create_table('w_backgrounds', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
@@ -78,6 +81,8 @@ class Migration_Add_cms extends CI_Migration {
                 'constraint' => 11,
             ),
         ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         $this->dbforge->add_key('banner_id', TRUE);
         $this->dbforge->add_key('banner_lang_id');
         $this->dbforge->add_key('banner_place_id');
@@ -173,6 +178,8 @@ class Migration_Add_cms extends CI_Migration {
                 'constraint' => 11,
             ),
         ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         $this->dbforge->add_key('config_id', TRUE);
         $this->dbforge->add_key('config_module_label');
         $this->dbforge->add_key('config_lang_id');
@@ -336,6 +343,8 @@ class Migration_Add_cms extends CI_Migration {
                 'constraint' => 11,
             ),
         ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         $this->dbforge->add_key('gallery_id', TRUE);
         $this->dbforge->add_key('gallery_lang_id');
         $this->dbforge->add_key('gallery_active');
@@ -379,6 +388,8 @@ class Migration_Add_cms extends CI_Migration {
                 'constraint' => 11,
             ),
         ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         $this->dbforge->add_key('photo_id', TRUE);
         $this->dbforge->add_key('photo_lang_id');
         $this->dbforge->add_key('photo_gallery_id');
@@ -543,6 +554,8 @@ class Migration_Add_cms extends CI_Migration {
                 'constraint' => 11,
             ),
         ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         $this->dbforge->add_key('news_id', TRUE);
         $this->dbforge->add_key('news_lang_id');
         $this->dbforge->add_key('news_date');
@@ -568,6 +581,8 @@ class Migration_Add_cms extends CI_Migration {
                 'constraint' => 11,
             ),
         ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         $this->dbforge->add_key('news_cat_id', TRUE);
         $this->dbforge->create_table('w_news_categories', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
 
@@ -660,13 +675,15 @@ class Migration_Add_cms extends CI_Migration {
             ),
 
         ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         $this->dbforge->add_key('page_id', TRUE);
         $this->dbforge->add_key('page_pid');
         $this->dbforge->add_key('page_menu_id');
         $this->dbforge->add_key('page_lang_id');
         $this->dbforge->create_table('w_pages', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
         // Главная страница
-        $this->db->query("INSERT INTO `w_pages` (`page_id`, `page_pid`, `page_menu_id`, `page_name`, `page_url`, `page_meta_title`, `page_link_title`, `page_meta_keywords`, `page_meta_description`, `page_meta_additional`, `page_footer_additional`, `page_view_id`, `page_status`, `page_sort`, `page_redirect`, `page_lang_id`) VALUES (1, 0, 1, 'Главная', 'index', 'Главная страница', 'Заголовок ссылки', '', '', '', '', 2, 1, 10, '', 1)");
+        $this->db->query("INSERT INTO `w_pages` (`page_id`, `page_pid`, `page_menu_id`, `page_name`, `page_url`, `page_meta_title`, `page_link_title`, `page_meta_keywords`, `page_meta_description`, `page_meta_additional`, `page_footer_additional`, `page_view_id`, `page_status`, `page_sort`, `page_redirect`, `page_lang_id`, `created_at`) VALUES (1, 0, 1, 'Главная', 'index', 'Главная страница', 'Заголовок ссылки', '', '', '', '', 2, 1, 10, '', 1, '".date('Y-m-d G:i:s')."')");
 
         // ------------------------------------------------------------------------
 
@@ -740,6 +757,8 @@ class Migration_Add_cms extends CI_Migration {
                 'constraint' => 11,
             ),
         ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         $this->dbforge->add_key('cross_block_id', TRUE);
         $this->dbforge->add_key('cross_block_lang_id');
         $this->dbforge->add_key('cross_block_active');
@@ -976,6 +995,8 @@ class Migration_Add_cms extends CI_Migration {
 			    'constraint' => 11,
 		    ),
 	    ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 	    $this->dbforge->add_key('cat_id', TRUE);
 	    $this->dbforge->add_key('cat_pid');
 	    $this->dbforge->create_table('w_shop_categories', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
@@ -1090,6 +1111,8 @@ class Migration_Add_cms extends CI_Migration {
 			    'constraint' => 11,
 		    ),
 	    ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 	    $this->dbforge->add_key('item_id', TRUE);
 	    $this->dbforge->add_key('item_pid');
 	    $this->dbforge->add_key('item_vendor_id');
@@ -1232,6 +1255,8 @@ class Migration_Add_cms extends CI_Migration {
 			    'constraint' => 11,
 		    ),
 	    ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 	    $this->dbforge->add_key('vendor_id', TRUE);
 	    $this->dbforge->create_table('w_shop_vendors', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
 
@@ -1251,6 +1276,8 @@ class Migration_Add_cms extends CI_Migration {
 			    'constraint' => 11,
 		    ),
 	    ));
+	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 	    $this->dbforge->add_key('tag_id', TRUE);
 	    $this->dbforge->create_table('w_tags', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
 

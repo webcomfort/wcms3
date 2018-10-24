@@ -20,6 +20,7 @@ if (is_array($files))
 	foreach ($files as $value) {
 		$this->CI->image_lib->src_file_move ($value, $this->CI->config->item( 'cms_gallery_dir' ), $id, false, true, $this->CI->config->item('cms_gallery_sizes'), false);
 	}
+	$this->CI->cms_utils->update_updated('w_gallery_photos', 'photo_id', $id);
 }
 
 // Теги

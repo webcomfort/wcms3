@@ -66,4 +66,23 @@ class Cms_utils extends CI_Model {
             return 10;
         }
     }
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Изменяем поле updated_at
+	 *
+	 * @access  public
+	 * @param   string
+	 * @param   string
+	 * @param   int
+	 * @return  void
+	 */
+	function update_updated($table, $id_name, $id) {
+		$data = array(
+			'updated_at' => date('Y-m-d G:i:s')
+		);
+		$this->db->where($id_name, $id);
+		$this->db->update($table, $data);
+	}
 }

@@ -232,6 +232,13 @@ class Adm_shop_vendor extends CI_Model {
             'save'          => true,
             'sort'          => false
         );
+		$opts['fdd']['created_at'] = array(
+			'name'          => 'Дата создания',
+			'select'        => 'T',
+			'options'       => 'ACPH',
+			'default'       => date('Y-m-d G:i:s'),
+			'sort'          => false
+		);
 
         // ------------------------------------------------------------------------
 

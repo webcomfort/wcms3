@@ -186,9 +186,10 @@ class Cms_tags extends CI_Model {
 									$value = $row_check->id;
 								} else {
 									$data = array(
-										'tag_id'    => '',
-										'tag_name' => $value,
-										'tag_lang_id' => $this->session->userdata('w_alang')
+										'tag_id'        => '',
+										'tag_name'      => $value,
+										'tag_lang_id'   => $this->session->userdata('w_alang'),
+										'created_at'    => date('Y-m-d G:i:s')
 									);
 									$this->db->insert('w_tags', $data);
 									$value = $this->db->insert_id();
@@ -249,9 +250,10 @@ class Cms_tags extends CI_Model {
 								$value = $row_check->id;
 							} else {
 								$data = array(
-									'tag_id'    => '',
-									'tag_name' => $value,
-									'tag_lang_id' => $this->session->userdata('w_alang')
+									'tag_id'        => '',
+									'tag_name'      => $value,
+									'tag_lang_id'   => $this->session->userdata('w_alang'),
+									'created_at'    => date('Y-m-d G:i:s')
 								);
 								$this->db->insert('w_tags', $data);
 								$value = $this->db->insert_id();

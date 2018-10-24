@@ -20,4 +20,5 @@ if (is_array($files))
 	foreach ($files as $value) {
 		$this->CI->image_lib->src_file_move ($value, $this->CI->config->item( 'cms_bg_dir' ), $id, false, true, array('_thumb' => array('width'=>150,'height'=>150)), false);
 	}
+	$this->CI->cms_utils->update_updated('w_backgrounds', 'bg_id', $id);
 }

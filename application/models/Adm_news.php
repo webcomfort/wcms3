@@ -710,7 +710,13 @@ class Adm_news extends CI_Model {
             'default'       => $this->session->userdata('w_alang'),
             'sort'          => false
         );
-
+	    $opts['fdd']['created_at'] = array(
+		    'name'          => 'Дата создания',
+		    'select'        => 'T',
+		    'options'       => 'ACPH',
+		    'default'       => date('Y-m-d G:i:s'),
+		    'sort'          => false
+	    );
 
         // ------------------------------------------------------------------------
 

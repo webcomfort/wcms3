@@ -340,6 +340,13 @@ class Adm_news_categories extends CI_Model {
             'sort'          => true,
             'help'          => 'Выберите из списка макет для отображения этой рубрики'
         );
+		$opts['fdd']['created_at'] = array(
+			'name'          => 'Дата создания',
+			'select'        => 'T',
+			'options'       => 'ACPH',
+			'default'       => date('Y-m-d G:i:s'),
+			'sort'          => false
+		);
 
         // ------------------------------------------------------------------------
 

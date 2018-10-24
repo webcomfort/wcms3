@@ -95,6 +95,8 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
             $this->CI->db->insert('w_pages_articles', $data);
 		}
 
+		$this->CI->cms_utils->update_updated('w_pages', 'page_id', $id);
+
 		// Индексирование статей
 		if($this->CI->config->item('cms_site_indexing'))
 		{

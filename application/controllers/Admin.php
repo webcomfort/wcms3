@@ -9,7 +9,9 @@ class Admin extends CI_Controller {
 
     function index()
     {
-        // Миграция
+	    $this->load->model('cms_utils');
+
+    	// Миграция
         if($this->uri->segment(2) == 'migrate')
         {
             $this->load->library('migration');
