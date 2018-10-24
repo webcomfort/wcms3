@@ -750,7 +750,7 @@ class Migration_Add_cms extends CI_Migration {
         $this->dbforge->add_field(array(
             'id' => array(
                 'type' => 'varchar',
-                'constraint' => 40,
+                'constraint' => 128,
                 'default' => '0',
             ),
             'ip_address' => array(
