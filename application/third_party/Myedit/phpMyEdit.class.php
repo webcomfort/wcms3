@@ -1129,9 +1129,9 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
             },
 	        init: function() {
 	            this.on("sending", function (file, xhr, formData) {
-	                formData.set("'.$this->CI->security->get_csrf_token_name().'", "'.$this->CI->security->get_csrf_hash().'");
-	                formData.set("module", "'.$this->module.'");
-	                formData.set("file_name", file.upload.filename);
+	                formData.append("'.$this->CI->security->get_csrf_token_name().'", "'.$this->CI->security->get_csrf_hash().'");
+	                formData.append("module", "'.$this->module.'");
+	                formData.append("file_name", file.upload.filename);
 	            });
 	            this.on("success", function (file, response) {
 	                $("#PME_data_'.$this->fds[$k].'_alert").append($(\'<input type="hidden" \' +
@@ -1406,12 +1406,12 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 				});
 	            	           
 	            this.on("sending", function (file, xhr, formData) {	                
-	                formData.set("'.$this->CI->security->get_csrf_token_name().'", "'.$this->CI->security->get_csrf_hash().'");
-	                formData.set("module", "'.$this->module.'");
-	                formData.set("file_name", file.upload.filename);
-	                formData.set("path", "'.$this->fdd[$k]['file']['url'].'");
-	                formData.set("id", "'.$row['qf'.$this->key_num].'");
-	                formData.set("multiple", "'.$multiple.'");
+	                formData.append("'.$this->CI->security->get_csrf_token_name().'", "'.$this->CI->security->get_csrf_hash().'");
+	                formData.append("module", "'.$this->module.'");
+	                formData.append("file_name", file.upload.filename);
+	                formData.append("path", "'.$this->fdd[$k]['file']['url'].'");
+	                formData.append("id", "'.$row['qf'.$this->key_num].'");
+	                formData.append("multiple", "'.$multiple.'");
 	            });
 	            
 	            this.on("success", function (file, response) {
