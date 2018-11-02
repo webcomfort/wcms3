@@ -15,6 +15,103 @@ class Adm_backgrounds extends CI_Model {
         parent::__construct();
     }
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Функция для добавления галереи через ajax
+	 *
+	 * @access  public
+	 * @return  string
+	 */
+
+	function p_save_bg()
+	{
+		$rights = $this->cms_user->get_user_rights();
+
+		if ( is_array($rights) && (isset($rights[basename(__FILE__)])) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
+		{
+			$bg_name = $this->input->post('bg_name', TRUE);
+			$files = $this->input->post( 'pic_files', true );
+			$article_num = $this->input->post( 'article_num', true );
+
+			if($bg_name != '' && is_array( $files )) {
+				$data = array(
+					'bg_id'      => '',
+					'bg_name'    => $bg_name,
+					'bg_label'   => '',
+					'bg_active'  => '1',
+					'created_at' => date( 'Y-m-d G:i:s' )
+				);
+				$this->db->insert( 'w_backgrounds', $data );
+
+				$this->load->library( 'image_lib' );
+				foreach ( $files as $value ) {
+					$this->image_lib->src_file_move( $value, $this->config->item( 'cms_bg_dir' ), $this->db->insert_id(), false, true, array(
+						'_thumb' => array(
+							'width'  => 150,
+							'height' => 150
+						)
+					) );
+				}
+
+				$response['result'] = 1;
+				$response['bg_id'] = $this->db->insert_id();
+				$response['article_num'] = $article_num;
+				$response['alert'] = '<div class="alert alert-success" role="alert">Фон был успешно загружен!</div>';
+				echo json_encode($response);
+
+			} else {
+				$response['result'] = 2;
+				$response['alert'] = '<div class="alert alert-warning" role="alert">Вы не заполнили требуемые поля!</div>';
+				echo json_encode($response);
+			}
+		}
+		else
+		{
+			$response['result'] = 2;
+			$response['alert'] = '<div class="alert alert-warning" role="alert">У вас недостаточно прав!</div>';
+			echo json_encode($response);
+		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Функция для смены значений поля select через ajax
+	 *
+	 * @access  public
+	 * @return  string
+	 */
+
+	function p_return_bg()
+	{
+		$rights = $this->cms_user->get_user_rights();
+
+		if ( is_array($rights) && (isset($rights[basename(__FILE__)])) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) ) {
+			$select = '';
+			$bg     = $this->input->post( 'bg_id', true );
+			$article_num = $this->input->post( 'article_num', true );
+
+			$this->db->select( 'bg_id, bg_name' );
+			$this->db->where( 'bg_active', 1 );
+			$this->db->order_by( 'bg_name', 'ASC' );
+			$query = $this->db->get( 'w_backgrounds' );
+
+			if ( $query->num_rows() > 0 ) {
+				$select .= '<option value="0"' . ( ( $bg == 0 ) ? 'selected="selected"' : '' ) . '>Без фона</option>';
+
+				foreach ( $query->result() as $row ) {
+					$select .= '<option value="' . $row->bg_id . '"' . ( ( $bg == $row->bg_id ) ? 'selected="selected"' : '' ) . '>' . $row->bg_name . '</option>';
+				}
+
+				$response['select'] = $select;
+				$response['article_num'] = $article_num;
+				echo json_encode($response);
+
+			}
+		}
+	}
+
     // ------------------------------------------------------------------------
 
     /**
@@ -195,6 +292,15 @@ class Adm_backgrounds extends CI_Model {
             'sort'          => true,
             'help'          => 'Введите название фона.'
         );
+		$opts['fdd']['bg_label'] = array(
+			'name'          => 'Метка',
+			'options'       => 'LACPDV',
+			'select'        => 'T',
+			'maxlen'        => 65535,
+			'required'      => false,
+			'sort'          => true,
+			'help'          => 'Введите метку фона (иногда требуется) - предпочтительно, если это будут латинские буквы, цифры, минус и символ подчеркивания.'
+		);
         $opts['fdd']['pic'] = array(
             'name'          => 'Фото',
             'required'      => false,

@@ -279,7 +279,7 @@ class Cms_articles extends CI_Model {
 
     function _get_article_bg($id, $bg=0)
     {
-        $select = '';
+    	$select = '';
 
         $this->db->select('bg_id, bg_name');
         $this->db->where('bg_active', 1);
@@ -295,7 +295,7 @@ class Cms_articles extends CI_Model {
 		        $select .= '<option value="'.$row->bg_id.'"'. (($bg == $row->bg_id) ? 'selected="selected"' : '').'>'.$row->bg_name.'</option>';
             }
 
-	        $select .= '</select>';
+	        $select .= '</select><a class="btn btn-success btn-xs ml5 add_bg_button" title="Добавить еще фон" href="#" role="button" data-toggle="modal" data-target="#BgModal" data-num="'.$id.'" id="add_bg_button_'.$id.'"><span class="glyphicon glyphicon-plus"></span></a>';
         }
 
         return $select;
@@ -331,6 +331,7 @@ class Cms_articles extends CI_Model {
                 $view = (array_key_exists($row->article_view_id, $views_array)) ? $views_array[$row->article_view_id]['file'] : false;
                 $data['article_text'] = $text;
                 $data['article_bg'] = $this->_get_bg($row->article_bg_id);
+	            $data['article_params'] = (isset($views_array[$row->article_view_id]['params'])) ? $views_array[$row->article_view_id]['params'] : array();
                 if ($view && $text != '') $articles[$row->article_place_id][] = $this->load->view('site/'.$view, $data, true);
             }
 

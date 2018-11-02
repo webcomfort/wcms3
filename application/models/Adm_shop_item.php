@@ -1022,6 +1022,7 @@ class Adm_shop_item extends CI_Model {
             'options'       => 'ACP',
             'add_display'   => $this->get_articles(),
             'change_display'=> $this->get_articles(),
+            'modal_code'    => $this->load->view('admin/inc_bg', array(), true),
             'sort'          => false,
             'help'          => 'Заполните поля требуемыми текстами.'
         );
