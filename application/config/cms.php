@@ -30,6 +30,7 @@ $config['cms_recaptcha_secret']  = '6Ld4GScUAAAAAB3j3M2MkYp4GHAgbJ8h9sCwmKHW';
 */
 $config['cms_site_profiling'] = false;
 $config['cms_admin_profiling'] = false;
+$config['cms_code_compression'] = false;
 
 /*
 |--------------------------------------------------------------------------
