@@ -101,6 +101,17 @@ $config['cms_site_views'] = array(
     )
 );
 
+$views_default = array(
+	'1' => array(
+		'file'      => 'article_default',
+		'name'      => 'Статья с темным текстом на светлом фоне'
+	),
+	'2' => array(
+		'file'      => 'article_default_white',
+		'name'      => 'Статья с белым текстом на темном фоне'
+	)
+);
+
 // Статьи
 $config['cms_articles'] = array(
 	'pages' => array(
@@ -110,29 +121,11 @@ $config['cms_articles'] = array(
 				'places' => array(
 					'0' => array(
 						'name'  => 'Основной блок',
-						'views' => array(
-							'1' => array(
-								'file'      => 'article_default',
-								'name'      => 'Статья с темным текстом на светлом фоне'
-							),
-							'2' => array(
-								'file'      => 'article_default_white',
-								'name'      => 'Статья с белым текстом на темном фоне'
-							)
-						)
+						'views' => $views_default
 					),
 					'1' => array(
 						'name'  => 'Сайдбар',
-						'views' => array(
-							'1' => array(
-								'file'      => 'article_default',
-								'name'      => 'Статья с темным текстом на светлом фоне'
-							),
-							'2' => array(
-								'file'      => 'article_default_white',
-								'name'      => 'Статья с белым текстом на темном фоне'
-							)
-						)
+						'views' => $views_default
 					)
 				)
 			),
@@ -140,29 +133,11 @@ $config['cms_articles'] = array(
 				'places' => array(
 					'0' => array(
 						'name'  => 'Основной блок',
-						'views' => array(
-							'1' => array(
-								'file'      => 'article_default',
-								'name'      => 'Статья с темным текстом на светлом фоне'
-							),
-							'2' => array(
-								'file'      => 'article_default_white',
-								'name'      => 'Статья с белым текстом на темном фоне'
-							)
-						)
+						'views' => $views_default
 					),
 					'1' => array(
 						'name'  => 'Сайдбар',
-						'views' => array(
-							'1' => array(
-								'file'      => 'article_default',
-								'name'      => 'Статья с темным текстом на светлом фоне'
-							),
-							'2' => array(
-								'file'      => 'article_default_white',
-								'name'      => 'Статья с белым текстом на темном фоне'
-							)
-						)
+						'views' => $views_default
 					)
 				)
 			),
@@ -200,16 +175,7 @@ $config['cms_articles'] = array(
 				'places' => array(
 					'0' => array(
 						'name'  => 'Основной блок',
-						'views' => array(
-							'1' => array(
-								'file'      => 'article_default',
-								'name'      => 'Статья с темным текстом на светлом фоне'
-							),
-							'2' => array(
-								'file'      => 'article_default_white',
-								'name'      => 'Статья с белым текстом на темном фоне'
-							)
-						)
+						'views' => $views_default
 					)
 				)
 			)
@@ -222,16 +188,7 @@ $config['cms_articles'] = array(
 				'places' => array(
 					'0' => array(
 						'name'  => 'Основной блок',
-						'views' => array(
-							'1' => array(
-								'file'      => 'article_default',
-								'name'      => 'Статья с темным текстом на светлом фоне'
-							),
-							'2' => array(
-								'file'      => 'article_default_white',
-								'name'      => 'Статья с белым текстом на темном фоне'
-							)
-						)
+						'views' => $views_default
 					)
 				)
 			)
