@@ -1495,9 +1495,9 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 	        retryChunksLimit: 3,
 	        init: function() {
 	            this.on("sending", function (file, xhr, formData) {
-	                formData.set("'.$this->CI->security->get_csrf_token_name().'", "'.$this->CI->security->get_csrf_hash().'");
-	                formData.set("module", "'.$this->module.'");
-	                formData.set("file_name", file.name);
+	                formData.append("'.$this->CI->security->get_csrf_token_name().'", "'.$this->CI->security->get_csrf_hash().'");
+	                formData.append("module", "'.$this->module.'");
+	                formData.append("file_name", file.name);
 	            });
 	            this.on("success", function (file, response) {
 	                $("#PME_data_'.$this->fds[$k].'_alert").append($(\'<input type="hidden" \' +

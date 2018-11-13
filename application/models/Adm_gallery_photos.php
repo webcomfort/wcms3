@@ -362,9 +362,9 @@ class Adm_gallery_photos extends CI_Model {
 			            },
 				        init: function() {
 				            this.on("sending", function (file, xhr, formData) {
-				                formData.set("' . $this->security->get_csrf_token_name() . '", "' . $this->security->get_csrf_hash() . '");
-				                formData.set("gallery_id", "' . $this->session->userdata( 'photo_filter' ) . '");
-				                formData.set("file_name", file.upload.filename);
+				                formData.append("' . $this->security->get_csrf_token_name() . '", "' . $this->security->get_csrf_hash() . '");
+				                formData.append("gallery_id", "' . $this->session->userdata( 'photo_filter' ) . '");
+				                formData.append("file_name", file.upload.filename);
 				            });
 				            this.on("success", function(file) {
 				                $.ajax({
