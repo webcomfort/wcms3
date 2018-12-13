@@ -167,105 +167,112 @@ class Adm_changelog extends CI_Model {
      * @access  public
      * @return  void
      */
-    function p_restore()
-    {
-        $rights = $this->cms_user->get_user_rights();
+	function p_restore()
+	{
+		$rights = $this->cms_user->get_user_rights();
 
-        if ( is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
-        {
-            $id = $this->input->post('id', TRUE);
+		if ( is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
+		{
+			$id = $this->input->post('id', TRUE);
 
-            $query = $this->db->get_where('w_changelog', array('id' => $id));
+			$query = $this->db->get_where('w_changelog', array('id' => $id));
 
-            if ($query->num_rows() > 0)
-            {
-                $row = $query->row();
+			if ($query->num_rows() > 0)
+			{
+				$row = $query->row();
 
-                // Восстановление удаленных записей
-                if ($row->operation == 'delete')
-                {
-                    // Восстановление дочерних записей
-                    $query_child = $this->db->get_where('w_changelog', array('pid' => $id));
+				// Восстановление удаленных записей
+				if ($row->operation == 'delete')
+				{
+					// Восстановление дочерних записей
+					$query_child = $this->db->get_where('w_changelog', array('pid' => $id));
 
-                    if ($query_child->num_rows() > 0)
-                    {
-                        foreach ($query_child->result() as $row_child)
-                        {
-                            if ($row_child->operation == 'delete') $this->db->insert($row_child->tab, unserialize($row_child->oldval));
-                            if ($row_child->operation == 'update')
-                            {
-                                // Находим индекс
-                                $query_ind = $this->db->query("SHOW INDEX FROM ".$row_child->tab." WHERE Key_name = 'PRIMARY'");
-                                $row_ind = $query_ind->row();
+					if ($query_child->num_rows() > 0)
+					{
+						$childs = array();
+						foreach ($query_child->result() as $row_child)
+						{
+							if ($row_child->operation == 'delete') $this->db->insert($row_child->tab, unserialize($row_child->oldval));
+							if ($row_child->operation == 'update')
+							{
+								// Находим индекс
+								$query_ind = $this->db->query("SHOW INDEX FROM ".$row_child->tab." WHERE Key_name = 'PRIMARY'");
+								$row_ind = $query_ind->row();
 
-                                if(preg_ext_string ($row_child->col))
-                                {
-                                    $data = array( $row_child->col => $row_child->oldval );
-                                    $this->db->update($row_child->tab, $data, $row_ind->Column_name." = '".$row_child->rowkey."'");
-                                }
-                            }
+								if(preg_ext_string ($row_child->col))
+								{
+									$data = array( $row_child->col => $row_child->oldval );
+									$this->db->update($row_child->tab, $data, $row_ind->Column_name." = '".$row_child->rowkey."'");
+								}
+							}
 
-                            if ($row_child->files) $this->_restore_files(unserialize($row_child->files), $row_child->id, $row_child->rowkey);
-                            if ($this->db->affected_rows()) $this->db->delete('w_changelog', array('id' => $row_child->id));
-                        }
-                    }
+							if ($row_child->files) $this->_restore_files(unserialize($row_child->files), $row_child->id, $row_child->rowkey);
+							if ($this->db->affected_rows()) $this->db->delete('w_changelog', array('id' => $row_child->id));
+							$childs[] = $row_child->id;
+						}
+					}
 
-                    $this->db->insert($row->tab, unserialize($row->oldval));
-                    if ($row->files) $this->_restore_files(unserialize($row->files), $row->id, $row->rowkey);
-                    if ($this->db->affected_rows())
-                    {
-                        $this->db->delete('w_changelog', array('id' => $row->id));
-                        echo '1';
-                    }
-                }
+					$this->db->insert($row->tab, unserialize($row->oldval));
+					if ($row->files) $this->_restore_files(unserialize($row->files), $row->id, $row->rowkey);
+					if ($this->db->affected_rows())
+					{
+						$this->db->delete('w_changelog', array('id' => $row->id));
+						if(isset($childs) && is_array($childs) && count($childs) > 0) {
+							foreach ($childs AS $chdel) {
+								$this->db->delete('w_changelog', array('id' => $chdel));
+							}
+						}
+						echo '1';
+					}
+				}
 
-                // ------------------------------------------------------------------------
+				// ------------------------------------------------------------------------
 
-                // Восстановление измененных записей
-                if ($row->operation == 'update')
-                {
-                    // Восстановление дочерних записей
-                    $query_child = $this->db->get_where('w_changelog', array('pid' => $id));
+				// Восстановление измененных записей
+				if ($row->operation == 'update')
+				{
+					// Восстановление дочерних записей
+					$query_child = $this->db->get_where('w_changelog', array('pid' => $id));
 
-                    if ($query_child->num_rows() > 0)
-                    {
-                        foreach ($query_child->result() as $row_child)
-                        {
-                            if ($row_child->operation == 'delete') $this->db->insert($row_child->tab, unserialize($row_child->oldval));
-                            if ($row_child->operation == 'update')
-                            {
-                                // Находим индекс
-                                $query_ind = $this->db->query("SHOW INDEX FROM ".$row_child->tab." WHERE Key_name = 'PRIMARY'");
-                                $row_ind = $query_ind->row();
+					if ($query_child->num_rows() > 0)
+					{
+						foreach ($query_child->result() as $row_child)
+						{
+							if ($row_child->operation == 'delete') $this->db->insert($row_child->tab, unserialize($row_child->oldval));
+							if ($row_child->operation == 'update')
+							{
+								// Находим индекс
+								$query_ind = $this->db->query("SHOW INDEX FROM ".$row_child->tab." WHERE Key_name = 'PRIMARY'");
+								$row_ind = $query_ind->row();
 
-                                if(preg_ext_string ($row_child->col))
-                                {
-                                    $data = array( $row_child->col => $row_child->oldval );
-                                    $this->db->update($row_child->tab, $data, $row_ind->Column_name." = '".$row_child->rowkey."'");
-                                }
-                            }
+								if(preg_ext_string ($row_child->col))
+								{
+									$data = array( $row_child->col => $row_child->oldval );
+									$this->db->update($row_child->tab, $data, $row_ind->Column_name." = '".$row_child->rowkey."'");
+								}
+							}
 
-                            if ($row_child->files) $this->_restore_files(unserialize($row_child->files), $row_child->id, $row_child->rowkey);
-                            if ($this->db->affected_rows()) $this->db->delete('w_changelog', array('id' => $row_child->id));
-                        }
-                    }
+							if ($row_child->files) $this->_restore_files(unserialize($row_child->files), $row_child->id, $row_child->rowkey);
+							if ($this->db->affected_rows()) $this->db->delete('w_changelog', array('id' => $row_child->id));
+						}
+					}
 
-                    // Находим индекс
-                    $query_ind = $this->db->query("SHOW INDEX FROM ".$row->tab." WHERE Key_name = 'PRIMARY'");
-                    $row_ind = $query_ind->row();
+					// Находим индекс
+					$query_ind = $this->db->query("SHOW INDEX FROM ".$row->tab." WHERE Key_name = 'PRIMARY'");
+					$row_ind = $query_ind->row();
 
-                    if(preg_ext_string ($row->col) && $row->oldval != '')
-                    {
-                        $data = array( $row->col => $row->oldval );
-                        $this->db->update($row->tab, $data, $row_ind->Column_name." = '".$row->rowkey."'");
-                    }
+					if(preg_ext_string ($row->col) && $row->oldval != '')
+					{
+						$data = array( $row->col => $row->oldval );
+						$this->db->update($row->tab, $data, $row_ind->Column_name." = '".$row->rowkey."'");
+					}
 
-                    if ($row->files) $this->_restore_files(unserialize($row->files), $row->id, $row->rowkey);
-                    echo '1';
-                }
-            }
-        }
-    }
+					if ($row->files) $this->_restore_files(unserialize($row->files), $row->id, $row->rowkey);
+					echo '1';
+				}
+			}
+		}
+	}
 
     // ------------------------------------------------------------------------
 
