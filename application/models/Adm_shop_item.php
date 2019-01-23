@@ -31,6 +31,53 @@ class Adm_shop_item extends CI_Model {
         $this->Cms_myedit->mass_save('item_cats', 'item_id', 'cat_id', 'sic_id', 'w_shop_items_cats');
     }
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Функция для переиндексации (внешний вызов)
+	 *
+	 * @access  public
+	 * @return  string
+	 */
+	function p_reindex() {
+		$rights = $this->cms_user->get_user_rights();
+		if ( $this->config->item('cms_site_indexing') && is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
+		{
+			$this->load->library('search');
+			$this->load->helper('text');
+
+			$query = $this->db->get_where('w_shop_items', array('item_active !=' => 0));
+			foreach ($query->result() as $row)
+			{
+				$articles = $row->item_cut.' ';
+				$query_a = $this->db->get_where('w_pages_articles', array('article_pid' => $row->item_id, 'article_pid_type' => 'shop'));
+				foreach ($query_a->result() as $row_a)
+				{
+					$articles .= $row_a->article_text;
+				}
+
+				$query_b = $this->db->get_where('w_shop_items_cats', array('item_id' => $row->item_id));
+				foreach ($query_b->result() as $row_b)
+				{
+					$category_id = $row_b->cat_id;
+				}
+
+				if($articles != ''){
+					$shop_page = $this->Cms_shop->get_shop_page($category_id);
+					$url = '/'.$shop_page.'/' . $row->item_url;
+					$title = $row->item_article.' '.$row->item_name;
+					$article_words = text2words(html_entity_decode($articles));
+					$title_words = text2words($title);
+					$short = ($row->item_meta_description != '') ? $row->item_meta_description : word_limiter($article_words, 50);
+					$lang_array = $this->config->item('cms_lang');
+					$lang = $lang_array[$this->session->userdata('w_alang')]['search'];
+					$words_array = $this->search->index_prepare($article_words . ' ' . $title_words, $lang);
+					$this->search->index_insert($url, $title, $short, $words_array);
+				}
+			}
+		}
+	}
+
     // ------------------------------------------------------------------------
 
     /**

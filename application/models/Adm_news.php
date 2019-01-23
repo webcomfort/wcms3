@@ -25,6 +25,46 @@ class Adm_news extends CI_Model {
 	    $this->Cms_tags->mass_save('news');
     }
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Функция для переиндексации (внешний вызов)
+	 *
+	 * @access  public
+	 * @return  string
+	 */
+	function p_reindex() {
+		$rights = $this->cms_user->get_user_rights();
+		if ( $this->config->item('cms_site_indexing') && is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
+		{
+			$this->load->library('search');
+			$this->load->helper('text');
+
+			$query = $this->db->get_where('w_news', array('news_active !=' => 0));
+			foreach ($query->result() as $row)
+			{
+				$articles = $row->news_cut.' ';
+				$query_a = $this->db->get_where('w_pages_articles', array('article_pid' => $row->news_id, 'article_pid_type' => 'news'));
+				foreach ($query_a->result() as $row_a)
+				{
+					$articles .= $row_a->article_text;
+				}
+
+				if($articles != ''){
+					$url = '/post/' . $row->news_url;
+					$title = $row->news_name;
+					$article_words = text2words(html_entity_decode($articles));
+					$title_words = text2words($title);
+					$short = ($row->news_meta_description != '') ? $row->news_meta_description : word_limiter($article_words, 50);
+					$lang_array = $this->config->item('cms_lang');
+					$lang = $lang_array[$this->session->userdata('w_alang')]['search'];
+					$words_array = $this->search->index_prepare($article_words . ' ' . $title_words, $lang);
+					$this->search->index_insert($url, $title, $short, $words_array);
+				}
+			}
+		}
+	}
+
     // ------------------------------------------------------------------------
 
     /**
