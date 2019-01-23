@@ -244,7 +244,7 @@ class Migration_Add_cms extends CI_Migration {
 (20, 'Характеристики', 'Adm_shop_fields.php', 2, 1, 1499953231),
 (21, 'Товары', 'Adm_shop_item.php', 2, 1, 1500456310),
 (22, 'Типы', 'Adm_shop_types.php', 2, 1, 1500556775),
-(23, 'Теги', 'Adm_tags.php', 2, 1, 1500556776)
+(23, 'Теги', 'Adm_tags.php', 2, 1, 1500556776),
 (24, 'Переиндексация', 'Adm_index.php', 2, 1, 1500556777)
 ");
 
