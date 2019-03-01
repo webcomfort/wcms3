@@ -1316,7 +1316,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 						$strip_tags, $escape);
 				} else {
                     echo $this->htmlSelect($this->cgi['prefix']['data'].$this->fds[$k].$name,
-						$css_class_name, $vals, $row["qf$k"], $multiple, $readonly,
+						$css_class_name, $vals, $row["qf".$k."_idx"], $multiple, $readonly,
 						$strip_tags, $escape);
                 }
 			}
