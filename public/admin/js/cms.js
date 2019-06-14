@@ -131,6 +131,25 @@ $(document).ready(function () {
         }
     });
 
+    $(".insert-select").change(function () {
+        var parent = $(this).closest('.article-div');
+        var id = parent.data('id');
+        var type = $(this).val();
+
+        if(type !== 0){
+            $.ajax({
+                method: "GET",
+                url: "/cms_inserts/p_get_insert_ui/",
+                data: { aid: id, tid: type }
+            }).done(function(result) {
+                $('#insert_area_'+id).html(result);
+                $('#gallery_insert_select_'+id).select2();
+            });
+        } else {
+            $('#insert_area_'+id).empty();
+        }
+    });
+
     $(document).on('click', '.article-button-plus', function(e) {
         e.preventDefault();
         var grandparent = $('#articles_area');
@@ -150,6 +169,7 @@ $(document).ready(function () {
             var article = json.div +
                 json.selects +
                 json.buttons +
+                json.insert +
                 json.hidden +
                 json.textarea +
                 '</div>';

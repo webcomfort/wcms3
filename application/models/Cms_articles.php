@@ -58,6 +58,7 @@ class Cms_articles extends CI_Model {
 <button class="btn btn-default btn-xs article-button-move article-button-down" data-id="'.$id.'"  title="Вниз"><span class="glyphicon glyphicon-chevron-down"></span></button>
 <button class="btn btn-default btn-xs article-button-remove" data-id="'.$id.'" title="Удалить"><span class="glyphicon glyphicon-remove"></span></button>
 </div>';
+            $response['insert'] = '<div class="article-insert-div">'.form_dropdown('insert_type_'.$id, $this->_get_insert_types(), 0, 'data-id="'.$id.'" data-type="'.$type.'" class="select2 insert-select"').'<div id="insert_area_'.$id.'" class="insert_area"></div></div>';
             $response['hidden']  = '<input type="hidden" class="page_article_order" name="page_article_order_'.$id.'" value="'.$id.'">';
             $response['textarea'] = '<textarea name="page_article_'.$id.'" class="htmleditor">'.$article.'</textarea>';
 
@@ -204,6 +205,7 @@ class Cms_articles extends CI_Model {
                 $fields .= $html['div'];
                 $fields .= $html['selects'];
                 $fields .= $html['buttons'];
+	            $fields .= $html['insert'];
                 $fields .= $html['hidden'];
                 $fields .= $html['textarea'];
                 $fields .= '</div>';
@@ -218,6 +220,7 @@ class Cms_articles extends CI_Model {
             $fields .= $html['div'];
             $fields .= $html['selects'];
             $fields .= $html['buttons'];
+	        $fields .= $html['insert'];
             $fields .= $html['hidden'];
             $fields .= $html['textarea'];
             $fields .= '</div>';
@@ -357,4 +360,25 @@ class Cms_articles extends CI_Model {
         $url  = $this->config->item('cms_bg_dir').$iid.'/'.$id.'.jpg';
         if (is_file ($path)) return $url;
     }
+
+	/**
+	 * Массив вставок
+	 *
+	 * @access	private
+	 * @return	array
+	 */
+
+	function _get_insert_types()
+	{
+		$data  = $this->config->item('cms_inserts');
+		$val_arr = array( "0" => 'Не выбрано');
+		if(is_array($data) && count($data) > 0) {
+			foreach ( $data as $key => $value ) {
+				$val_arr[ $key ] = $value['name'];
+			}
+			return $val_arr;
+		} else {
+			return $val_arr;
+		}
+	}
 }

@@ -238,6 +238,7 @@ class Adm_cross_blocks extends CI_Model {
             'options'       => 'LACPDV',
             'select'        => 'T',
             'maxlen'        => 65535,
+	        'cell_display'  => '{@module mod_cross_blocks $value@}',
             'required'      => true,
             'sort'          => true,
             'help'          => 'Введите метку для блока - требуется для программного вызова. Предпочтительно, если это будут латинские буквы, цифры, минус и символ подчеркивания'

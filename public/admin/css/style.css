@@ -101,11 +101,14 @@ td.pme-tab-selected a { text-decoration: none; }
 .select2-result-repository__title { overflow: hidden; }
 
 /*----------  2.7. Pages  ----------*/
-.article-div { position: relative; background-color: #e9e9e9; border: #dbdbdb 1px solid; padding: 50px 20px 20px 20px; margin-bottom: 10px; }
+.article-div { position: relative; background-color: #e9e9e9; border: #dbdbdb 1px solid; padding: 100px 20px 20px 20px; margin-bottom: 10px; }
 .article-buttons-div { position: absolute; top: 10px; right: 20px; }
 .article-buttons-div button { margin-right: 3px; }
 .article-selects-div { position: absolute; top: 10px; left: 20px; width: 100%; }
 .article-selects-div .select2-container { padding: 0; min-width: 100px !important; max-width: 150px; }
+.article-insert-div { position: absolute; top: 50px; left: 20px; width: calc(100% - 40px); border-top: #ccc 1px solid; padding-top: 5px; }
+.article-insert-div .select2-container { padding: 0; min-width: 100px !important; max-width: 150px; }
+.article-insert-div .insert_area { display: inline-block; padding: 0; width: calc(100% - 200px); }
 
 /*----------  2.8. Fields  ----------*/
 .field-div { background-color: #ecebeb; border: #dcdcdc 1px solid; padding: 5px 10px; margin-bottom: 5px; }

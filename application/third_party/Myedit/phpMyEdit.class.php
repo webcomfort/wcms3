@@ -1764,7 +1764,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 			$value = sprintf($this->fdd[$k]['mask'], $value);
 		}
 		if(isset($this->fdd[$k]['cell_display']) && $this->fdd[$k]['cell_display'] != '') {
-            $celldisplay = $this->substituteVars($this->fdd[$k]['cell_display'], array('key'=>$key_rec));
+            $celldisplay = $this->substituteVars($this->fdd[$k]['cell_display'], array('key'=>$key_rec,'value'=>$value));
             return $celldisplay;
         }
         if(isset($this->fdd[$k]['cell_func']) && is_array($this->fdd[$k]['cell_func']) && count($this->fdd[$k]['cell_func']) > 0) {

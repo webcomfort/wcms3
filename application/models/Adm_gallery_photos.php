@@ -37,6 +37,28 @@ class Adm_gallery_photos extends CI_Model {
 
     // ------------------------------------------------------------------------
 
+	function get_insert_ui($aid){
+
+    	$ui = form_dropdown('insert_gal_'.$aid, $this->_get_galleries_array(), 0, 'id="gallery_insert_select_'.$aid.'" class="select2 insert-select"');
+		$ui .= '<a class="btn btn-success btn-xs" href="#" role="button" data-toggle="modal" data-target="#GalleryInsModal'.$aid.'" id="gallery_add_button_'.$aid.'"><span class="glyphicon glyphicon-plus"></span></a>';
+		$ui .= '<a class="btn btn-primary btn-ins ml5" href="#" role="button" data-id="'.$aid.'">Вставить</a>';
+		$ui .= $this->load->view('admin/ins_gallery', array('ins_id'=>$aid), true);
+    	return $ui;
+	}
+
+	function _get_galleries_array (){
+		$options = array('0' => 'Не выбрано');
+		// Получаем данные
+		$this->db->select('gallery_id AS id, gallery_name AS name')
+		         ->from('w_galleries')
+		         ->where('gallery_lang_id', $this->session->userdata('w_alang'));
+		$query  = $this->db->get();
+		if ($query->num_rows() > 0) {
+			foreach ($query->result() as $row) $options[$row->id] = $row->name;
+		}
+		return $options;
+	}
+
     /**
      * Функция, отдающая html для других функций
      *
@@ -226,7 +248,7 @@ class Adm_gallery_photos extends CI_Model {
         if ( is_array($rights) && (isset($rights[basename(__FILE__)])) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
         {
 
-            $options = '';
+            $options = '<option value="0">Не выбрано</option>';
 
             // Получаем данные
             $this->db->select('gallery_id AS id, gallery_name AS name')
@@ -319,9 +341,10 @@ class Adm_gallery_photos extends CI_Model {
         <div class="row"><div class="col-xs-12"><div class="p20 ui-block">
 		
 		<div class="row">
-            <div class="col-xs-8">'.
+            <div class="col-xs-6">'.
                 $this->load->view('admin/filter_default', $data, true)
-            .'</div>          
+            .'</div>
+            <div class="col-xs-2"><h6 class="m0 mb15">&nbsp</h6>{@module mod_gallery '.$this->session->userdata('photo_filter').'@}</div>
 			<div class="col-xs-4">
                 <h6 class="m0 mb10">Быстрое создание галереи</h6>
                 '.form_open('/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/', array('class' => 'm0 form-inline', 'role' => 'form')).'

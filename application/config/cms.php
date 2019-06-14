@@ -202,6 +202,14 @@ $config['cms_articles'] = array(
 	)
 );
 
+$config['cms_inserts'] = array(
+	'1' => array(
+		'name'          => 'Галерея',
+		'adm_model'     => 'Adm_gallery_photos',
+		'adm_function'  => 'get_insert_ui'
+	),
+);
+
 // Подключения
 $config['cms_site_inclusions'] = array(
     '1' => array(

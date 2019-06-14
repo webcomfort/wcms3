@@ -117,7 +117,6 @@ class Cms_inclusions extends CI_Model {
                 if ($value['filter'] != '') eval($value['filter']);
 
                 $this->db->select($value['key'].', '.$value['description']);
-                if ($filters != '') $this->db->where($filters, NULL, FALSE);
                 $this->db->order_by($value['orderby']);
                 $query = $this->db->get($value['table']);
 
