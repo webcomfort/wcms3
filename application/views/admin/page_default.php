@@ -5,6 +5,9 @@
             <div class="col-xs-8">
                 <ul class="nav nav-pills pull-right">
                     <li>
+                        <a class="white" href="/public/docs.docx" target="_blank"><span class="glyphicon glyphicon-info-sign icon-white"></span>&nbsp;&nbsp;Справка</a>
+                    </li>
+                    <li>
                         <a class="white" href="/admin/<?php echo $admin_page_id; ?>/clear"><span class="glyphicon glyphicon-refresh icon-white"></span>&nbsp;&nbsp;Очистить кэш</a>
                     </li>
                     <li class="dropdown">

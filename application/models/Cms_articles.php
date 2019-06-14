@@ -282,24 +282,22 @@ class Cms_articles extends CI_Model {
 
     function _get_article_bg($id, $bg=0)
     {
-    	$select = '';
-
-        $this->db->select('bg_id, bg_name');
+    	$this->db->select('bg_id, bg_name');
         $this->db->where('bg_active', 1);
         $this->db->order_by('bg_name', 'ASC');
         $query = $this->db->get('w_backgrounds');
 
+	    $select = '<select name="page_article_bg_'.$id.'" class="select2_icon">';
+	    $select .= '<option value="0"'. (($bg == 0) ? 'selected="selected"' : '').'>Без фона</option>';
+
         if ($query->num_rows() > 0)
         {
-            $select = '<select name="page_article_bg_'.$id.'" class="select2_icon">';
-	        $select .= '<option value="0"'. (($bg == 0) ? 'selected="selected"' : '').'>Без фона</option>';
-
         	foreach ($query->result() as $row) {
 		        $select .= '<option value="'.$row->bg_id.'"'. (($bg == $row->bg_id) ? 'selected="selected"' : '').'>'.$row->bg_name.'</option>';
             }
-
-	        $select .= '</select><a class="btn btn-success btn-xs ml5 add_bg_button" title="Добавить еще фон" href="#" role="button" data-toggle="modal" data-target="#BgModal" data-num="'.$id.'" id="add_bg_button_'.$id.'"><span class="glyphicon glyphicon-plus"></span></a>';
         }
+
+	    $select .= '</select><a class="btn btn-success btn-xs ml5 add_bg_button" title="Добавить еще фон" href="#" role="button" data-toggle="modal" data-target="#BgModal" data-num="'.$id.'" id="add_bg_button_'.$id.'"><span class="glyphicon glyphicon-plus"></span></a>';
 
         return $select;
     }

@@ -340,6 +340,13 @@ class Adm_news_categories extends CI_Model {
             'sort'          => true,
             'help'          => 'Выберите из списка макет для отображения этой рубрики'
         );
+		$opts['fdd']['code'] = array(
+			'name'          => 'Код',
+			'nodb'          => true,
+			'options'       => 'L',
+			'cell_display'  => '{@module mod_news_latest 3 $key@}',
+			'sort'          => false,
+		);
 		$opts['fdd']['created_at'] = array(
 			'name'          => 'Дата создания',
 			'select'        => 'T',
