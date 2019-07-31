@@ -131,7 +131,7 @@ $(document).ready(function () {
         }
     });
 
-    $(".insert-select").change(function () {
+	$(document).on('change', '.insert-select', function() {
         var parent = $(this).closest('.article-div');
         var id = parent.data('id');
         var type = $(this).val();
@@ -180,6 +180,7 @@ $(document).ready(function () {
             //Selects
             $("select[name=page_article_view_"+nextId+"]").select2({ language: "ru" });
             $("select[name=page_article_place_"+nextId+"]").select2({ language: "ru" });
+			$("select[name=insert_type_"+nextId+"]").select2({ language: "ru" });
 
             if ($("select[name=page_article_bg_"+nextId+"]")[0]){
                 $("select[name=page_article_bg_"+nextId+"]").select2({

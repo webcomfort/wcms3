@@ -39,9 +39,9 @@ class Adm_gallery_photos extends CI_Model {
 
 	function get_insert_ui($aid){
 
-    	$ui = form_dropdown('insert_gal_'.$aid, $this->_get_galleries_array(), 0, 'id="gallery_insert_select_'.$aid.'" class="select2 insert-select"');
+    	$ui = form_dropdown('insert_gal_'.$aid, $this->_get_galleries_array(), 0, 'id="gallery_insert_select_'.$aid.'" class="select2"');
 		$ui .= '<a class="btn btn-success btn-xs" href="#" role="button" data-toggle="modal" data-target="#GalleryInsModal'.$aid.'" id="gallery_add_button_'.$aid.'"><span class="glyphicon glyphicon-plus"></span></a>';
-		$ui .= '<a class="btn btn-primary btn-ins ml5" href="#" role="button" data-id="'.$aid.'">Вставить</a>';
+		$ui .= '<a class="btn btn-primary btn-ins-'.$aid.' ml5" href="#" role="button" data-id="'.$aid.'">Вставить</a>';
 		$ui .= $this->load->view('admin/ins_gallery', array('ins_id'=>$aid), true);
     	return $ui;
 	}

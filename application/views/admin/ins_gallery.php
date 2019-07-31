@@ -44,7 +44,7 @@
             });
         });
 
-        $(document).on('click', '.btn-ins', function(e) {
+        $(document).on('click', '.btn-ins-<?php echo $ins_id; ?>', function(e) {
             e.preventDefault();
             var id = $(this).data('id');
             var gal = $('#gallery_insert_select_<?php echo $ins_id; ?>').val();
