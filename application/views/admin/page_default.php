@@ -1,8 +1,8 @@
         <div class="row">
-			<div class="col-xs-4">
+			<div class="col-md-4">
                 <a href="/" class="ml10"><img src="/public/admin/img/logo.png" width="235" height="32" /></a>
             </div>
-            <div class="col-xs-8">
+            <div class="col-md-8">
                 <ul class="nav nav-pills pull-right">
                     <li>
                         <a class="white" href="/public/docs.docx" target="_blank"><span class="glyphicon glyphicon-info-sign icon-white"></span>&nbsp;&nbsp;Справка</a>

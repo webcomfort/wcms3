@@ -63,6 +63,32 @@ td.pme-cell select, td.pme-cell input { max-width: 300px; }
 td.pme-cell-nav { width: 1%; white-space:nowrap; padding-left: 0px; padding-right: 10px; }
 td.pme-stats { text-align: right; }
 
+@media (max-width: 799.99px) {
+	.pme-main, .pme-main tbody { display: block; }
+	tr.pme-row { display: flex; flex-wrap: wrap; padding: 10px; border: #ccc 1px solid; margin-bottom: 10px; }
+	tr.pme-header { display: flex; flex-wrap: wrap; padding: 10px; border-top: #ccc 1px solid; margin-bottom: 10px; }
+	tr.pme-row td, tr.pme-header th { display: block; width: 100%; min-width: 200px; border-top: none !important; padding: 0 !important; }
+	tr.pme-row td.pme-key { font-weight: bold; }
+	tr.pme-row td.pme-help { font-size: 11px; padding-top: 5px !important; }
+	tr.pme-row td.pme-navigation, tr.pme-row td.pme-cell-nav { width: 50%; min-width: auto; margin-bottom: 10px; }
+	tr.pme-row td.pme-cell { width: 100%; border: #e5e5e5 1px solid !important; margin-bottom: 10px; padding: 10px !important; }
+	.article-div { padding: 10px 10px 10px 10px !important; }
+	.article-selects-div { position: inherit !important; top: 0 !important; left: 0 !important; }
+	.article-selects-div .select2-container { margin-bottom: 5px !important; }
+	.article-buttons-div { position: relative !important; top: 0 !important; right: 0 !important; padding: 5px 0 !important; border-top: #ccc 1px solid; width: 100%; }
+	.article-insert-div { position: inherit !important; top: 0 !important; left: 0 !important; padding-bottom: 5px; }
+	.pme-buttons input { margin-bottom: 5px; }
+
+	tr.pme-header { display: flex; flex-wrap: wrap; padding: 0 10px; border-top: #ccc 1px solid; padding-top: 10px; white-space: normal; }
+	tr.pme-header th.pme-header { display: block; width: auto; border: #e5e5e5 1px solid !important; padding: 5px 10px !important; min-width: auto; margin-bottom: 3px;  margin-right: 3px; }
+	tr.pme-filter { display: flex; flex-wrap: wrap; margin: 10px 0 !important; }
+	tr.pme-filter td { border-top: none !important; padding: 4px !important; }
+
+	table.pme-tab, table.pme-tab tbody { display: block; }
+	tr.pme-tab { display: flex; flex-wrap: wrap; }
+	tr.pme-tab td { display: block; padding: 5px; margin-bottom: 3px; }
+}
+
 /*----------  2.2. Buttons  ----------*/
 .pme-goto { margin: 0px 0 0 10px; }
 a.pme-navigation { margin-right: 2px; }

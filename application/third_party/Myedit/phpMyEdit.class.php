@@ -1046,7 +1046,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 				echo '</table>',"\n";
 				echo '</div>',"\n";
 				echo '<div id="'.$this->dhtml['prefix'].'tab',$tab,'">',"\n";
-				echo '<table class="',$this->getCSSclass('main'),' table table-hover table-responsive ui-table" summary="',$this->tb,'">',"\n";
+				echo '<table class="',$this->getCSSclass('main'),' table table-hover ui-table" summary="',$this->tb,'">',"\n";
 			}
 			if (! $this->displayed[$k]) {
 				continue;
@@ -1219,7 +1219,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 				echo '</table>',"\n";
 				echo '</div>',"\n";
 				echo '<div id="'.$this->dhtml['prefix'].'tab',$tab,'">',"\n";
-				echo '<table class="',$this->getCSSclass('main'),' table table-hover table-responsive ui-table" summary="',$this->tb,'">',"\n";
+				echo '<table class="',$this->getCSSclass('main'),' table table-hover ui-table" summary="',$this->tb,'">',"\n";
 			}
 			if (! $this->displayed[$k]) {
 				continue;
@@ -2406,7 +2406,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 	{
 		if (($but_str = $this->display_buttons($position)) === null)
 			return;
-		echo '<table summary="navigation" class="',$this->getCSSclass('navigation', $position),' table table-hover table-responsive ui-table">',"\n";
+		echo '<table summary="navigation" class="',$this->getCSSclass('navigation', $position),' table table-hover ui-table">',"\n";
 		echo '<tr class="',$this->getCSSclass('navigation', $position),'">',"\n";
 		echo '<td class="',$this->getCSSclass('buttons', $position),'">',"\n";
 		echo $but_str,'</td>',"\n";
@@ -2442,7 +2442,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		if ($position == 'down') {
 			if ($this->tabs_enabled()) $this->display_tab_labels('down');
 		}
-		echo '<table summary="navigation" class="',$this->getCSSclass('navigation', $position),' table table-hover table-responsive ui-table">',"\n";
+		echo '<table summary="navigation" class="',$this->getCSSclass('navigation', $position),' table table-hover ui-table">',"\n";
 		echo '<tr class="',$this->getCSSclass('navigation', $position),'">',"\n";
 		echo '<td class="',$this->getCSSclass('buttons', $position),'">',"\n";
 		echo $but_str,'</td>',"\n";
@@ -2634,7 +2634,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		}
 		echo $this->htmlHiddenSys('qfn', $this->qfn);
 		echo $this->htmlHiddenSys('fm', $this->fm);
-		echo '<table class="',$this->getCSSclass('main'),' table table-hover table-responsive ui-table" summary="',$this->tb,'">',"\n";
+		echo '<table class="',$this->getCSSclass('main'),' table table-hover ui-table" summary="',$this->tb,'">',"\n";
 		echo '<tr class="',$this->getCSSclass('header'),'">',"\n";
 		/*
 		 * System (navigation, selection) columns counting
@@ -2809,7 +2809,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
                             // Multiple fields processing
                             // Default size is 2 and array required for values.
                             $from_table = ! $this->col_has_values($k) || isset($this->fdd[$k]['values']['table']);
-                            $vals       = $this->set_values($k, array('*' => '*'), null, $from_table);
+                            $vals       = $this->set_values($k, array('*' => $this->fdd[$fd]['name']), null, $from_table);
                             $selected   = $mi;
                             $multiple   = $this->col_has_multiple_select($k);
                             $multiple  |= $this->fdd[$fd]['select'] == 'M';
@@ -2833,7 +2833,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
                             }
                             echo '<input class="form-control ',$css_class_name,'" value="',htmlspecialchars(@$m);
                             echo '" type="text" name="'.$this->cgi['prefix']['sys'].'qf'.$k.'"',$len_props;
-                            echo ' onkeypress="return '.$this->js['prefix'].'filter_handler(this.form, event);" />';
+                            echo ' onkeypress="return '.$this->js['prefix'].'filter_handler(this.form, event);" placeholder="',$this->fdd[$fd]['name'],'" />';
                         } else {
                             echo '&nbsp;';
                         }
@@ -3096,7 +3096,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		if ($this->tabs_enabled()) {
 			echo '<div id="'.$this->dhtml['prefix'].'tab0">',"\n";
 		}
-		echo '<table class="',$this->getCSSclass('main'),' table table-hover table-responsive ui-table" summary="',$this->tb,'">',"\n";
+		echo '<table class="',$this->getCSSclass('main'),' table table-hover ui-table" summary="',$this->tb,'">',"\n";
 		if ($this->add_operation()) {
 			$this->display_add_record();
 		} else {
