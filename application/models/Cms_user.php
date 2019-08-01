@@ -16,6 +16,7 @@ class Cms_user extends CI_Model {
     private $user_myedit_rights = false;
     private $group_id           = false;
     private $group_admin        = false;
+	private $group_files        = false;
 
     function __construct()
     {
@@ -56,6 +57,7 @@ class Cms_user extends CI_Model {
                 if ($groups[$row->user_group_id]['active'])
                 {
                     if ($groups[$row->user_group_id]['admin']) $this->group_admin = true;
+	                if ($groups[$row->user_group_id]['files']) $this->group_files = true;
 
                     $second_name = ($row->user_second_name != '') ? $row->user_second_name . ' ' : '';
 
@@ -116,6 +118,7 @@ class Cms_user extends CI_Model {
 			if ($groups[$row->user_group_id]['active'])
             {
                 if ($groups[$row->user_group_id]['admin']) $this->group_admin = true;
+	            if ($groups[$row->user_group_id]['files']) $this->group_files = true;
 
                 $this->user_id           = $row->user_id;
                 $this->user_email        = $login;
@@ -488,6 +491,19 @@ class Cms_user extends CI_Model {
     {
         return $this->group_admin;
     }
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Есть ли у группы права видеть все файлы
+	 *
+	 * @access	public
+	 * @return	bool
+	 */
+	function get_group_files()
+	{
+		return $this->group_files;
+	}
 
     // ------------------------------------------------------------------------
 

@@ -6,12 +6,21 @@
 
 class Adm_news_categories extends CI_Model {
 
-    function __construct()
+	private $forest = array();
+	private $categories_list = array();
+	private $crumbs = array();
+
+	function __construct()
     {
         if($this->input->post('PME_sys_rec', TRUE) === '0' || $this->input->post('PME_sys_savecopy', TRUE) || $this->input->post('PME_sys_savedelete', TRUE)) header ('Location: /admin/'.$this->uri->segment(2));
 	    if($this->input->post('PME_sys_morechange', TRUE)) {
 		    header ('Location: /admin/'.$this->uri->segment(2).'/?PME_sys_operation=PME_op_Change&PME_sys_rec='.$this->input->post('PME_sys_rec', TRUE).(($this->input->post('PME_sys_cur_tab', TRUE)) ? '&PME_sys_cur_tab='.$this->input->post('PME_sys_cur_tab', TRUE) : ''));
 	    }
+
+	    $this->load->helper( array('string') );
+	    $this->load->model('Cms_utils');
+	    $this->_get_parent_list();
+
         parent::__construct();
     }
 
@@ -201,6 +210,176 @@ class Adm_news_categories extends CI_Model {
         return $val_arr;
     }
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Возврат id родителя
+	 *
+	 * @access  private
+	 * @return  int
+	 */
+
+	function _get_parent()
+	{
+		if ($this->session->userdata('w_ncat_parent') != 0)
+		{
+			$this->db->select('news_cat_pid AS pid')
+			         ->from('w_news_categories')
+			         ->where('news_cat_id', $this->session->userdata('w_ncat_parent'));
+
+			$query  = $this->db->get();
+			$row    = $query->row();
+			return $row->pid;
+		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Массив категорий для формирования выпадающего списка
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+
+	function _get_parent_list()
+	{
+		$this->db->select('news_cat_id, news_cat_pid, news_cat_name')
+		         ->order_by('news_cat_pid, news_cat_sort');
+
+		$query = $this->db->get('w_news_categories');
+
+		$this->categories_list[0] = 'Верхний уровень';
+
+		if ($query->num_rows() > 0) {
+			@$this->forest =& $this->tree->get_tree('news_cat_id', 'news_cat_pid', $query->result_array(), 0);
+			$this->_get_cats_array ($this->forest, 'news_cat_id', 'news_cat_pid', 'news_cat_name', '');
+		}
+	}
+
+	/**
+	 * Преобразование массива в дерево с отступами
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	function _get_cats_array ($forest, $id_name, $parent_name, $level_name, $dash='')
+	{
+		foreach ($forest as $tree)
+		{
+			$this->categories_list[$tree[$id_name]] = $dash.' '.$tree[$level_name];
+			if (isset($tree['nodes'])) $this->_get_cats_array($tree['nodes'], $id_name, $parent_name, $level_name, $dash.' -');
+		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Вывод дочерних элементов
+	 *
+	 * @access	public
+	 * @param   int
+	 * @param   string
+	 * @return	string
+	 */
+
+	function get_child_pages($key, $value)
+	{
+		$forest = array();
+		$this->db->select('news_cat_id, news_cat_pid, news_cat_name')
+		         ->order_by('news_cat_pid, news_cat_sort');
+		$query = $this->db->get('w_news_categories');
+
+		if ($query->num_rows() > 0)$forest = $this->tree->get_full_tree('news_cat_id', 'news_cat_pid', $query->result_array(), $key);
+
+		return '<div class="jstree">' . $this->_reformat_forest($forest) . '</div>';
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Переформатирование дочерних элементов под вывод списка
+	 *
+	 * @access	private
+	 * @param   array
+	 * @param   array
+	 * @return	string
+	 */
+
+	function _reformat_forest ($forest, $menu = '')
+	{
+		$menu .= '<ul>';
+		foreach ($forest as $tree)
+		{
+			$menu .= '<li>';
+			$menu .= '<a href="/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/parent/'.$tree['news_cat_id'].'">';
+			$menu .= $tree['news_cat_name'];
+			$menu .= '</a>';
+			if (isset($tree['nodes'])) $menu = $this->_reformat_forest($tree['nodes'], $menu);
+			$menu .= '</li>';
+
+		}
+		$menu .= '</ul>';
+
+		return $menu;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Переформатирование дочерних элементов под вывод списка
+	 *
+	 * @access	private
+	 * @param   array
+	 * @param   array
+	 * @return	string
+	 */
+
+	function _get_crumbs ()
+	{
+		$crumbs = '<small>';
+		$this->set_crumbs($this->forest, 'news_cat_id', 'news_cat_pid', 'news_cat_name', '/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/parent/', $this->session->userdata('w_ncat_parent'));
+		$this->crumbs = array_reverse($this->crumbs);
+		foreach ($this->crumbs as $value) $crumbs .= '<a href="'.$value['url'].'">'.$value['news_cat_name'].'</a> &raquo; ';
+		$crumbs .= '</small>';
+		return $crumbs;
+	}
+
+	/**
+	 * Формируем массив из связанных страниц
+	 *
+	 * @access  public
+	 * @param   array
+	 * @param   string
+	 * @param   string
+	 * @param   string
+	 * @param   string
+	 * @param   int
+	 * @return  void
+	 */
+	function set_crumbs ($forest, $id_name, $parent_name, $level_name, $link = '/', $active_id)
+	{
+		if (is_array($forest))
+		{
+			foreach ($forest as $tree)
+			{
+				if ($tree[$id_name] == $active_id)
+				{
+					$this->crumbs[$tree[$id_name]][$id_name] = $tree[$id_name];
+					$this->crumbs[$tree[$id_name]][$parent_name] = $tree[$parent_name];
+					$this->crumbs[$tree[$id_name]][$level_name] = $tree[$level_name];
+					$this->crumbs[$tree[$id_name]]['url'] = $link.$tree[$parent_name];
+
+					if ($tree[$parent_name] != 0) $this->set_crumbs($this->forest, $id_name, $parent_name, $level_name, $link, $tree[$parent_name]);
+				}
+				else
+				{
+					if(isset($tree['nodes'])) $this->set_crumbs($tree['nodes'], $id_name, $parent_name, $level_name, $link, $active_id);
+				}
+			}
+		}
+	}
+
     // ------------------------------------------------------------------------
 
 	/**
@@ -218,6 +397,12 @@ class Adm_news_categories extends CI_Model {
         $this->load->model('Cms_myedit');
         $opts = $this->Cms_myedit->get_base_opts();
 
+		// Переопределяем кнопки
+		$opts['buttons']['L']['up'] = array('add','save','<<','<','>','>>','goto_combo');
+		$opts['buttons']['L']['down'] = $opts['buttons']['L']['up'];
+		$opts['buttons']['F']['up'] = $opts['buttons']['L']['up'];
+		$opts['buttons']['F']['down'] = $opts['buttons']['L']['up'];
+
         // Таблица
         $opts['tb'] = 'w_news_categories';
 
@@ -225,8 +410,9 @@ class Adm_news_categories extends CI_Model {
         $opts['key'] = 'news_cat_id';
 
         // Начальная и ручная(UI) сортировка
-        $opts['sort_field'] = array('news_name');
-        $opts['ui_sort_field'] = '';
+		// Начальная и ручная(UI) сортировка
+		$opts['sort_field'] = array('news_cat_sort');
+		$opts['ui_sort_field'] = 'news_cat_sort';
 
         // Кол-во записей для вывода на экран
         $opts['inc'] = 100;
@@ -240,8 +426,19 @@ class Adm_news_categories extends CI_Model {
         $rights = $this->cms_user->get_user_myedit_rights();
         $opts['options'] = $rights[basename(__FILE__)];
 
-        // Фильтрация вывода
-        $opts['filters'] = array ();
+		// Активизируем родительский режим и управляем сессиями
+		if(isset($uri_assoc_array['parent'])){
+			$this->session->set_userdata('w_ncat_parent', $uri_assoc_array['parent']);
+		}
+		if(!$this->session->userdata('w_ncat_parent')) {
+			$this->session->set_userdata('w_ncat_parent', 0);
+		}
+
+		// Фильтрация вывода
+		$opts['filters'] = array (
+			"news_cat_pid = '" . $this->session->userdata('w_ncat_parent') . "'",
+			"news_cat_lang_id = '" . $this->session->userdata('w_alang') . "'"
+		);
 
         // Триггеры
 		// $this->opts['triggers']['insert']['after'] = '';
@@ -313,7 +510,18 @@ class Adm_news_categories extends CI_Model {
         // F - присутствует в фильтрах
         // ------------------------------------------------------------------------
 
-        $opts['fdd']['news_cat_id'] = array(
+		$opts['fdd']['go2'] = array(
+			'name'          => '',
+			'css'           => array('postfix'=>'nav'),
+			'nodb'          => true,
+			'options'       => 'L',
+			'cell_display'   => '<div class="mr20"><a href="'.$opts['page_name'].'/move/up/id/$key" class="btn btn-sm btn-default mr2" rel="tooltip" title="Сдвинуть вверх"><i class="glyphicon glyphicon-chevron-up"></i></a><a href="'.$opts['page_name'].'/move/down/id/$key" class="btn btn-sm btn-default" rel="tooltip" title="Сдвинуть вниз"><i class="glyphicon glyphicon-chevron-down"></i></a></div>',
+			'sort'          => false,
+		);
+
+		// ------------------------------------------------------------------------
+
+		$opts['fdd']['news_cat_id'] = array(
             'name'          => 'Номер по б/д',
             'select'        => 'T',
             'options'       => 'F', // Автоинкремент
@@ -324,12 +532,38 @@ class Adm_news_categories extends CI_Model {
         $opts['fdd']['news_cat_name'] = array(
             'name'          => 'Название рубрики',
             'options'       => 'LACPDV',
+            'cell_func' => array(
+	            'model' => 'adm_news_categories',
+	            'func'  => 'get_child_pages'
+            ),
             'select'        => 'T',
             'maxlen'        => 65535,
             'required'      => true,
             'sort'          => true,
             'help'          => 'Введите название рубрики.'
         );
+		$opts['fdd']['news_cat_pid'] = array(
+			'name'          => 'Родительский раздел',
+			'select'        => 'D',
+			'options'       => 'ACPD',
+			'values2'       => $this->categories_list,
+			'default'       => $this->session->userdata('w_ncat_parent'),
+			'required'      => true,
+			'sort'          => true,
+			'help'          => 'Проставляется автоматически при заведении категории. Можно использовать, когда требуется перенести категорию в другой раздел.'
+		);
+		$where = array(
+			'field' => 'news_cat_pid',
+			'value' => $this->session->userdata('w_ncat_parent')
+		);
+		$opts['fdd']['news_cat_sort'] = array(
+			'name'          => 'Сортировка',
+			'select'        => 'T',
+			'options'       => 'LACPD',
+			'default'       => $this->Cms_utils->get_max_sort('news_cat_sort', 'w_news_categories', $where),
+			'save'          => true,
+			'sort'          => false
+		);
         $opts['fdd']['news_cat_view_id'] = array(
             'name'          => 'Макет',
             'select'        => 'D',
@@ -347,6 +581,14 @@ class Adm_news_categories extends CI_Model {
 			'cell_display'  => '{@module mod_news_latest 3 $key@}',
 			'sort'          => false,
 		);
+		$opts['fdd']['news_cat_lang_id'] = array(
+			'name'          => 'Язык',
+			'select'        => 'T',
+			'options'       => 'ACPH',
+			'maxlen'        => 3,
+			'default'       => $this->session->userdata('w_alang'),
+			'sort'          => false
+		);
 		$opts['fdd']['created_at'] = array(
 			'name'          => 'Дата создания',
 			'select'        => 'T',
@@ -354,6 +596,10 @@ class Adm_news_categories extends CI_Model {
 			'default'       => date('Y-m-d G:i:s'),
 			'sort'          => false
 		);
+
+		$opts['parent_id']      = $this->_get_parent();
+		$opts['parent_sess_id'] = $this->session->userdata('w_ncat_parent');
+		$opts['parent_crumbs']  = $this->_get_crumbs();
 
         // ------------------------------------------------------------------------
 

@@ -364,24 +364,31 @@ class Cms_myedit extends CI_Model {
 	 */
 	function p_elfinder()
 	{
-        if ($this->cms_user->get_group_admin())
-        {
-            $id = $this->cms_user->get_user_id();
-            $dir = FCPATH.'public/userfiles/'.$id.'/';
-            $url = '/public/userfiles/'.$id.'/';
-            if(!is_dir($dir)) mkdir($dir, 0755, true);
+		if ($this->cms_user->get_group_admin())
+		{
+			$id = $this->cms_user->get_user_id();
 
-            $opts = array(
-                'roots' => array(
-                    array(
-                        'driver'        => 'LocalFileSystem',
-                        'path'          => $dir,
-                        'URL'           => $url
-                    )
-                )
-            );
-            $this->load->library('efinder', $opts);
-        }
+			if ($this->cms_user->get_group_files()){
+				$dir = FCPATH.'public/userfiles/';
+				$url = '/public/userfiles/';
+			} else {
+				$dir = FCPATH.'public/userfiles/'.$id.'/';
+				$url = '/public/userfiles/'.$id.'/';
+			}
+
+			if(!is_dir($dir)) mkdir($dir, 0755, true);
+
+			$opts = array(
+				'roots' => array(
+					array(
+						'driver'        => 'LocalFileSystem',
+						'path'          => $dir,
+						'URL'           => $url
+					)
+				)
+			);
+			$this->load->library('efinder', $opts);
+		}
 	}
 
     // ------------------------------------------------------------------------

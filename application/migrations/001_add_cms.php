@@ -574,18 +574,33 @@ class Migration_Add_cms extends CI_Migration {
                 'unsigned' => TRUE,
                 'auto_increment' => TRUE
             ),
+            'news_cat_pid' => array(
+	            'type' => 'int',
+	            'constraint' => 11,
+	            'default' => '0',
+            ),
             'news_cat_name' => array(
                 'type' => 'varchar',
                 'constraint' => 255,
+            ),
+            'news_cat_sort' => array(
+	            'type' => 'int',
+	            'constraint' => 11,
             ),
             'news_cat_view_id' => array(
                 'type' => 'int',
                 'constraint' => 11,
             ),
+            'news_cat_lang_id' => array(
+	            'type' => 'int',
+	            'constraint' => 11,
+            ),
         ));
 	    $this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
 	    $this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         $this->dbforge->add_key('news_cat_id', TRUE);
+	    $this->dbforge->add_key('news_cat_pid');
+	    $this->dbforge->add_key('news_cat_lang_id');
         $this->dbforge->create_table('w_news_categories', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
 
         // ------------------------------------------------------------------------

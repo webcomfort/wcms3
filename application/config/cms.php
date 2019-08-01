@@ -381,12 +381,20 @@ $config['cms_user_groups'] = array(
     '1' => array(
         'name'      => 'Администраторы',
         'admin'     => true,
-        'active'    => true
+        'active'    => true,
+	    'files'     => true
     ),
     '2' => array(
+	    'name'      => 'Редакторы',
+	    'admin'     => true,
+	    'active'    => true,
+	    'files'     => false
+    ),
+    '3' => array(
         'name'      => 'Пользователи',
         'admin'     => false,
-        'active'    => true
+        'active'    => true,
+        'files'     => false
     )
 );
 
