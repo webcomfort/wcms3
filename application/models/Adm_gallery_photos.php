@@ -29,34 +29,48 @@ class Adm_gallery_photos extends CI_Model {
 	 */
     function get_meta()
     {
-        $meta = '';
 	    // JS функции для модуля select2 - простой список
-	    $meta .= $this->Cms_myedit->get_ajax_default_format();
+	    $meta = $this->Cms_myedit->get_ajax_default_format();
         return $meta;
     }
 
     // ------------------------------------------------------------------------
 
+	/**
+	 * Функция, список выбора для пересечений с тегами
+	 *
+	 * @access	public
+	 * @param   int - article id
+	 * @return	string
+	 */
 	function get_insert_ui($aid){
 
-    	$ui = form_dropdown('insert_gal_'.$aid, $this->_get_galleries_array(), 0, 'id="gallery_insert_select_'.$aid.'" class="select2"');
-		$ui .= '<a class="btn btn-success btn-xs" href="#" role="button" data-toggle="modal" data-target="#GalleryInsModal'.$aid.'" id="gallery_add_button_'.$aid.'"><span class="glyphicon glyphicon-plus"></span></a>';
+    	// Строим селект
+		$this->load->helper('form');
+		$fopts = 'id="gallery_insert_select_'.$aid.'" class="js-data-ajax-gal-'.$aid.'"';
+		$ui = form_dropdown('insert_gal_'.$aid, [], [], $fopts);
+
+    	$ui .= '<a class="btn btn-success btn-xs" href="#" role="button" data-toggle="modal" data-target="#GalleryInsModal'.$aid.'" id="gallery_add_button_'.$aid.'"><span class="glyphicon glyphicon-plus"></span></a>';
 		$ui .= '<a class="btn btn-primary btn-ins-'.$aid.' ml5" href="#" role="button" data-id="'.$aid.'">Вставить</a>';
 		$ui .= $this->load->view('admin/ins_gallery', array('ins_id'=>$aid), true);
+		// Получаем js-код для этого поля
+		$ui .= $this->Cms_myedit->get_ajax($aid, '/adm_gallery_photos/p_get_gal', 'gal', 1, false);
     	return $ui;
 	}
 
-	function _get_galleries_array (){
-		$options = array('0' => 'Не выбрано');
-		// Получаем данные
-		$this->db->select('gallery_id AS id, gallery_name AS name')
-		         ->from('w_galleries')
-		         ->where('gallery_lang_id', $this->session->userdata('w_alang'));
-		$query  = $this->db->get();
-		if ($query->num_rows() > 0) {
-			foreach ($query->result() as $row) $options[$row->id] = $row->name;
+	/**
+	 * Функция, генерирующая список событий для <select> (внешний вызов)
+	 *
+	 * @access  public
+	 * @return  string
+	 */
+	function p_get_gal()
+	{
+		$rights = $this->cms_user->get_user_rights();
+		if ( is_array($rights) && ($rights['Adm_gallery_photos.php']['edit'] || $rights['Adm_gallery_photos.php']['copy'] || $rights['Adm_gallery_photos.php']['add']) )
+		{
+			echo $this->Cms_myedit->get_ajax_query ('gallery_id', 'gallery_name', 'w_galleries', 1);
 		}
-		return $options;
 	}
 
     /**

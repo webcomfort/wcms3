@@ -131,6 +131,8 @@ class Adm_pages extends CI_Model {
 
         </script>';
 
+	    $meta .= $this->Cms_myedit->get_ajax_default_format();
+
         return $meta;
     }
 
