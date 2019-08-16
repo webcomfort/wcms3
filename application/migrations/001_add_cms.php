@@ -736,7 +736,7 @@ class Migration_Add_cms extends CI_Migration {
                 'constraint' => 11,
             ),
             'article_text' => array(
-                'type' => 'text',
+                'type' => 'longtext',
             ),
         ));
         $this->dbforge->add_key('article_id', TRUE);
