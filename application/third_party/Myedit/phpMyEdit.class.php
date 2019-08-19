@@ -107,6 +107,7 @@ class phpMyEdit
 	private $mass_save = array(); // Fields for table list save
 	private $modal_code = ''; // Modal code
 	private $file_arr = array(); // File array
+	private $list_view = false;
 
 	// Database handling
 	var $hn;		// hostname
@@ -2580,476 +2581,600 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 	/*
 	 * Table Page Listing
 	 */
-	function list_table() /* {{{ */
-	{
-		if ($this->fm == '') {
+	function list_table() /* {{{ */ {
+		if ( $this->fm == '' ) {
 			$this->fm = 0;
 		}
 		$this->fm = $this->navfm;
-		if ($this->prev_operation()) {
+		if ( $this->prev_operation() ) {
 			$this->fm = $this->fm - $this->inc;
-			if ($this->fm < 0) {
+			if ( $this->fm < 0 ) {
 				$this->fm = 0;
 			}
 		}
-		if ($this->first_operation()) {
+		if ( $this->first_operation() ) {
 			$this->fm = 0;
 		} // last operation must be performed below, after retrieving total_recs
-		if ($this->next_operation()) {
+		if ( $this->next_operation() ) {
 			$this->fm += $this->inc;
 		}
 		$this->number_of_recs();
-		if ($this->last_operation() || $this->fm > $this->total_recs) { // if goto_text is badly set
-			$this->fm = (int)(($this->total_recs - 1)/$this->inc)*$this->inc;
+		if ( $this->last_operation() || $this->fm > $this->total_recs ) { // if goto_text is badly set
+			$this->fm = (int) ( ( $this->total_recs - 1 ) / $this->inc ) * $this->inc;
 		}
 		// If sort sequence has changed, restart listing
 		$this->qfn != $this->prev_qfn && $this->fm = 0;
-		if (0) { // DEBUG
+		if ( 0 ) { // DEBUG
 			echo 'qfn vs. prev_qfn comparsion ';
-			echo '[<b>',htmlspecialchars($this->qfn),'</b>]';
-			echo '[<b>',htmlspecialchars($this->prev_qfn),'</b>]<br />';
-			echo 'comparsion <u>',($this->qfn == $this->prev_qfn ? 'proved' : 'failed'),'</u>';
+			echo '[<b>', htmlspecialchars( $this->qfn ), '</b>]';
+			echo '[<b>', htmlspecialchars( $this->prev_qfn ), '</b>]<br />';
+			echo 'comparsion <u>', ( $this->qfn == $this->prev_qfn ? 'proved' : 'failed' ), '</u>';
 		}
 		/*
 		 * If user is allowed to Change/Delete records, we need an extra column
 		 * to allow users to select a record
 		 */
 		$select_recs = $this->key != '' &&
-			($this->change_enabled() || $this->delete_enabled() || $this->view_enabled());
+		               ( $this->change_enabled() || $this->delete_enabled() || $this->view_enabled() );
 		// Are we doing a listall?
 		$listall = $this->inc <= 0;
 		/*
 		 * Display the SQL table in an HTML table
 		 */
 		$this->form_begin();
-		echo $this->get_origvars_html($this->get_sfn_cgi_vars());
-		echo $this->htmlHiddenSys('fl', $this->fl);
+		echo $this->get_origvars_html( $this->get_sfn_cgi_vars() );
+		echo $this->htmlHiddenSys( 'fl', $this->fl );
 		// Display buttons at top and/or bottom of page.
-		$this->display_list_table_buttons('up', $listall);
-		if ($this->cgi['persist'] != '') {
-			echo $this->get_origvars_html($this->cgi['persist']);
+		$this->display_list_table_buttons( 'up', $listall );
+		if ( $this->cgi['persist'] != '' ) {
+			echo $this->get_origvars_html( $this->cgi['persist'] );
 		}
-		if (! $this->filter_operation()) {
-			echo $this->get_origvars_html($this->qfn);
+		if ( ! $this->filter_operation() ) {
+			echo $this->get_origvars_html( $this->qfn );
 		}
-		echo $this->htmlHiddenSys('qfn', $this->qfn);
-		echo $this->htmlHiddenSys('fm', $this->fm);
-		echo '<table class="',$this->getCSSclass('main'),' table table-hover ui-table" summary="',$this->tb,'">',"\n";
-		echo '<tr class="',$this->getCSSclass('header'),'">',"\n";
-		/*
-		 * System (navigation, selection) columns counting
-		 */
-		$sys_cols  = 0;
-		$sys_cols += intval($this->filter_enabled() || $select_recs);
-		if ($sys_cols > 0) {
-			$sys_cols += intval($this->nav_buttons()
-					&& ($this->nav_text_links() || $this->nav_graphic_links()));
-		}
-		/*
-		 * We need an initial column(s) (sys columns)
-		 * if we have filters, Changes or Deletes enabled
-		 */
-		if ($sys_cols) {
-			echo '<th class="',$this->getCSSclass('header'),'" colspan="',$sys_cols,'">';
-			if ($this->filter_enabled()) {
-				if ($this->filter_operation()) {
-					echo $this->htmlSubmit('sw', 'Hide', $this->getCSSclass('hide'), false).'&nbsp;'.'&nbsp;';
-					echo $this->htmlSubmit('sw', 'Clear', $this->getCSSclass('clear'), false);
-				} else {
-					echo $this->htmlSubmit('sw', 'Search', $this->getCSSclass('search'), false);
-				}
-			} else {
-				echo '&nbsp;';
-			}
-			echo '</th>',"\n";
-		}
-		for ($k = 0; $k < $this->num_fds; $k++) {
-			$fd = $this->fds[$k];
-			if (! $this->displayed[$k]) {
-				continue;
-			}
-			$css_postfix    = @$this->fdd[$k]['css']['postfix'];
-			$css_class_name = $this->getCSSclass('header', null, null, $css_postfix);
-			$fdn = $this->fdd[$fd]['name'];
-			if (! $this->fdd[$fd]['sort'] || $this->password($fd)) {
-				echo '<th class="',$css_class_name,'">',$fdn,'</th>',"\n";
-			} else {
-				// Clicking on the current sort field reverses the sort order
-				$new_sfn = $this->sfn;
-				array_unshift($new_sfn, in_array("$k", $new_sfn, 1) ? "-$k" : $k);
-				echo '<th class="',$css_class_name,'">';
-				echo '<a class="',$css_class_name,'" href="';
-				echo htmlspecialchars($this->page_name.'?'.$this->cgi['prefix']['sys'].'fm'.'=0'
-						.'&'.$this->cgi['prefix']['sys'].'fl'.'='.$this->fl
-						.'&'.$this->cgi['prefix']['sys'].'qfn'.'='.rawurlencode($this->qfn).$this->qfn
-						.'&'.$this->get_sfn_cgi_vars($new_sfn).$this->cgi['persist']);
-				echo '">',$fdn,'</a></th>',"\n";
-			}
-		}
-		echo '</tr>',"\n";
+		echo $this->htmlHiddenSys( 'qfn', $this->qfn );
+		echo $this->htmlHiddenSys( 'fm', $this->fm );
 
-		/*
-		 * Prepare the SQL Query from the data definition file
-		 */
-		$qparts['type']   = 'select';
-		$qparts['select'] = $this->get_SQL_column_list();
-		// Even if the key field isn't displayed, we still need its value
-		if ($select_recs) {
-			if (!in_array ($this->key, $this->fds)) {
-				$qparts['select'] .= ','.$this->fqn($this->key);
-			}
-		}
-		$qparts['from']  = $this->get_SQL_join_clause();
-		$qparts['where'] = $this->get_SQL_where_from_query_opts();
-		// build up the ORDER BY clause
-		if (isset($this->sfn)) {
-			$sort_fields   = array();
-			$sort_fields_w = array();
-			foreach ($this->sfn as $field) {
-				if ($field[0] == '-') {
-					$field = substr($field, 1);
-					$desc  = true;
-				} else {
-					$field = $field;
-					$desc  = false;
-				}
-				if(!$this->fdd[$field]['nodb']) {
-                    $sort_field = $this->fqn($field);
-                    $sort_field_w = $this->fdd[$field]['name'];
-                    $this->col_has_sql($field) && $sort_field_w .= ' (sql)';
-                    if ($desc) {
-                        $sort_field   .= ' DESC';
-                        $sort_field_w .= ' '.$this->labels['descending'];
-                    } else {
-                        $sort_field_w .= ' '.$this->labels['ascending'];
-                    }
-                    if($sort_field) $sort_fields[]   = $sort_field;
-                    $sort_fields_w[] = $sort_field_w;
-                }
-			}
-			if (count($sort_fields) > 0) {
-				$qparts['orderby'] = join(',', $sort_fields);
-			}
-		}
-		$qparts['limit'] = $listall ? '' : $this->sql_limit($this->fm,$this->inc);
+		// Alternative list view
+		if($this->list_view){
 
-		/*
-		 * Main list_table() query
-		 *
-		 * Each row of the HTML table is one record from the SQL query. We must
-		 * perform this query before filter printing, because we want to use
-		 * $this->sql_field_len() function. We will also fetch the first row to get
-		 * the field names.
-		 */
-		$query = $this->get_SQL_main_list_query($qparts);
-		$res   = $this->myquery($query, __LINE__);
-		if ($res == false) {
-			$this->error('invalid SQL query', $query);
-			return false;
-		}
-		$row = $this->sql_fetch($res);
+			$list_data = array();
 
-		/* FILTER {{{
-		 *
-		 * Draw the filter and fill it with any data typed in last pass and stored
-		 * in the array parameter keyword 'filter'. Prepare the SQL WHERE clause.
-		 */
-		if ($this->filter_operation()) {
-			// Filter row retrieval
-			$fields     = false;
-			$filter_row = $row;
-			if (! is_array($filter_row)) {
-				unset($qparts['where']);
-				$query = $this->get_SQL_query($qparts);
-				$res   = $this->myquery($query, __LINE__);
-				if ($res == false) {
-					$this->error('invalid SQL query', $query);
-					return false;
-				}
-				$filter_row = $this->sql_fetch($res);
-			}
-			/* Variable $fields is used to get index of particular field in
-			   result. That index can be passed in example to $this->sql_field_len()
-			   function. Use field names as indexes to $fields array. */
-			if (is_array($filter_row)) {
-				$fields = array_flip(array_keys($filter_row));
-			}
-			if ($fields != false) {
-				$css_class_name = $this->getCSSclass('filter');
-				echo '<tr class="',$css_class_name,'">',"\n";
-				echo '<td class="',$css_class_name,'" colspan="',$sys_cols,'">';
-				echo $this->htmlSubmit('filter', 'Query', $this->getCSSclass('query'), false);
-				echo '</td>', "\n";
-				for ($k = 0; $k < $this->num_fds; $k++) {
-					if (! $this->displayed[$k]) {
-						continue;
-					}
-					$css_postfix      = @$this->fdd[$k]['css']['postfix'];
-					$css_class_name   = $this->getCSSclass('filter', null, null, $css_postfix);
-					$this->field_name = $this->fds[$k];
-					$fd               = $this->field_name;
-					$this->field      = $this->fdd[$fd];
-					$l  = 'qf'.$k;
-					$lc = 'qf'.$k.'_comp';
-					$li = 'qf'.$k.'_id';
-					if ($this->clear_operation()) {
-						$m  = null;
-						$mc = null;
-						$mi = null;
-					} else {
-						$m  = $this->get_sys_cgi_var($l);
-						$mc = $this->get_sys_cgi_var($lc);
-						$mi = $this->get_sys_cgi_var($li);
-					}
-					echo '<td class="',$css_class_name,'">';
-                    if(!$this->fdd[$this->fdn[$fd]]['nodb']){
-                        if ($this->password($k)) {
-                            echo '&nbsp;';
-                        } else if ($this->fdd[$fd]['select'] == 'D' || $this->fdd[$fd]['select'] == 'M') {
-                            // Multiple fields processing
-                            // Default size is 2 and array required for values.
-                            $from_table = ! $this->col_has_values($k) || isset($this->fdd[$k]['values']['table']);
-                            $vals       = $this->set_values($k, array('*' => $this->fdd[$fd]['name']), null, $from_table);
-                            $selected   = $mi;
-                            $multiple   = $this->col_has_multiple_select($k);
-                            $multiple  |= $this->fdd[$fd]['select'] == 'M';
-                            $readonly   = false;
-                            $strip_tags = true;
-                            $escape     = true;
-                            echo $this->htmlSelect($this->cgi['prefix']['sys'].$l.'_id', $css_class_name,
-                                    $vals, $selected, $multiple, $readonly, $strip_tags, $escape);
-                        } elseif ($this->fdd[$fd]['select'] == 'N' || $this->fdd[$fd]['select'] == 'T') {
-                            $len_props = '';
-                            $maxlen = intval($this->fdd[$k]['maxlen']);
-                            $maxlen > 0 || $maxlen = intval($this->sql_field_len($res, $fields["qf$k"]));
-                            $size = isset($this->fdd[$k]['size']) ? $this->fdd[$k]['size']
-                                : ($maxlen < 30 ? min($maxlen, 8) : 12);
-                            $len_props .= ' size="'.$size.'"';
-                            $len_props .= ' maxlength="'.$maxlen.'"';
-                            if ($this->fdd[$fd]['select'] == 'N') {
-                                $mc = in_array($mc, $this->comp_ops) ? $mc : '=';
-                                echo $this->htmlSelect($this->cgi['prefix']['sys'].$l.'_comp',
-                                        $css_class_name, $this->comp_ops, $mc);
-                            }
-                            echo '<input class="form-control ',$css_class_name,'" value="',htmlspecialchars(@$m);
-                            echo '" type="text" name="'.$this->cgi['prefix']['sys'].'qf'.$k.'"',$len_props;
-                            echo ' onkeypress="return '.$this->js['prefix'].'filter_handler(this.form, event);" placeholder="',$this->fdd[$fd]['name'],'" />';
-                        } else {
-                            echo '&nbsp;';
-                        }
-                    }
-					echo '</td>',"\n";
-				}
-				echo '</tr>',"\n";
-			}
-		} // }}}
-
-		/*
-		 * Display sorting sequence
-		 */
-		if ($qparts['orderby'] && $this->display['sort']) {
-			$css_class_name = $this->getCSSclass('sortinfo');
-			echo '<tr class="',$css_class_name,'">',"\n";
-			echo '<td class="',$css_class_name,'" colspan="',$sys_cols,'">';
-			echo '<a class="',$css_class_name,'" href="';
-			echo htmlspecialchars($this->page_name
-					.'?'.$this->cgi['prefix']['sys'].'fl'.'='.$this->fl
-					.'&'.$this->cgi['prefix']['sys'].'fm'.'='.$this->fm
-					.'&'.$this->cgi['prefix']['sys'].'qfn'.'='.rawurlencode($this->qfn)
-					.$this->qfn.$this->cgi['persist']);
-			echo '">',$this->labels['Clear'],'</a></td>',"\n";
-			echo '<td class="',$css_class_name,'" colspan="',$this->num_fields_displayed,'">';
-			echo $this->labels['Sorted By'],': ',join(', ', $sort_fields_w),'</td></tr>',"\n";
-		}
-
-		/*
-		 * Display the current query
-		 */
-		$text_query = $this->get_SQL_where_from_query_opts(null, true);
-		if ($text_query != '' && $this->display['query']) {
-			$css_class_name = $this->getCSSclass('queryinfo');
-			echo '<tr class="',$css_class_name,'">',"\n";
-			echo '<td class="',$css_class_name,'" colspan="',$sys_cols,'">';
-			echo '<a class="',$css_class_name,'" href="';
-			echo htmlspecialchars($this->get_server_var('PHP_SELF')
-					.'?'.$this->cgi['prefix']['sys'].'fl'.'='.$this->fl
-					.'&'.$this->cgi['prefix']['sys'].'fm'.'='.$this->fm
-					.'&'.$this->cgi['prefix']['sys'].'qfn'.'='.rawurlencode($this->qfn)
-					.'&'.$this->get_sfn_cgi_vars().$this->cgi['persist']);
-			echo '">',$this->labels['Clear'],'</a></td>',"\n";
-			echo '<td class="',$css_class_name,'" colspan="',$this->num_fields_displayed,'">';
-			echo $this->labels['Current Query'],': ',htmlspecialchars($text_query),'</td></tr>',"\n";
-		}
-
-        if(isset($this->parent_sess_id) && $this->parent_sess_id != 0){
-            echo '<tr class="'.$this->getCSSclass('row', null, 'next').'"><td class="'.$this->getCSSclass('cell', null, true, $css_postfix).'"></td><td class="'.$this->getCSSclass('cell', null, true, $css_postfix).'" colspan="'.$this->num_fields_displayed.'"><a href="/'.$this->CI->uri->segment(1).'/'.$this->CI->uri->segment(2).'/parent/0/" class="btn btn-xs btn-warning"><i class="glyphicon glyphicon-eject icon-white"></i></a>&nbsp;&nbsp;<a href="/'.$this->CI->uri->segment(1).'/'.$this->CI->uri->segment(2).'/parent/'.$this->parent_id.'/" class="btn btn-xs btn-warning" ><i class="glyphicon glyphicon-backward icon-white"></i></a>&nbsp;&nbsp;&nbsp;'.$this->parent_crumbs.'</td></tr>';
-		}
-
-		if ($this->nav_text_links() || $this->nav_graphic_links() || $this->nav_bootstrap_links()) {
+			// query params
 			$qstrparts = array();
-			strlen($this->fl)             > 0 && $qstrparts[] = $this->cgi['prefix']['sys'].'fl'.'='.$this->fl;
-			strlen($this->fm)             > 0 && $qstrparts[] = $this->cgi['prefix']['sys'].'fm'.'='.$this->fm;
-			count($this->sfn)             > 0 && $qstrparts[] = $this->get_sfn_cgi_vars();
-			strlen($this->cgi['persist']) > 0 && $qstrparts[] = $this->cgi['persist'];
+			strlen( $this->fl ) > 0 && $qstrparts[] = $this->cgi['prefix']['sys'] . 'fl' . '=' . $this->fl;
+			strlen( $this->fm ) > 0 && $qstrparts[] = $this->cgi['prefix']['sys'] . 'fm' . '=' . $this->fm;
+			count( $this->sfn ) > 0 && $qstrparts[] = $this->get_sfn_cgi_vars();
+			strlen( $this->cgi['persist'] ) > 0 && $qstrparts[] = $this->cgi['persist'];
 			$qpview      = $qstrparts;
 			$qpcopy      = $qstrparts;
 			$qpchange    = $qstrparts;
 			$qpdelete    = $qstrparts;
-			$qp_prefix   = $this->cgi['prefix']['sys'].'operation'.'='.$this->cgi['prefix']['operation'];
-			$qpview[]    = $qp_prefix.'View';
-			$qpcopy[]    = $qp_prefix.'Copy';
-			$qpchange[]  = $qp_prefix.'Change';
-			$qpdelete[]  = $qp_prefix.'Delete';
-			$qpviewStr   = htmlspecialchars($this->page_name.'?'.join('&',$qpview).$this->qfn);
-			$qpcopyStr   = htmlspecialchars($this->page_name.'?'.join('&',$qpcopy).$this->qfn);
-			$qpchangeStr = htmlspecialchars($this->page_name.'?'.join('&',$qpchange).$this->qfn);
-			$qpdeleteStr = htmlspecialchars($this->page_name.'?'.join('&',$qpdelete).$this->qfn);
-		}
+			$qp_prefix   = $this->cgi['prefix']['sys'] . 'operation' . '=' . $this->cgi['prefix']['operation'];
+			$qpview[]    = $qp_prefix . 'View';
+			$qpcopy[]    = $qp_prefix . 'Copy';
+			$qpchange[]  = $qp_prefix . 'Change';
+			$qpdelete[]  = $qp_prefix . 'Delete';
+			$qpviewStr   = htmlspecialchars( $this->page_name . '?' . join( '&', $qpview ) . $this->qfn );
+			$qpcopyStr   = htmlspecialchars( $this->page_name . '?' . join( '&', $qpcopy ) . $this->qfn );
+			$qpchangeStr = htmlspecialchars( $this->page_name . '?' . join( '&', $qpchange ) . $this->qfn );
+			$qpdeleteStr = htmlspecialchars( $this->page_name . '?' . join( '&', $qpdelete ) . $this->qfn );
 
-		$fetched  = true;
-		$first    = true;
-		$rowCount = 0;
-		while ((!$fetched && ($row = $this->sql_fetch($res)) != false)
-				|| ($fetched && $row != false)) {
-			$fetched = false;
-			echo '<tr class="',$this->getCSSclass('row', null, 'next'),'">',"\n";
-			if ($sys_cols) { /* {{{ */
-				$key_rec     = $row['qf'.$this->key_num];
-				$queryAppend = htmlspecialchars('&'.$this->cgi['prefix']['sys'].'rec'.'='.$key_rec);
-				$viewQuery   = $qpviewStr   . $queryAppend;
-				$copyQuery   = $qpcopyStr   . $queryAppend;
-				$changeQuery = $qpchangeStr . $queryAppend;
-				$deleteQuery = $qpdeleteStr . $queryAppend;
-				$viewTitle   = htmlspecialchars($this->labels['View']);
-				$changeTitle = htmlspecialchars($this->labels['Change']);
-				$copyTitle   = htmlspecialchars($this->labels['Copy']);
-				$deleteTitle = htmlspecialchars($this->labels['Delete']);
-				$css_class_name = $this->getCSSclass('navigation', null, true);
-				if ($select_recs) {
-					if (! $this->nav_buttons() || $sys_cols > 1) {
-						echo '<td class="',$css_class_name,'">';
-					}
-					if ($this->nav_graphic_links()) {
-						$printed_out = false;
-						if ($this->view_enabled()) {
-							$printed_out = true;
-							echo '<a class="',$css_class_name,'" href="',$viewQuery,'"><img class="';
-							echo $css_class_name,'" src="',$this->url['images'];
-							echo 'pme-view.png" height="15" width="16" border="0" ';
-							echo 'alt="',$viewTitle,'" title="',$viewTitle,'" /></a>';
-						}
-						if ($this->change_enabled()) {
-							$printed_out && print('&nbsp;');
-							$printed_out = true;
-							echo '<a class="',$css_class_name,'" href="',$changeQuery,'"><img class="';
-							echo $css_class_name,'" src="',$this->url['images'];
-							echo 'pme-change.png" height="15" width="16" border="0" ';
-							echo 'alt="',$changeTitle,'" title="',$changeTitle,'" /></a>';
-						}
-						if ($this->copy_enabled()) {
-							$printed_out && print('&nbsp;');
-							$printed_out = true;
-							echo '<a class="',$css_class_name,'" href="',$copyQuery,'"><img class="';
-							echo $css_class_name,'" src="',$this->url['images'];
-							echo 'pme-copy.png" height="15" width="16" border="0" ';
-							echo 'alt="',$copyTitle,'" title="',$copyTitle,'" /></a>';
-						}
-						if ($this->delete_enabled()) {
-							$printed_out && print('&nbsp;');
-							$printed_out = true;
-							echo '<a class="',$css_class_name,'" href="',$deleteQuery,'"><img class="';
-							echo $css_class_name,'" src="',$this->url['images'];
-							echo 'pme-delete.png" height="15" width="16" border="0" ';
-							echo 'alt="',$deleteTitle,'" title="',$deleteTitle,'" /></a>';
-						}
-					}
-                    if ($this->nav_bootstrap_links()) {
-						$printed_out = false;
-						if ($this->view_enabled()) {
-							$printed_out = true;
-							echo '<a class="',$css_class_name,' btn btn-default btn-sm" href="',$viewQuery,'" rel="tooltip" title="',$viewTitle,'">';
-							echo '<i class="glyphicon glyphicon-eye-open"></i>';
-							echo '</a>';
-						}
-						if ($this->change_enabled()) {
-							$printed_out = true;
-							echo '<a class="',$css_class_name,' btn btn-default btn-sm" href="',$changeQuery,'" rel="tooltip" title="',$changeTitle,'">';
-							echo '<i class="glyphicon glyphicon-edit"></i>';
-							echo '</a>';
-						}
-						if ($this->copy_enabled()) {
-							$printed_out = true;
-							echo '<a class="',$css_class_name,' btn btn-default btn-sm" href="',$copyQuery,'" rel="tooltip" title="',$copyTitle,'">';
-							echo '<i class="glyphicon glyphicon-plus"></i>';
-							echo '</a>';
-						}
-						if ($this->delete_enabled()) {
-							$printed_out = true;
-							echo '<a class="',$css_class_name,' btn btn-default btn-sm" href="',$deleteQuery,'" rel="tooltip" title="',$deleteTitle,'">';
-							echo '<i class="glyphicon glyphicon-remove"></i>';
-							echo '</a>';
-						}
-					}
-					if ($this->nav_text_links()) {
-						if ($this->nav_graphic_links()) {
-							echo '<br class="',$css_class_name,'">';
-						}
-						$printed_out = false;
-						if ($this->view_enabled()) {
-							$printed_out = true;
-							echo '<a href="',$viewQuery,'" title="',$viewTitle,'" class="',$css_class_name,'">V</a>';
-						}
-						if ($this->change_enabled()) {
-							$printed_out && print('&nbsp;');
-							$printed_out = true;
-							echo '<a href="',$changeQuery,'" title="',$changeTitle,'" class="',$css_class_name,'">C</a>';
-						}
-						if ($this->copy_enabled()) {
-							$printed_out && print('&nbsp;');
-							$printed_out = true;
-							echo '<a href="',$copyQuery,'" title="',$copyTitle,'" class="',$css_class_name,'">P</a>';
-						}
-						if ($this->delete_enabled()) {
-							$printed_out && print('&nbsp;');
-							$printed_out = true;
-							echo '<a href="',$deleteQuery,'" title="',$deleteTitle,'" class="',$css_class_name,'">D</a>';
-						}
-					}
-					if (! $this->nav_buttons() || $sys_cols > 1) {
-						echo '</td>',"\n";
-					}
-					if ($this->nav_buttons()) {
-						echo '<td class="',$css_class_name,'"><input class="',$css_class_name;
-						echo '" type="radio" name="'.$this->cgi['prefix']['sys'].'rec';
-						echo '" value="',htmlspecialchars($key_rec),'"';
-						if (($this->rec == '' && $first) || ($this->rec == $key_rec)) {
-							echo ' checked';
-							$first = false;
-						}
-						echo ' /></td>',"\n";
-					}
-				} elseif ($this->filter_enabled()) {
-					echo '<td class="',$css_class_name,'" colspan="',$sys_cols,'">&nbsp;</td>',"\n";
+			/*
+			 * Prepare the SQL Query from the data definition file
+			 */
+			$qparts['type']   = 'select';
+			$qparts['select'] = $this->get_SQL_column_list();
+			// Even if the key field isn't displayed, we still need its value
+			if ( $select_recs ) {
+				if ( ! in_array( $this->key, $this->fds ) ) {
+					$qparts['select'] .= ',' . $this->fqn( $this->key );
 				}
-			} /* }}} */
-			for ($k = 0; $k < $this->num_fds; $k++) { /* {{{ */
-				$fd = $this->fds[$k];
-				if (! $this->displayed[$k]) {
-					continue;
+			}
+			$qparts['from']  = $this->get_SQL_join_clause();
+			$qparts['where'] = $this->get_SQL_where_from_query_opts();
+			// build up the ORDER BY clause
+			if ( isset( $this->sfn ) ) {
+				$sort_fields   = array();
+				$sort_fields_w = array();
+				foreach ( $this->sfn as $field ) {
+					if ( $field[0] == '-' ) {
+						$field = substr( $field, 1 );
+						$desc  = true;
+					} else {
+						$field = $field;
+						$desc  = false;
+					}
+					if ( ! $this->fdd[ $field ]['nodb'] ) {
+						$sort_field   = $this->fqn( $field );
+						$sort_field_w = $this->fdd[ $field ]['name'];
+						$this->col_has_sql( $field ) && $sort_field_w .= ' (sql)';
+						if ( $desc ) {
+							$sort_field   .= ' DESC';
+							$sort_field_w .= ' ' . $this->labels['descending'];
+						} else {
+							$sort_field_w .= ' ' . $this->labels['ascending'];
+						}
+						if ( $sort_field ) {
+							$sort_fields[] = $sort_field;
+						}
+						$sort_fields_w[] = $sort_field_w;
+					}
 				}
-				$css_postfix    = @$this->fdd[$k]['css']['postfix'];
-				$css_class_name = $this->getCSSclass('cell', null, true, $css_postfix);
-				if ($this->password($k)) {
-					echo '<td class="',$css_class_name,'">',$this->labels['hidden'],'</td>',"\n";
-					continue;
+				if ( count( $sort_fields ) > 0 ) {
+					$qparts['orderby'] = join( ',', $sort_fields );
 				}
-				echo '<td class="',$css_class_name,'"',$this->getColAttributes($fd),'>';
-				echo $this->cellDisplay($k, $row, $css_class_name);
-				echo '</td>',"\n";
-			} /* }}} */
-			echo '</tr>',"\n";
+			}
+			$qparts['limit'] = $listall ? '' : $this->sql_limit( $this->fm, $this->inc );
+
+			$query = $this->get_SQL_main_list_query( $qparts );
+			$query = $this->CI->db->query($query);
+			if ($query->num_rows() > 0) {
+				foreach ( $query->result_array() as $key => $value ) {
+					$key_rec = $value[ 'qf' . $this->key_num ];
+					$queryAppend    = htmlspecialchars( '&' . $this->cgi['prefix']['sys'] . 'rec' . '=' . $key_rec );
+					$viewQuery      = $qpviewStr . $queryAppend;
+					$copyQuery      = $qpcopyStr . $queryAppend;
+					$changeQuery    = $qpchangeStr . $queryAppend;
+					$deleteQuery    = $qpdeleteStr . $queryAppend;
+					$viewTitle      = htmlspecialchars( $this->labels['View'] );
+					$changeTitle    = htmlspecialchars( $this->labels['Change'] );
+					$copyTitle      = htmlspecialchars( $this->labels['Copy'] );
+					$deleteTitle    = htmlspecialchars( $this->labels['Delete'] );
+					$css_class_name = $this->getCSSclass( 'navigation', null, true );
+
+					if ( $this->view_enabled() ) {
+						$value['view_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $viewQuery. '" rel="tooltip" title="'. $viewTitle. '"><i class="glyphicon glyphicon-eye-open"></i></a>';
+					}
+					if ( $this->change_enabled() ) {
+						$value['change_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $changeQuery. '" rel="tooltip" title="'. $changeTitle. '"><i class="glyphicon glyphicon-edit"></i></a>';
+					}
+					if ( $this->copy_enabled() ) {
+						$value['copy_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $copyQuery. '" rel="tooltip" title="'. $copyTitle. '"><i class="glyphicon glyphicon-plus"></i></a>';
+					}
+					if ( $this->delete_enabled() ) {
+						$value['delete_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $deleteQuery. '" rel="tooltip" title="'. $deleteTitle. '"><i class="glyphicon glyphicon-remove"></i></a>';
+					}
+
+					if(isset($this->list_view['file']) && $this->list_view['file'] != '' && isset($this->fdd[$this->list_view['file']])) {
+						$value['file'] = $this->get_file ($this->list_view['file'], $key_rec);
+					}
+
+					$list_data[$key] = $value;
+				}
+			}
+			$this->CI->load->view($this->list_view['list_view'], array(
+				'myEditResult'  => $list_data,
+				'token_name'    => $this->CI->security->get_csrf_token_name(),
+				'csrf_hash'     => $this->CI->security->get_csrf_hash()
+			));
 		}
-		echo '</table>',"\n"; // end of table rows listing
+		else {
+			// Main table start
+			// -----------------------------------------------------------------
+			echo '<table class="', $this->getCSSclass( 'main' ), ' table table-hover ui-table" summary="', $this->tb, '">', "\n";
+			echo '<tr class="', $this->getCSSclass( 'header' ), '">', "\n";
+			/*
+			 * System (navigation, selection) columns counting
+			 */
+			$sys_cols = 0;
+			$sys_cols += intval( $this->filter_enabled() || $select_recs );
+			if ( $sys_cols > 0 ) {
+				$sys_cols += intval( $this->nav_buttons()
+				                     && ( $this->nav_text_links() || $this->nav_graphic_links() ) );
+			}
+			/*
+			 * We need an initial column(s) (sys columns)
+			 * if we have filters, Changes or Deletes enabled
+			 */
+			if ( $sys_cols ) {
+				echo '<th class="', $this->getCSSclass( 'header' ), '" colspan="', $sys_cols, '">';
+				if ( $this->filter_enabled() ) {
+					if ( $this->filter_operation() ) {
+						echo $this->htmlSubmit( 'sw', 'Hide', $this->getCSSclass( 'hide' ), false ) . '&nbsp;' . '&nbsp;';
+						echo $this->htmlSubmit( 'sw', 'Clear', $this->getCSSclass( 'clear' ), false );
+					} else {
+						echo $this->htmlSubmit( 'sw', 'Search', $this->getCSSclass( 'search' ), false );
+					}
+				} else {
+					echo '&nbsp;';
+				}
+				echo '</th>', "\n";
+			}
+			for ( $k = 0; $k < $this->num_fds; $k ++ ) {
+				$fd = $this->fds[ $k ];
+				if ( ! $this->displayed[ $k ] ) {
+					continue;
+				}
+				$css_postfix    = @$this->fdd[ $k ]['css']['postfix'];
+				$css_class_name = $this->getCSSclass( 'header', null, null, $css_postfix );
+				$fdn            = $this->fdd[ $fd ]['name'];
+				if ( ! $this->fdd[ $fd ]['sort'] || $this->password( $fd ) ) {
+					echo '<th class="', $css_class_name, '">', $fdn, '</th>', "\n";
+				} else {
+					// Clicking on the current sort field reverses the sort order
+					$new_sfn = $this->sfn;
+					array_unshift( $new_sfn, in_array( "$k", $new_sfn, 1 ) ? "-$k" : $k );
+					echo '<th class="', $css_class_name, '">';
+					echo '<a class="', $css_class_name, '" href="';
+					echo htmlspecialchars( $this->page_name . '?' . $this->cgi['prefix']['sys'] . 'fm' . '=0'
+					                       . '&' . $this->cgi['prefix']['sys'] . 'fl' . '=' . $this->fl
+					                       . '&' . $this->cgi['prefix']['sys'] . 'qfn' . '=' . rawurlencode( $this->qfn ) . $this->qfn
+					                       . '&' . $this->get_sfn_cgi_vars( $new_sfn ) . $this->cgi['persist'] );
+					echo '">', $fdn, '</a></th>', "\n";
+				}
+			}
+			echo '</tr>', "\n";
+
+			/*
+			 * Prepare the SQL Query from the data definition file
+			 */
+			$qparts['type']   = 'select';
+			$qparts['select'] = $this->get_SQL_column_list();
+			// Even if the key field isn't displayed, we still need its value
+			if ( $select_recs ) {
+				if ( ! in_array( $this->key, $this->fds ) ) {
+					$qparts['select'] .= ',' . $this->fqn( $this->key );
+				}
+			}
+			$qparts['from']  = $this->get_SQL_join_clause();
+			$qparts['where'] = $this->get_SQL_where_from_query_opts();
+			// build up the ORDER BY clause
+			if ( isset( $this->sfn ) ) {
+				$sort_fields   = array();
+				$sort_fields_w = array();
+				foreach ( $this->sfn as $field ) {
+					if ( $field[0] == '-' ) {
+						$field = substr( $field, 1 );
+						$desc  = true;
+					} else {
+						$field = $field;
+						$desc  = false;
+					}
+					if ( ! $this->fdd[ $field ]['nodb'] ) {
+						$sort_field   = $this->fqn( $field );
+						$sort_field_w = $this->fdd[ $field ]['name'];
+						$this->col_has_sql( $field ) && $sort_field_w .= ' (sql)';
+						if ( $desc ) {
+							$sort_field   .= ' DESC';
+							$sort_field_w .= ' ' . $this->labels['descending'];
+						} else {
+							$sort_field_w .= ' ' . $this->labels['ascending'];
+						}
+						if ( $sort_field ) {
+							$sort_fields[] = $sort_field;
+						}
+						$sort_fields_w[] = $sort_field_w;
+					}
+				}
+				if ( count( $sort_fields ) > 0 ) {
+					$qparts['orderby'] = join( ',', $sort_fields );
+				}
+			}
+			$qparts['limit'] = $listall ? '' : $this->sql_limit( $this->fm, $this->inc );
+
+			/*
+			 * Main list_table() query
+			 *
+			 * Each row of the HTML table is one record from the SQL query. We must
+			 * perform this query before filter printing, because we want to use
+			 * $this->sql_field_len() function. We will also fetch the first row to get
+			 * the field names.
+			 */
+			$query = $this->get_SQL_main_list_query( $qparts );
+			$res   = $this->myquery( $query, __LINE__ );
+			if ( $res == false ) {
+				$this->error( 'invalid SQL query', $query );
+
+				return false;
+			}
+			$row = $this->sql_fetch( $res );
+
+			/* FILTER {{{
+			 *
+			 * Draw the filter and fill it with any data typed in last pass and stored
+			 * in the array parameter keyword 'filter'. Prepare the SQL WHERE clause.
+			 */
+			if ( $this->filter_operation() ) {
+				// Filter row retrieval
+				$fields     = false;
+				$filter_row = $row;
+				if ( ! is_array( $filter_row ) ) {
+					unset( $qparts['where'] );
+					$query = $this->get_SQL_query( $qparts );
+					$res   = $this->myquery( $query, __LINE__ );
+					if ( $res == false ) {
+						$this->error( 'invalid SQL query', $query );
+
+						return false;
+					}
+					$filter_row = $this->sql_fetch( $res );
+				}
+				/* Variable $fields is used to get index of particular field in
+				   result. That index can be passed in example to $this->sql_field_len()
+				   function. Use field names as indexes to $fields array. */
+				if ( is_array( $filter_row ) ) {
+					$fields = array_flip( array_keys( $filter_row ) );
+				}
+				if ( $fields != false ) {
+					$css_class_name = $this->getCSSclass( 'filter' );
+					echo '<tr class="', $css_class_name, '">', "\n";
+					echo '<td class="', $css_class_name, '" colspan="', $sys_cols, '">';
+					echo $this->htmlSubmit( 'filter', 'Query', $this->getCSSclass( 'query' ), false );
+					echo '</td>', "\n";
+					for ( $k = 0; $k < $this->num_fds; $k ++ ) {
+						if ( ! $this->displayed[ $k ] ) {
+							continue;
+						}
+						$css_postfix      = @$this->fdd[ $k ]['css']['postfix'];
+						$css_class_name   = $this->getCSSclass( 'filter', null, null, $css_postfix );
+						$this->field_name = $this->fds[ $k ];
+						$fd               = $this->field_name;
+						$this->field      = $this->fdd[ $fd ];
+						$l                = 'qf' . $k;
+						$lc               = 'qf' . $k . '_comp';
+						$li               = 'qf' . $k . '_id';
+						if ( $this->clear_operation() ) {
+							$m  = null;
+							$mc = null;
+							$mi = null;
+						} else {
+							$m  = $this->get_sys_cgi_var( $l );
+							$mc = $this->get_sys_cgi_var( $lc );
+							$mi = $this->get_sys_cgi_var( $li );
+						}
+						echo '<td class="', $css_class_name, '">';
+						if ( ! $this->fdd[ $this->fdn[ $fd ] ]['nodb'] ) {
+							if ( $this->password( $k ) ) {
+								echo '&nbsp;';
+							} else if ( $this->fdd[ $fd ]['select'] == 'D' || $this->fdd[ $fd ]['select'] == 'M' ) {
+								// Multiple fields processing
+								// Default size is 2 and array required for values.
+								$from_table = ! $this->col_has_values( $k ) || isset( $this->fdd[ $k ]['values']['table'] );
+								$vals       = $this->set_values( $k, array( '*' => $this->fdd[ $fd ]['name'] ), null, $from_table );
+								$selected   = $mi;
+								$multiple   = $this->col_has_multiple_select( $k );
+								$multiple   |= $this->fdd[ $fd ]['select'] == 'M';
+								$readonly   = false;
+								$strip_tags = true;
+								$escape     = true;
+								echo $this->htmlSelect( $this->cgi['prefix']['sys'] . $l . '_id', $css_class_name,
+									$vals, $selected, $multiple, $readonly, $strip_tags, $escape );
+							} elseif ( $this->fdd[ $fd ]['select'] == 'N' || $this->fdd[ $fd ]['select'] == 'T' ) {
+								$len_props = '';
+								$maxlen    = intval( $this->fdd[ $k ]['maxlen'] );
+								$maxlen > 0 || $maxlen = intval( $this->sql_field_len( $res, $fields["qf$k"] ) );
+								$size      = isset( $this->fdd[ $k ]['size'] ) ? $this->fdd[ $k ]['size']
+									: ( $maxlen < 30 ? min( $maxlen, 8 ) : 12 );
+								$len_props .= ' size="' . $size . '"';
+								$len_props .= ' maxlength="' . $maxlen . '"';
+								if ( $this->fdd[ $fd ]['select'] == 'N' ) {
+									$mc = in_array( $mc, $this->comp_ops ) ? $mc : '=';
+									echo $this->htmlSelect( $this->cgi['prefix']['sys'] . $l . '_comp',
+										$css_class_name, $this->comp_ops, $mc );
+								}
+								echo '<input class="form-control ', $css_class_name, '" value="', htmlspecialchars( @$m );
+								echo '" type="text" name="' . $this->cgi['prefix']['sys'] . 'qf' . $k . '"', $len_props;
+								echo ' onkeypress="return ' . $this->js['prefix'] . 'filter_handler(this.form, event);" placeholder="', $this->fdd[ $fd ]['name'], '" />';
+							} else {
+								echo '&nbsp;';
+							}
+						}
+						echo '</td>', "\n";
+					}
+					echo '</tr>', "\n";
+				}
+			} // }}}
+
+			/*
+			 * Display sorting sequence
+			 */
+			if ( $qparts['orderby'] && $this->display['sort'] ) {
+				$css_class_name = $this->getCSSclass( 'sortinfo' );
+				echo '<tr class="', $css_class_name, '">', "\n";
+				echo '<td class="', $css_class_name, '" colspan="', $sys_cols, '">';
+				echo '<a class="', $css_class_name, '" href="';
+				echo htmlspecialchars( $this->page_name
+				                       . '?' . $this->cgi['prefix']['sys'] . 'fl' . '=' . $this->fl
+				                       . '&' . $this->cgi['prefix']['sys'] . 'fm' . '=' . $this->fm
+				                       . '&' . $this->cgi['prefix']['sys'] . 'qfn' . '=' . rawurlencode( $this->qfn )
+				                       . $this->qfn . $this->cgi['persist'] );
+				echo '">', $this->labels['Clear'], '</a></td>', "\n";
+				echo '<td class="', $css_class_name, '" colspan="', $this->num_fields_displayed, '">';
+				echo $this->labels['Sorted By'], ': ', join( ', ', $sort_fields_w ), '</td></tr>', "\n";
+			}
+
+			/*
+			 * Display the current query
+			 */
+			$text_query = $this->get_SQL_where_from_query_opts( null, true );
+			if ( $text_query != '' && $this->display['query'] ) {
+				$css_class_name = $this->getCSSclass( 'queryinfo' );
+				echo '<tr class="', $css_class_name, '">', "\n";
+				echo '<td class="', $css_class_name, '" colspan="', $sys_cols, '">';
+				echo '<a class="', $css_class_name, '" href="';
+				echo htmlspecialchars( $this->get_server_var( 'PHP_SELF' )
+				                       . '?' . $this->cgi['prefix']['sys'] . 'fl' . '=' . $this->fl
+				                       . '&' . $this->cgi['prefix']['sys'] . 'fm' . '=' . $this->fm
+				                       . '&' . $this->cgi['prefix']['sys'] . 'qfn' . '=' . rawurlencode( $this->qfn )
+				                       . '&' . $this->get_sfn_cgi_vars() . $this->cgi['persist'] );
+				echo '">', $this->labels['Clear'], '</a></td>', "\n";
+				echo '<td class="', $css_class_name, '" colspan="', $this->num_fields_displayed, '">';
+				echo $this->labels['Current Query'], ': ', htmlspecialchars( $text_query ), '</td></tr>', "\n";
+			}
+
+			if ( isset( $this->parent_sess_id ) && $this->parent_sess_id != 0 ) {
+				echo '<tr class="' . $this->getCSSclass( 'row', null, 'next' ) . '"><td class="' . $this->getCSSclass( 'cell', null, true, $css_postfix ) . '"></td><td class="' . $this->getCSSclass( 'cell', null, true, $css_postfix ) . '" colspan="' . $this->num_fields_displayed . '"><a href="/' . $this->CI->uri->segment( 1 ) . '/' . $this->CI->uri->segment( 2 ) . '/parent/0/" class="btn btn-xs btn-warning"><i class="glyphicon glyphicon-eject icon-white"></i></a>&nbsp;&nbsp;<a href="/' . $this->CI->uri->segment( 1 ) . '/' . $this->CI->uri->segment( 2 ) . '/parent/' . $this->parent_id . '/" class="btn btn-xs btn-warning" ><i class="glyphicon glyphicon-backward icon-white"></i></a>&nbsp;&nbsp;&nbsp;' . $this->parent_crumbs . '</td></tr>';
+			}
+
+			if ( $this->nav_text_links() || $this->nav_graphic_links() || $this->nav_bootstrap_links() ) {
+				$qstrparts = array();
+				strlen( $this->fl ) > 0 && $qstrparts[] = $this->cgi['prefix']['sys'] . 'fl' . '=' . $this->fl;
+				strlen( $this->fm ) > 0 && $qstrparts[] = $this->cgi['prefix']['sys'] . 'fm' . '=' . $this->fm;
+				count( $this->sfn ) > 0 && $qstrparts[] = $this->get_sfn_cgi_vars();
+				strlen( $this->cgi['persist'] ) > 0 && $qstrparts[] = $this->cgi['persist'];
+				$qpview      = $qstrparts;
+				$qpcopy      = $qstrparts;
+				$qpchange    = $qstrparts;
+				$qpdelete    = $qstrparts;
+				$qp_prefix   = $this->cgi['prefix']['sys'] . 'operation' . '=' . $this->cgi['prefix']['operation'];
+				$qpview[]    = $qp_prefix . 'View';
+				$qpcopy[]    = $qp_prefix . 'Copy';
+				$qpchange[]  = $qp_prefix . 'Change';
+				$qpdelete[]  = $qp_prefix . 'Delete';
+				$qpviewStr   = htmlspecialchars( $this->page_name . '?' . join( '&', $qpview ) . $this->qfn );
+				$qpcopyStr   = htmlspecialchars( $this->page_name . '?' . join( '&', $qpcopy ) . $this->qfn );
+				$qpchangeStr = htmlspecialchars( $this->page_name . '?' . join( '&', $qpchange ) . $this->qfn );
+				$qpdeleteStr = htmlspecialchars( $this->page_name . '?' . join( '&', $qpdelete ) . $this->qfn );
+			}
+
+			$fetched  = true;
+			$first    = true;
+			$rowCount = 0;
+			while ( ( ! $fetched && ( $row = $this->sql_fetch( $res ) ) != false )
+			        || ( $fetched && $row != false ) ) {
+				$fetched = false;
+				echo '<tr class="', $this->getCSSclass( 'row', null, 'next' ), '">', "\n";
+				if ( $sys_cols ) { /* {{{ */
+					$key_rec        = $row[ 'qf' . $this->key_num ];
+					$queryAppend    = htmlspecialchars( '&' . $this->cgi['prefix']['sys'] . 'rec' . '=' . $key_rec );
+					$viewQuery      = $qpviewStr . $queryAppend;
+					$copyQuery      = $qpcopyStr . $queryAppend;
+					$changeQuery    = $qpchangeStr . $queryAppend;
+					$deleteQuery    = $qpdeleteStr . $queryAppend;
+					$viewTitle      = htmlspecialchars( $this->labels['View'] );
+					$changeTitle    = htmlspecialchars( $this->labels['Change'] );
+					$copyTitle      = htmlspecialchars( $this->labels['Copy'] );
+					$deleteTitle    = htmlspecialchars( $this->labels['Delete'] );
+					$css_class_name = $this->getCSSclass( 'navigation', null, true );
+					if ( $select_recs ) {
+						if ( ! $this->nav_buttons() || $sys_cols > 1 ) {
+							echo '<td class="', $css_class_name, '">';
+						}
+						if ( $this->nav_graphic_links() ) {
+							$printed_out = false;
+							if ( $this->view_enabled() ) {
+								$printed_out = true;
+								echo '<a class="', $css_class_name, '" href="', $viewQuery, '"><img class="';
+								echo $css_class_name, '" src="', $this->url['images'];
+								echo 'pme-view.png" height="15" width="16" border="0" ';
+								echo 'alt="', $viewTitle, '" title="', $viewTitle, '" /></a>';
+							}
+							if ( $this->change_enabled() ) {
+								$printed_out && print( '&nbsp;' );
+								$printed_out = true;
+								echo '<a class="', $css_class_name, '" href="', $changeQuery, '"><img class="';
+								echo $css_class_name, '" src="', $this->url['images'];
+								echo 'pme-change.png" height="15" width="16" border="0" ';
+								echo 'alt="', $changeTitle, '" title="', $changeTitle, '" /></a>';
+							}
+							if ( $this->copy_enabled() ) {
+								$printed_out && print( '&nbsp;' );
+								$printed_out = true;
+								echo '<a class="', $css_class_name, '" href="', $copyQuery, '"><img class="';
+								echo $css_class_name, '" src="', $this->url['images'];
+								echo 'pme-copy.png" height="15" width="16" border="0" ';
+								echo 'alt="', $copyTitle, '" title="', $copyTitle, '" /></a>';
+							}
+							if ( $this->delete_enabled() ) {
+								$printed_out && print( '&nbsp;' );
+								$printed_out = true;
+								echo '<a class="', $css_class_name, '" href="', $deleteQuery, '"><img class="';
+								echo $css_class_name, '" src="', $this->url['images'];
+								echo 'pme-delete.png" height="15" width="16" border="0" ';
+								echo 'alt="', $deleteTitle, '" title="', $deleteTitle, '" /></a>';
+							}
+						}
+						if ( $this->nav_bootstrap_links() ) {
+							$printed_out = false;
+							if ( $this->view_enabled() ) {
+								$printed_out = true;
+								echo '<a class="', $css_class_name, ' btn btn-default btn-sm" href="', $viewQuery, '" rel="tooltip" title="', $viewTitle, '">';
+								echo '<i class="glyphicon glyphicon-eye-open"></i>';
+								echo '</a>';
+							}
+							if ( $this->change_enabled() ) {
+								$printed_out = true;
+								echo '<a class="', $css_class_name, ' btn btn-default btn-sm" href="', $changeQuery, '" rel="tooltip" title="', $changeTitle, '">';
+								echo '<i class="glyphicon glyphicon-edit"></i>';
+								echo '</a>';
+							}
+							if ( $this->copy_enabled() ) {
+								$printed_out = true;
+								echo '<a class="', $css_class_name, ' btn btn-default btn-sm" href="', $copyQuery, '" rel="tooltip" title="', $copyTitle, '">';
+								echo '<i class="glyphicon glyphicon-plus"></i>';
+								echo '</a>';
+							}
+							if ( $this->delete_enabled() ) {
+								$printed_out = true;
+								echo '<a class="', $css_class_name, ' btn btn-default btn-sm" href="', $deleteQuery, '" rel="tooltip" title="', $deleteTitle, '">';
+								echo '<i class="glyphicon glyphicon-remove"></i>';
+								echo '</a>';
+							}
+						}
+						if ( $this->nav_text_links() ) {
+							if ( $this->nav_graphic_links() ) {
+								echo '<br class="', $css_class_name, '">';
+							}
+							$printed_out = false;
+							if ( $this->view_enabled() ) {
+								$printed_out = true;
+								echo '<a href="', $viewQuery, '" title="', $viewTitle, '" class="', $css_class_name, '">V</a>';
+							}
+							if ( $this->change_enabled() ) {
+								$printed_out && print( '&nbsp;' );
+								$printed_out = true;
+								echo '<a href="', $changeQuery, '" title="', $changeTitle, '" class="', $css_class_name, '">C</a>';
+							}
+							if ( $this->copy_enabled() ) {
+								$printed_out && print( '&nbsp;' );
+								$printed_out = true;
+								echo '<a href="', $copyQuery, '" title="', $copyTitle, '" class="', $css_class_name, '">P</a>';
+							}
+							if ( $this->delete_enabled() ) {
+								$printed_out && print( '&nbsp;' );
+								$printed_out = true;
+								echo '<a href="', $deleteQuery, '" title="', $deleteTitle, '" class="', $css_class_name, '">D</a>';
+							}
+						}
+						if ( ! $this->nav_buttons() || $sys_cols > 1 ) {
+							echo '</td>', "\n";
+						}
+						if ( $this->nav_buttons() ) {
+							echo '<td class="', $css_class_name, '"><input class="', $css_class_name;
+							echo '" type="radio" name="' . $this->cgi['prefix']['sys'] . 'rec';
+							echo '" value="', htmlspecialchars( $key_rec ), '"';
+							if ( ( $this->rec == '' && $first ) || ( $this->rec == $key_rec ) ) {
+								echo ' checked';
+								$first = false;
+							}
+							echo ' /></td>', "\n";
+						}
+					} elseif ( $this->filter_enabled() ) {
+						echo '<td class="', $css_class_name, '" colspan="', $sys_cols, '">&nbsp;</td>', "\n";
+					}
+				} /* }}} */
+				for ( $k = 0; $k < $this->num_fds; $k ++ ) { /* {{{ */
+					$fd = $this->fds[ $k ];
+					if ( ! $this->displayed[ $k ] ) {
+						continue;
+					}
+					$css_postfix    = @$this->fdd[ $k ]['css']['postfix'];
+					$css_class_name = $this->getCSSclass( 'cell', null, true, $css_postfix );
+					if ( $this->password( $k ) ) {
+						echo '<td class="', $css_class_name, '">', $this->labels['hidden'], '</td>', "\n";
+						continue;
+					}
+					echo '<td class="', $css_class_name, '"', $this->getColAttributes( $fd ), '>';
+					echo $this->cellDisplay( $k, $row, $css_class_name );
+					echo '</td>', "\n";
+				} /* }}} */
+				echo '</tr>', "\n";
+			}
+			echo '</table>', "\n";
+		}
+		// ------------------------------------------------------
+		// end of table rows listing
 		$this->display_list_table_buttons('down', $listall);
 		$this->form_end();
 	} /* }}} */
@@ -3827,6 +3952,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
         $this->uri              = $this->CI->uri->uri_to_assoc(1);
         $this->logtable_title   = @$opts['logtable_title'];
 		$this->logtable_field   = @$opts['logtable_field'];
+		$this->list_view        = (isset($opts['list_view']) && is_array($opts['list_view'])) ? $opts['list_view'] : false;
 
         // Set desirable error reporting level
 		$error_reporting = error_reporting(E_ALL & ~E_NOTICE);

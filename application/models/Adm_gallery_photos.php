@@ -608,6 +608,28 @@ class Adm_gallery_photos extends CI_Model {
     // ------------------------------------------------------------------------
 
 	/**
+	 * AJAX сортировка
+	 *
+	 * @access	public
+	 * @return	array
+	 */
+	function p_sortable() {
+		$rights = $this->cms_user->get_user_rights();
+		if ( is_array($rights) && (isset($rights[basename(__FILE__)])) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) ) {
+			$i = 10;
+			foreach ($this->input->get('item', true) as $value) {
+				$data = array(
+					'photo_sort' => $i
+				);
+				$this->db->where('photo_id', $value);
+				$this->db->update('w_gallery_photos', $data);
+				$i = $i+10;
+				echo $value;
+			}
+		}
+	}
+
+	/**
 	 * Параметры phpMyEdit
 	 *
 	 * @access	private
@@ -628,13 +650,17 @@ class Adm_gallery_photos extends CI_Model {
         $opts = $this->Cms_myedit->get_base_opts();
 		
 		// Переопределяем кнопки
-		$opts['buttons']['L']['up'] = array('add','save','<<','<','>','>>','goto_combo');
+		$opts['buttons']['L']['up'] = array('add','<<','<','>','>>','goto_combo');
 		$opts['buttons']['L']['down'] = $opts['buttons']['L']['up'];
         $opts['buttons']['F']['up'] = $opts['buttons']['L']['up'];
         $opts['buttons']['F']['down'] = $opts['buttons']['L']['up'];
 
         // Таблица
         $opts['tb'] = 'w_gallery_photos';
+        $opts['list_view'] = array(
+	        'list_view' => 'admin/list_of_photos',
+	        'file'      => 'pic',
+        );
 
         // Ключ
         $opts['key'] = 'photo_id';
@@ -644,7 +670,7 @@ class Adm_gallery_photos extends CI_Model {
         $opts['ui_sort_field'] = 'photo_sort';
 
         // Кол-во записей для вывода на экран
-        $opts['inc'] = 100;
+        $opts['inc'] = 1000;
 
         // Имя файла модуля, передаем для последующей проверки прав на него
         $opts['module'] = basename(__FILE__);
