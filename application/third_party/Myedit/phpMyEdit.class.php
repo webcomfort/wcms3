@@ -1803,60 +1803,61 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
      * @param	string
      * @param	int
      */
-    function get_file ($k, $key_rec) {
-        $int_dir = $this->get_folder($key_rec);
-        $dir = FCPATH.substr($this->fdd[$k]['file']['url'], 1).$int_dir.'/';
-        if(count($this->file_arr) == 0){
-	        if (is_dir($dir)) $this->file_arr = scandir ($dir);
-        }
+	function get_file ($k, $key_rec) {
+		$int_dir = $this->get_folder($key_rec);
+		$int_dir = intval($int_dir);
+		$dir = FCPATH.substr($this->fdd[$k]['file']['url'], 1).$int_dir.'/';
+		if(!isset($this->file_arr[$int_dir]) && count($this->file_arr[$int_dir]) == 0){
+			if (is_dir($dir)) $this->file_arr[$int_dir] = scandir ($dir);
+		}
 
-        if ( is_dir( $dir . $key_rec ) ) {
-	        if ( isset( $this->fdd[ $k ]['file']['tn'] ) ) {
-		        $value = '';
-		        $path  = $dir . $key_rec;
-		        if ( $handle = opendir( $path ) ) {
-			        while ( false !== ( $file = readdir( $handle ) ) ) {
-				        if ( preg_match( "/^([0-9]+)\.([a-zA-Z]+)$/", $file, $matches ) ) {
-					        $pieces = explode( ".", $file );
-					        $ext    = $pieces[ count( $pieces ) - 1 ];
-					        $value  .= '<a href="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . '/' . $file . '" target="_blank" style="display: inline-block; margin-right: 5px; margin-bottom: 5px;"><img src="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . '/' . $matches[1] . $this->fdd[ $k ]['file']['tn'] . '.' . $ext . '?' . rand() . '" border="0" /></a>';
-				        }
-			        }
-		        }
+		if ( is_dir( $dir . $key_rec ) ) {
+			if ( isset( $this->fdd[ $k ]['file']['tn'] ) ) {
+				$value = '';
+				$path  = $dir . $key_rec;
+				if ( $handle = opendir( $path ) ) {
+					while ( false !== ( $file = readdir( $handle ) ) ) {
+						if ( preg_match( "/^([0-9]+)\.([a-zA-Z]+)$/", $file, $matches ) ) {
+							$pieces = explode( ".", $file );
+							$ext    = $pieces[ count( $pieces ) - 1 ];
+							$value  .= '<a href="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . '/' . $file . '" target="_blank" style="display: inline-block; margin-right: 5px; margin-bottom: 5px;"><img src="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . '/' . $matches[1] . $this->fdd[ $k ]['file']['tn'] . '.' . $ext . '?' . rand() . '" border="0" /></a>';
+						}
+					}
+				}
 
-	        } else {
-		        $value = '<img src="' . $this->url['icons'] . 'folder.png" border="0" />';
-	        }
-        } else {
-	        $fl_array = preg_grep( "/^" . $key_rec . "\.([[:alnum:]])*$/", $this->file_arr );
-	        if ( count( $fl_array ) > 0 ) {
-		        $file = array_shift( $fl_array );
+			} else {
+				$value = '<img src="' . $this->url['icons'] . 'folder.png" border="0" />';
+			}
+		} else {
+			$fl_array = preg_grep( "/^" . $key_rec . "\.([[:alnum:]])*$/", $this->file_arr[$int_dir] );
+			if ( count( $fl_array ) > 0 ) {
+				$file = array_shift( $fl_array );
 
-		        if ( ! isset( $this->fdd[ $k ]['file']['ext'] ) ) {
-			        $pieces = explode( ".", $file );
-			        $ext    = $pieces[ count( $pieces ) - 1 ];
-			        if ( isset( $this->fdd[ $k ]['file']['tn'] ) ) {
-				        if ( $ext == 'swf' ) {
-					        $size  = getimagesize( $dir . $key_rec . '.' . $ext );
-					        $xsize = $size[0];
-					        $ysize = $size[1];
-					        $value = '<object width="' . $xsize . '" height="' . $ysize . '" type="application/x-shockwave-flash" data="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . '.swf"> <param name="movie" value="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . '.swf"> </object>';
-				        } else {
-					        $value = '<a href="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $file . '" target="_blank"><img src="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . $this->fdd[ $k ]['file']['tn'] . '.' . $ext . '?' . rand() . '" class="img-responsive" border="0" /></a>';
-				        }
-			        } else {
-				        $value = '<a href="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $file . '" target="_blank"><img src="' . $this->url['icons'] . $ext . '.png" border="0" /></a>';
-			        }
-		        } else {
-			        if ( isset( $this->fdd[ $k ]['file']['tn'] ) && is_file( $dir . $key_rec . $this->fdd[ $k ]['file']['tn'] . '.' . $this->fdd[ $k ]['file']['ext'] ) ) {
-				        $value = '<a href="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . '.' . $this->fdd[ $k ]['file']['ext'] . '" target="_blank"><img src="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . $this->fdd[ $k ]['file']['tn'] . '.' . $this->fdd[ $k ]['file']['ext'] . '?' . rand() . '" border="0" /></a>';
-			        }
-		        }
-	        }
-        }
+				if ( ! isset( $this->fdd[ $k ]['file']['ext'] ) ) {
+					$pieces = explode( ".", $file );
+					$ext    = $pieces[ count( $pieces ) - 1 ];
+					if ( isset( $this->fdd[ $k ]['file']['tn'] ) ) {
+						if ( $ext == 'swf' ) {
+							$size  = getimagesize( $dir . $key_rec . '.' . $ext );
+							$xsize = $size[0];
+							$ysize = $size[1];
+							$value = '<object width="' . $xsize . '" height="' . $ysize . '" type="application/x-shockwave-flash" data="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . '.swf"> <param name="movie" value="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . '.swf"> </object>';
+						} else {
+							$value = '<a href="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $file . '" target="_blank"><img src="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . $this->fdd[ $k ]['file']['tn'] . '.' . $ext . '?' . rand() . '" class="img-responsive" border="0" /></a>';
+						}
+					} else {
+						$value = '<a href="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $file . '" target="_blank"><img src="' . $this->url['icons'] . $ext . '.png" border="0" /></a>';
+					}
+				} else {
+					if ( isset( $this->fdd[ $k ]['file']['tn'] ) && is_file( $dir . $key_rec . $this->fdd[ $k ]['file']['tn'] . '.' . $this->fdd[ $k ]['file']['ext'] ) ) {
+						$value = '<a href="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . '.' . $this->fdd[ $k ]['file']['ext'] . '" target="_blank"><img src="' . $this->fdd[ $k ]['file']['url'] . $int_dir . '/' . $key_rec . $this->fdd[ $k ]['file']['tn'] . '.' . $this->fdd[ $k ]['file']['ext'] . '?' . rand() . '" border="0" /></a>';
+					}
+				}
+			}
+		}
 
-        if (isset($value)) return $value;
-    }
+		if (isset($value)) return $value;
+	}
 
 	/**
      * Get folder

@@ -8,7 +8,7 @@
 		border-radius: 3px;
 		font-size: 16px;
 	}
-	#sortable .col-md-3 {
+	#sortable .col-md-2 {
 		cursor: move;
 	}
 </style>
