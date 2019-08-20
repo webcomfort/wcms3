@@ -410,6 +410,7 @@ class Adm_gallery_photos extends CI_Model {
 						            data: {url: "/' . urlencode( $this->uri->segment( 1 ) . '/' . $this->uri->segment( 2 ) ) . '"}
 						        }).done(function(result) {
 						            $("#admin_interface").html(result);
+						            $(".thumbnail").each(function() { $(this).css("height","auto"); });
 						        });
 				            });
 				        }
