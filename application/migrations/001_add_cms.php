@@ -963,6 +963,33 @@ class Migration_Add_cms extends CI_Migration {
 (24, 1, 24, 1, 1, 1, 1, 1, 1)
 ");
 
+	    // ------------------------------------------------------------------------
+
+	    $this->dbforge->add_field(array(
+		    'wur_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+			    'unsigned' => TRUE,
+			    'auto_increment' => TRUE
+		    ),
+		    'wur_user_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'wur_item_id' => array(
+			    'type' => 'int',
+			    'constraint' => 11,
+		    ),
+		    'wur_type' => array(
+			    'type' => 'varchar',
+			    'constraint' => 255,
+		    ),
+	    ));
+	    $this->dbforge->add_key('wur_id', TRUE);
+	    $this->dbforge->add_key('wur_user_id');
+	    $this->dbforge->add_key('wur_item_id');
+	    $this->dbforge->create_table('w_user_rights', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
 	    // ----------------------------------- КАТАЛОГ -------------------------------------
 
 	    // Категории
