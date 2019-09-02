@@ -242,7 +242,7 @@ class Cms_user extends CI_Model {
      * @param	string
      * @return	bool
      */
-    function remember_confirmation($email)
+    function remember_confirmation($email, $place = 'admin')
     {
         $this->db->select('user_id');
         $this->db->from('w_user');
@@ -259,7 +259,7 @@ class Cms_user extends CI_Model {
 			$this->email->subject(lang('cms_user_rem_conf_subj'));
 
             $hash = md5(uniqid().time());
-			$message = sprintf(lang('cms_user_pass_conf_mess'), 'admin', $hash);
+			$message = sprintf(lang('cms_user_pass_conf_mess'), $place, $hash);
 			$this->email->message($message);
 
 			if ($this->email->send())

@@ -24,7 +24,7 @@ class Mod_menu_top extends CI_Model {
     function get_output($params = array())
     {
         $menu_id    = $params[0];
-        $statuses   = array(1, 3);
+        $statuses   = array(1, 3, 4);
 
         $this->db->select('page_id, page_pid, page_name, page_url, page_status, page_redirect, page_link_title');
         $this->db->from('w_pages');

@@ -63,7 +63,7 @@ class Cms_page extends CI_Model {
 		$this->db->from('w_pages');
 		$this->db->where('page_menu_id =', $menu_id);
 		$this->db->where('page_lang_id =', LANG);
-		$this->db->where_in('page_status', array(1, 2, 3));
+		$this->db->where_in('page_status', array(1, 2, 3, 4));
 		$this->db->order_by('page_sort', 'asc');
 		$query = $this->db->get();
 

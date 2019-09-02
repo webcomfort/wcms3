@@ -25,7 +25,7 @@ class Mod_menu_second extends CI_Model {
     {
         $menu_id    = $params[0];
         $ul_class   = $params[1];
-        $statuses   = array(1, 3);
+        $statuses   = array(1, 3, 4);
 
         if ($menu_id == MENU_ID)
         {

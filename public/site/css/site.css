@@ -1,6 +1,28 @@
 /* #Site Styles
 ================================================== */
 body { font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; }
+a:active,
+a:focus,
+textarea:hover,
+input:hover,
+textarea:active,
+input:active,
+textarea:focus,
+input:focus,
+button:focus,
+button:active,
+button:hover,
+label:focus,
+.btn:active,
+.btn.active,
+.form-control,
+.form-control:focus
+{
+	outline: none !important;
+	box-shadow: none !important;
+	-webkit-box-shadow: none !important;
+	border-color: #ced4da !important;
+}
 
 /* #Second menu
 ================================================== */
@@ -42,6 +64,55 @@ a.tag {
 	font-size: .9em;
 	color: #0099da;
 	text-decoration: none;
+}
+
+/* Form signin*/
+.form-signin {
+	width: 100%;
+	max-width: 330px;
+	padding: 15px;
+	margin: auto;
+}
+.form-signin .checkbox {
+	font-weight: 400;
+}
+.form-signin label {
+	font-size: 14px;
+}
+.form-signin .form-control {
+	position: relative;
+	box-sizing: border-box;
+	height: auto;
+	padding: 10px;
+	font-size: 16px;
+}
+.form-signin .form-control:focus {
+	z-index: 2;
+}
+.form-signin input.i1 {
+	margin-bottom: -1px;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+.form-signin input.i2 {
+	margin-bottom: 10px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+.form-signin .btn-primary {
+	border: none;
+	font-size: 12px !important;
+	letter-spacing: 0.84px !important;
+	padding: 12px 37px !important;
+	text-decoration: none;
+	text-transform: uppercase;
+	-webkit-transition: all 1s ease 0s;
+	-moz-transition: all 1s ease 0s;
+	-o-transition: all 1s ease 0s;
+	transition: all 1s ease 0s;
+}
+.form-signin .text-muted {
+	font-size: 12px;
 }
 
 /* Predefined margins

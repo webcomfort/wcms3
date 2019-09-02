@@ -237,10 +237,6 @@ if ( ! function_exists('get_bootstrap4_menu'))
 				if ( ( isset ( $link_title ) && $link_title == '' ) || ( isset ( $tree[ $link_title ] ) && $tree[ $link_title ] == '' ) ) {
 					$tree[ $link_title ] = $tree[ $level_name ];
 				}
-				if (isset($tree[$status_name]) && $tree[$status_name] == 4)
-				{
-					$tree[$url_name] = '';
-				}
 
 				// li
 				if ($i == 0) {
