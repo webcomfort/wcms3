@@ -37,7 +37,7 @@ class Adm_gallery_photos extends CI_Model {
     // ------------------------------------------------------------------------
 
 	/**
-	 * Функция, список выбора для пересечений с тегами
+	 * Функция, список выбора для пересечений
 	 *
 	 * @access	public
 	 * @param   int - article id
@@ -206,6 +206,9 @@ class Adm_gallery_photos extends CI_Model {
 	        	$this->_upload_files($this->db->insert_id(), $files, $this->input->post('gallery_name', TRUE));
 	        }
 
+	        // Права доступа к элементам
+	        $this->cms_user->insert_default_rights('gallery_id', 'w_galleries', 'gallery');
+
             echo '<div class="alert alert-success" role="alert">Галерея была успешно добавлена!</div>'.$this->_get_inc_form($this->input->post('inc_id', TRUE));
         }
         else
@@ -307,11 +310,21 @@ class Adm_gallery_photos extends CI_Model {
 		// Создаем галерею
         if (isset($_POST['gal_name']) && $_POST['gal_name'] != '') $this->_add_gallery();
 
+	    $user_rights = $this->cms_user->get_right_items('gallery');
+
         // Получаем данные
-        $this->db->select('gallery_id AS id, gallery_name AS name')
-            ->from('w_galleries')
-			->order_by('gallery_name', 'asc')
-            ->where('gallery_lang_id', $this->session->userdata('w_alang'));
+	    if($user_rights === false){
+		    $this->db->select('gallery_id AS id, gallery_name AS name')
+		             ->from('w_galleries')
+		             ->order_by('gallery_name', 'asc')
+		             ->where('gallery_lang_id', $this->session->userdata('w_alang'));
+	    } else {
+		    $this->db->select('gallery_id AS id, gallery_name AS name')
+		             ->from('w_galleries')
+		             ->order_by('gallery_name', 'asc')
+			         ->where_in('gallery_id', $user_rights)
+		             ->where('gallery_lang_id', $this->session->userdata('w_alang'));
+	    }
 
         $query  = $this->db->get();
 
@@ -383,6 +396,7 @@ class Adm_gallery_photos extends CI_Model {
 			
 			<script>
 			    $(document).ready(function () {
+			        $(".thumbnail").equalHeights();
 				    var galleryDropzone = new Dropzone("div#galleryDropzone", {
 				        url: "/adm_gallery_photos/p_drop_upload/",
 				        paramName: "file",
@@ -409,8 +423,14 @@ class Adm_gallery_photos extends CI_Model {
 						            url: "/adm_gallery_photos/p_get_output/",
 						            data: {url: "/' . urlencode( $this->uri->segment( 1 ) . '/' . $this->uri->segment( 2 ) ) . '"}
 						        }).done(function(result) {
-						            $("#admin_interface").html(result);
-						            $(".thumbnail").each(function() { $(this).css("height","auto"); });
+						            $("#admin_interface").html(result);	
+						            var height = 0;
+						            $(".thumbnail").each(function() { 
+						                if(height < $(this).height()) height = $(this).height();
+						            });
+						            $(".thumbnail").each(function() { 
+						                $(this).css("height", height+121); 
+						            });
 						        });
 				            });
 				        }
@@ -548,7 +568,9 @@ class Adm_gallery_photos extends CI_Model {
 
     function _add_gallery()
     {
-        $data = array(
+	    $this->session->unset_userdata('photo_filter');
+
+    	$data = array(
 		   'gallery_id' => '',
 		   'gallery_name' => $this->input->post('gal_name', true),
 		   'gallery_view_id' => $this->input->post('gal_tpl', true),
@@ -557,8 +579,16 @@ class Adm_gallery_photos extends CI_Model {
 		);
 
 		$this->db->insert('w_galleries', $data);
-		
-		$this->session->set_userdata(array('photo_filter' => $this->db->insert_id()));
+
+	    // Права доступа к элементам
+	    $this->cms_user->insert_default_rights('gallery_id', 'w_galleries', 'gallery');
+
+	    $this->db->select_max( 'gallery_id', 'id' );
+	    $query = $this->db->get( 'w_galleries' );
+	    $row   = $query->row();
+
+		$this->session->set_userdata(array('photo_filter' => $row->id));
+	    header ('Location: /admin/'.$this->uri->segment(2));
     }
 
     // ------------------------------------------------------------------------

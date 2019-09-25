@@ -380,21 +380,24 @@ $config['cms_user_agent']   = true; // проверять по user_agent
 $config['cms_user_groups'] = array(
     '1' => array(
         'name'      => 'Администраторы',
-        'admin'     => true,
-        'active'    => true,
-	    'files'     => true
+        'admin'     => true, // доступ в админ
+        'active'    => true, // активна ли группа
+	    'files'     => true, // доступ к файлам всех пользователей
+        'items'     => true  // доступ к записям всех пользователей
     ),
     '2' => array(
 	    'name'      => 'Редакторы',
 	    'admin'     => true,
 	    'active'    => true,
-	    'files'     => false
+	    'files'     => false,
+	    'items'     => false
     ),
     '3' => array(
         'name'      => 'Пользователи',
         'admin'     => false,
         'active'    => true,
-        'files'     => false
+        'files'     => false,
+        'items'     => false
     )
 );
 

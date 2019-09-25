@@ -24,6 +24,9 @@ else $pid = 0;
 $fields_inserted = array();
 $this->CI->db->cache_delete_all();
 
+// Права доступа к элементам
+$this->CI->cms_user->insert_item_rights($id, 'shop');
+
 // ------------------------------------------------------------------------
 
 // Изображения

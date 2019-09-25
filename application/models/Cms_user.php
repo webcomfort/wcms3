@@ -586,4 +586,286 @@ class Cms_user extends CI_Model {
             return FALSE;
         }
     }
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Функция, отдающая административное поле
+	 *
+	 * @access	public
+	 * @param   int - id для выборки
+	 * @param   string - тип элемента
+	 * @return	array
+	 */
+	function get_users_field($id, $value)
+	{
+		$opts = array();
+		$users_select = $this->_get_users_select($id, $value);
+		$opts['fdd'][$value.'_users'] = array(
+			'name'     => 'Пользователи',
+			'nodb'     => true,
+			'select'   => 'M',
+			'options'  => 'ACP',
+			'add_display'   => $users_select,
+			'change_display'=> $users_select,
+			'cell_func' => array(
+				'model' => 'cms_user',
+				'func'  => 'get_users_select'
+			),
+			'required' => false,
+			'sort'     => false,
+			'help'     => 'Выберите из списка пользователей, которые имеют право редактировать этот элемент.'
+		);
+		return $opts;
+	}
+
+	/**
+	 * Функция, список выбора для пересечений с пользователями
+	 *
+	 * @access	private
+	 * @param   int - id для выборки
+	 * @param   string - тип элемента
+	 * @return	string
+	 */
+	function _get_users_select($key, $value)
+	{
+		// Получаем массивы с данными для формирования селекта
+		$select_array = $this->_item_users($key, $value);
+		// Строим селект
+		$this->load->helper('form');
+		$opts = 'class="select2"';
+		return form_multiselect($value.'_users_'.$key.'[]', $select_array['values'], $select_array['defaults'], $opts);
+	}
+
+	/**
+	 * Функция, отдающая массивы пересечений элементов и пользователей для формирования селекта с дефолтными значениями
+	 *
+	 * @access	private
+	 * @param   int - id для выборки
+	 * @param   string - тип элемента
+	 * @return	array
+	 */
+	function _item_users($key, $value)
+	{
+		$val_arr = $this->_get_item_users();
+		$val_arr_active = array();
+		$groups = $this->_get_item_groups();
+
+		// No id, new item
+		if($key == 0 && in_array($this->get_group_id(), $groups)) {
+			$val_arr_active[] = $this->get_user_id();
+		}
+
+		// Active
+		$this->db->select('wur_user_id AS id')
+		         ->from('w_user_rights')
+		         ->where('wur_item_id', $key)
+		         ->where('wur_type', $value);
+
+		$query  = $this->db->get();
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result() as $row)
+			{
+				$val_arr_active[] = $row->id;
+			}
+
+			$data = array(
+				'values'    => $val_arr,
+				'defaults'  => $val_arr_active
+			);
+
+			return $data;
+		}
+		else {
+			$data = array(
+				'values'    => $val_arr,
+				'defaults'  => $val_arr_active
+			);
+			return $data;
+		}
+	}
+
+	/**
+	 * Функция, отдающая массив пользователей, которым нужны права для работы с элементами
+	 *
+	 * @access  public
+	 * @return  array
+	 */
+	function _get_item_users()
+	{
+		$this->db->select('user_id AS id, user_name, user_second_name, user_surname')
+		         ->from('w_user')
+				 ->where_in('user_group_id', $this->_get_item_groups());
+
+		$query  = $this->db->get();
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result() as $row)
+			{
+				$val_arr[$row->id] = (($row->user_name != '')?$row->user_name:'').(($row->user_second_name != '')?' '.$row->user_second_name:'').(($row->user_surname != '')?' '.$row->user_surname:'');
+			}
+		}
+
+		if(isset($val_arr) && is_array($val_arr))
+		{
+			return $val_arr;
+		}
+	}
+
+	/**
+	 * Функция, отдающая массив групп, которым нужны права для работы с элементами
+	 *
+	 * @access  public
+	 * @return  array
+	 */
+	function _get_item_groups()
+	{
+		$groups = $this->config->item('cms_user_groups');
+		$result = array();
+		foreach ($groups as $key => $value) {
+			if($groups[$key]['admin'] === true && $groups[$key]['items'] === false) $result[] = $key;
+		}
+		return $result;
+	}
+
+	/**
+	 * Функция, проверки групп, которым нужны права для работы с элементами
+	 *
+	 * @access  public
+	 * @param   string - тип элемента
+	 * @return  array | bool
+	 */
+	function get_right_items($type)
+	{
+		$groups = $this->_get_item_groups();
+		if(in_array($this->get_group_id(), $groups)) {
+			$user_items = array();
+			$this->db->select('wur_item_id AS id')
+			         ->from('w_user_rights')
+			         ->where('wur_user_id', $this->get_user_id())
+					 ->where('wur_type', $type);
+			$query  = $this->db->get();
+			if ($query->num_rows() > 0) {
+				foreach ( $query->result() as $row ) {
+					$user_items[] = $row->id;
+				}
+			}
+			return $user_items;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Заносим данные в таблицу пересечений
+	 *
+	 * @access  public
+	 * @param   int     - id записи
+	 * @param   string  - тип записи
+	 * @return  void
+	 */
+	function insert_item_rights($id, $type)
+	{
+		// $id родителя записи при операции копирования
+		if($this->input->post('PME_sys_savecopy', TRUE)) {
+			$field_base = $type.'_users';
+			foreach ($this->input->post() as $k => $v) {
+				if (preg_match_all('/^'.$field_base.'_([0-9]*)$/', $k, $matches)) {
+					$pid = $matches[1][0];
+				}
+			}
+		}
+		else $pid = 0;
+
+		if(is_array($this->input->post($type.'_users_'.$pid, TRUE))) {
+			foreach ($this->input->post($type.'_users_'.$pid, TRUE) as $value) {
+				$data = array(
+					'wur_id'		=> '',
+					'wur_user_id'	=> trim($value),
+					'wur_item_id' 	=> $id,
+					'wur_type'      => $type
+				);
+				$this->db->insert('w_user_rights', $data);
+			}
+		}
+	}
+
+	/**
+	 * Заносим данные в таблицу пересечений
+	 *
+	 * @access  public
+	 * @param   string - имя поля с id
+	 * @param   string - таблица
+	 * @param   string  - тип записи
+	 * @return  void
+	 */
+	function insert_default_rights($id_name, $table, $type)
+	{
+		$groups = $this->_get_item_groups();
+		if(in_array($this->get_group_id(), $groups)) {
+			$this->db->select_max( $id_name, 'id' );
+			$query = $this->db->get( $table );
+			$row   = $query->row();
+			$id    = $row->id;
+
+			$data = array(
+				'wur_id'      => '',
+				'wur_user_id' => $this->get_user_id(),
+				'wur_item_id' => $id,
+				'wur_type'    => $type
+			);
+			$this->db->insert( 'w_user_rights', $data );
+		}
+	}
+
+	/**
+	 * Обновляем данные в таблице пересечений
+	 *
+	 * @access  public
+	 * @param   int     - id записи
+	 * @param   string  - тип записи
+	 * @return  void
+	 */
+	function update_item_rights($id, $type)
+	{
+		// Удаляем старые записи
+		$this->db->delete('w_user_rights', array('wur_item_id' => $id, 'wur_type' => $type));
+
+		// Вносим новые записи
+		if(is_array($this->input->post($type.'_users_'.$id, TRUE))) {
+			foreach ($this->input->post($type.'_users_'.$id, TRUE) as $value) {
+				$data = array(
+					'wur_id'		=> '',
+					'wur_user_id'	=> trim($value),
+					'wur_item_id' 	=> $id,
+					'wur_type'      => $type
+				);
+				$this->db->insert('w_user_rights', $data);
+			}
+		}
+	}
+
+	/**
+	 * Удаляем данные в таблице пересечений
+	 *
+	 * @access  public
+	 * @param   int     - id записи
+	 * @param   string  - тип записи
+	 * @return  void
+	 */
+	function delete_item_rights($id, $type)
+	{
+		$query = $this->db->get_where('w_user_rights', array('wur_item_id' => $id, 'wur_type' => $type));
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result() as $row)
+			{
+				$this->trigger->delete_relative($row->wur_id, $this->trigger->get_last_basket_element(), 'w_user_rights', 'wur_id', 'Пересечение', '');
+			}
+		}
+	}
 }

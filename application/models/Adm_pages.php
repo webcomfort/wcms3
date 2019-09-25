@@ -475,6 +475,11 @@ class Adm_pages extends CI_Model {
 	 */
 	function _get_crud_model ()
 	{
+		// $id текущей записи
+		if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
+		elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
+		else $id = 0;
+
 		// Массив переменных из урла
         $uri_assoc_array = $this->uri->uri_to_assoc(1);
 
@@ -745,6 +750,11 @@ class Adm_pages extends CI_Model {
             'sort'          => true,
             'help'          => 'Введите сюда адрес страницы, на которую нужно будет перебросить посетителя.'
         );
+
+		// ------------------------------------------------------------------------
+
+		$opts['user_rights'] = $this->cms_user->get_right_items('page');
+		$opts = array_merge_recursive((array)$opts, (array)$this->cms_user->get_users_field($id, 'page'));
 
         // ------------------------------------------------------------------------
 

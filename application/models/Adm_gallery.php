@@ -88,7 +88,12 @@ class Adm_gallery extends CI_Model {
 	 */
 	function _get_crud_model ()
 	{
-        // Массив переменных из урла
+		// $id текущей записи
+		if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
+		elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
+		else $id = 0;
+
+		// Массив переменных из урла
         $uri_assoc_array = $this->uri->uri_to_assoc(1);
 
         // Получаем базовые настройки
@@ -134,6 +139,8 @@ class Adm_gallery extends CI_Model {
 		// $this->opts['triggers']['insert']['after'] = '';
 		// $this->opts['triggers']['update']['after'] = '';
 		// $this->opts['triggers']['delete']['before'] = '';
+		$opts['triggers']['insert']['after']  = APPPATH.'triggers/gallery_insert_after.php';
+		$opts['triggers']['update']['after']  = APPPATH.'triggers/gallery_update_after.php';
 		$opts['triggers']['delete']['after']  = APPPATH.'triggers/gallery_delete_after.php';
 
         // Логирование: общее название класса и поле где хранится название объекта
@@ -249,6 +256,11 @@ class Adm_gallery extends CI_Model {
             'cell_display'  => '{@module mod_gallery $key@}',
             'sort'          => false,
         );
+
+		// ------------------------------------------------------------------------
+
+		$opts['user_rights'] = $this->cms_user->get_right_items('gallery');
+		$opts = array_merge_recursive((array)$opts, (array)$this->cms_user->get_users_field($id, 'gallery'));
 
         // ------------------------------------------------------------------------
 

@@ -696,6 +696,11 @@ class Adm_news extends CI_Model {
             );
         }
 
+	    // ------------------------------------------------------------------------
+
+	    $opts['user_rights'] = $this->cms_user->get_right_items('news');
+	    $opts = array_merge_recursive((array)$opts, (array)$this->cms_user->get_users_field($id, 'news'));
+
         // ------------------------------------------------------------------------
 
         $opts = array_merge_recursive((array)$opts, (array)$this->Cms_inclusions->get_admin_inclusions('news'));

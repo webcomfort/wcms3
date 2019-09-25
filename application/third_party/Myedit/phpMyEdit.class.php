@@ -108,6 +108,7 @@ class phpMyEdit
 	private $modal_code = ''; // Modal code
 	private $file_arr = array(); // File array
 	private $list_view = false;
+	private $user_rights = false;
 
 	// Database handling
 	var $hn;		// hostname
@@ -1829,7 +1830,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 				$value = '<img src="' . $this->url['icons'] . 'folder.png" border="0" />';
 			}
 		} else {
-			$fl_array = preg_grep( "/^" . $key_rec . "\.([[:alnum:]])*$/", $this->file_arr[$int_dir] );
+			$fl_array = (is_array($this->file_arr[$int_dir])) ? preg_grep( "/^" . $key_rec . "\.([[:alnum:]])*$/", $this->file_arr[$int_dir] ) : array();
 			if ( count( $fl_array ) > 0 ) {
 				$file = array_shift( $fl_array );
 
@@ -2723,18 +2724,21 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 					$copyTitle      = htmlspecialchars( $this->labels['Copy'] );
 					$deleteTitle    = htmlspecialchars( $this->labels['Delete'] );
 					$css_class_name = $this->getCSSclass( 'navigation', null, true );
+					$rights_check = $this->check_user_rights($key_rec);
 
-					if ( $this->view_enabled() ) {
-						$value['view_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $viewQuery. '" rel="tooltip" title="'. $viewTitle. '"><i class="glyphicon glyphicon-eye-open"></i></a>';
-					}
-					if ( $this->change_enabled() ) {
-						$value['change_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $changeQuery. '" rel="tooltip" title="'. $changeTitle. '"><i class="glyphicon glyphicon-edit"></i></a>';
-					}
-					if ( $this->copy_enabled() ) {
-						$value['copy_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $copyQuery. '" rel="tooltip" title="'. $copyTitle. '"><i class="glyphicon glyphicon-plus"></i></a>';
-					}
-					if ( $this->delete_enabled() ) {
-						$value['delete_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $deleteQuery. '" rel="tooltip" title="'. $deleteTitle. '"><i class="glyphicon glyphicon-remove"></i></a>';
+					if($rights_check){
+						if ( $this->view_enabled() ) {
+							$value['view_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $viewQuery. '" rel="tooltip" title="'. $viewTitle. '"><i class="glyphicon glyphicon-eye-open"></i></a>';
+						}
+						if ( $this->change_enabled() ) {
+							$value['change_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $changeQuery. '" rel="tooltip" title="'. $changeTitle. '"><i class="glyphicon glyphicon-edit"></i></a>';
+						}
+						if ( $this->copy_enabled() ) {
+							$value['copy_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $copyQuery. '" rel="tooltip" title="'. $copyTitle. '"><i class="glyphicon glyphicon-plus"></i></a>';
+						}
+						if ( $this->delete_enabled() ) {
+							$value['delete_button'] = '<a class="'. $css_class_name. ' btn btn-default btn-sm" href="'. $deleteQuery. '" rel="tooltip" title="'. $deleteTitle. '"><i class="glyphicon glyphicon-remove"></i></a>';
+						}
 					}
 
 					if(isset($this->list_view['file']) && $this->list_view['file'] != '' && isset($this->fdd[$this->list_view['file']])) {
@@ -3048,7 +3052,9 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 					$copyTitle      = htmlspecialchars( $this->labels['Copy'] );
 					$deleteTitle    = htmlspecialchars( $this->labels['Delete'] );
 					$css_class_name = $this->getCSSclass( 'navigation', null, true );
-					if ( $select_recs ) {
+					$rights_check   = $this->check_user_rights($key_rec);
+
+					if ( $select_recs && $rights_check) {
 						if ( ! $this->nav_buttons() || $sys_cols > 1 ) {
 							echo '<td class="', $css_class_name, '">';
 						}
@@ -3937,6 +3943,22 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
         return true;
     }
 
+	function check_user_rights($key){
+		if($this->user_rights === false){
+			return true;
+		} else {
+			if(is_array($this->user_rights) && count($this->user_rights) == 0){
+				return false;
+			}
+			else if(is_array($this->user_rights) && in_array($key, $this->user_rights)){
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+	}
+
     /*
 	 * Class constructor
 	 */
@@ -3989,6 +4011,9 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		if (! isset($this->page_name)) {
 			$this->page_name = basename($this->get_server_var('PHP_SELF'));
 			isset($this->page_name) || $this->page_name = $this->tb;
+		}
+		if (isset($opts['user_rights'])) {
+			$this->user_rights = $opts['user_rights'];
 		}
         /* Row sorting */
         if(isset($this->uri['id']) && isset($this->uri['move']) && preg_match("/^[a-z]*$/",$this->uri['move']) && preg_match("/^[0-9]*$/",$this->uri['id'])){

@@ -6,7 +6,7 @@
 		background-color: #757c82;
 		color: #fff;
 		border-radius: 3px;
-		font-size: 16px;
+		font-size: 14px;
 	}
 	#sortable .col-md-2 {
 		cursor: move;
@@ -39,7 +39,6 @@ foreach ($myEditResult as $value){
 </div>
 <script>
     $(document).ready(function () {
-		$('.thumbnail').equalHeights();
         $( "#sortable" ).sortable({
             update: function (event, ui) {
                 var data = $(this).sortable('serialize');

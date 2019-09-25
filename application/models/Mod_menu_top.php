@@ -40,7 +40,22 @@ class Mod_menu_top extends CI_Model {
             $this->tree->set_tree ($forest);
             $this->tree->set_top ($forest, 'page_id', 'page_pid', PAGE_ID);
             $top = $this->tree->get_top ();
-            
+
+            if($this->cms_user->get_user_id()){
+	            $max = max(array_column($forest, 'page_id'));
+	            array_push($forest,
+		            array (
+			            'page_id' => $max+1,
+			            'page_pid' => 0,
+			            'page_name' => 'Выход',
+			            'page_url' => '-/exit',
+			            'page_status' => 1,
+			            'page_redirect' => '',
+			            'page_link_title' => 'Выход'
+		            )
+	            );
+            }
+
             return get_bootstrap4_menu ($forest, 'page_id', 'page_pid', 'page_name', 'page_url', 'page_link_title', $link = '/', 'page_status', 3, $top, 'active', '', 0, false);
         }
     }

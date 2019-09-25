@@ -1094,7 +1094,7 @@ class Adm_shop_item extends CI_Model {
 
         // ------------------------------------------------------------------------
 
-        /*$opts['fdd']['item_price'] = array(
+        $opts['fdd']['item_price'] = array(
             'name'          => 'Цена',
             'options'       => 'LACPDV',
             'select'        => 'T',
@@ -1150,7 +1150,8 @@ class Adm_shop_item extends CI_Model {
             'save'          => true,
             'default'       => 0,
             'help'          => 'Выберите дополнительную маркировку товара.'
-        ); */
+        );
+
 		// Tags
 		$opts = array_merge_recursive((array)$opts, (array)$this->Cms_tags->get_admin_opts($id, 'shop'));
         if($publish)
@@ -1176,6 +1177,11 @@ class Adm_shop_item extends CI_Model {
             'save'          => true,
             'sort'          => false
         );
+
+		// ------------------------------------------------------------------------
+
+		$opts['user_rights'] = $this->cms_user->get_right_items('shop');
+		$opts = array_merge_recursive((array)$opts, (array)$this->cms_user->get_users_field($id, 'shop'));
 
         // ------------------------------------------------------------------------
 

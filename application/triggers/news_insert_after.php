@@ -23,6 +23,9 @@ if($this->CI->input->post('PME_sys_savecopy', TRUE)) {
 else $pid = 0;
 $this->CI->db->cache_delete_all();
 
+// Права доступа к элементам
+$this->CI->cms_user->insert_item_rights($id, 'news');
+
 // ------------------------------------------------------------------------
 
 // Изображения

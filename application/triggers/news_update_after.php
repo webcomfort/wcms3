@@ -12,6 +12,9 @@ $articles = '';
 $this->CI->load->library('trigger');
 $this->CI->db->cache_delete_all();
 
+// Права доступа к элементам
+$this->CI->cms_user->update_item_rights($id, 'news');
+
 // ------------------------------------------------------------------------
 
 // Изображения

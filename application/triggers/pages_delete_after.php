@@ -12,6 +12,9 @@ $id = $this->rec;
 $last_basket_element = $this->CI->trigger->get_last_basket_element();
 $this->CI->db->cache_delete_all();
 
+// Права доступа к элементам
+$this->CI->cms_user->delete_item_rights($id, 'page');
+
 // ------------------------------------------------------------------------
 // Удаление статей удаляемого элемента
 

@@ -13,6 +13,9 @@ $row = $query->row();
 $id = $row->id;
 $this->CI->db->cache_delete_all();
 
+// Права доступа к элементам
+$this->CI->cms_user->insert_item_rights($id, 'page');
+
 // ------------------------------------------------------------------------
 
 $this->CI->db->where('article_pid', $id);
