@@ -34,6 +34,7 @@ class Cms_articles extends CI_Model {
 		    'div'       => '',
 		    'selects'   => '',
 		    'buttons'   => '',
+		    'insert'    => '',
 		    'hidden'    => '',
 		    'textarea'  => ''
 	    );
