@@ -1808,7 +1808,7 @@ function '.$this->js['prefix'].'filter_handler(theForm, theEvent)
 		$int_dir = $this->get_folder($key_rec);
 		$int_dir = intval($int_dir);
 		$dir = FCPATH.substr($this->fdd[$k]['file']['url'], 1).$int_dir.'/';
-		if(!isset($this->file_arr[$int_dir]) && count($this->file_arr[$int_dir]) == 0){
+		if(!isset($this->file_arr[$int_dir]) && is_array($this->file_arr[$int_dir]) && count($this->file_arr[$int_dir]) == 0){
 			if (is_dir($dir)) $this->file_arr[$int_dir] = scandir ($dir);
 		}
 

@@ -571,6 +571,7 @@ class Cms_myedit extends CI_Model {
             ($keyw == 0) ? $this->db->like($name_field, $value, 'both') : $this->db->or_like($name_field, $value, 'both');
         }
         $this->db->order_by($name_field, 'ASC');
+        $page = ($page) ? $page-10 : $page;
         $this->db->limit(10, $page);
         $query  = $this->db->get();
 
