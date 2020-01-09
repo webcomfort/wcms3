@@ -24,9 +24,11 @@ class Page extends CI_Controller {
         }
         else
         {
-            if(preg_ext_string ($this->uri->segment(1)))
+	        $segment = $this->Cms_page->page_segment();
+
+	        if(preg_ext_string ($this->uri->segment($segment)))
             {
-                $this->_build_page($this->_get_page_params($this->uri->segment(1)));
+                $this->_build_page($this->_get_page_params($this->uri->segment($segment)));
             }
             else
             {
@@ -331,11 +333,12 @@ class Page extends CI_Controller {
 
 	        $this->db->cache_on();
 
-	        $data['page_name'] = $params->page_name;
+	        $data = array();
 
 	        // Подключения
 	        $data = array_merge_recursive((array)$data, (array)$this->Cms_inclusions->get_inclusions($params->page_id, 'pages'));
 	        $data['page_crumbs']       = $this->load->view('site/menu_crumbs', array('crumbs_array'=>$this->Cms_page->get_crumbs()), true);
+	        $data['page_base_url']     = $this->Cms_page->get_base_url();
 	        $data['page_name']         = $this->Cms_page->get_name();
 	        $data['page_title']        = $this->Cms_page->get_title();
 	        $data['page_link_title']   = $this->Cms_page->get_link_title();

@@ -193,15 +193,7 @@ class Tree {
                     $this->crumbs[$tree[$id_name]][$parent_name] = $tree[$parent_name];
                     $this->crumbs[$tree[$id_name]][$level_name] = $tree[$level_name];
                     $this->crumbs[$tree[$id_name]][$url_name] = $tree[$url_name];
-
-                    if (isset($tree[$status_name]) && $tree[$status_name] == $status_value && isset($tree['nodes'][0][$id_name]))
-                    {
-                        $this->crumbs[$tree[$id_name]][$url_name] = $tree['nodes'][0][$url_name];
-                    }
-                    else
-                    {
-                        $this->crumbs[$tree[$id_name]][$id_name] = $tree[$id_name];
-                    }
+	                $this->crumbs[$tree[$id_name]][$status_name] = $tree[$status_name];
 
                     if ($tree[$parent_name] != 0) $this->set_crumbs($this->forest, $id_name, $parent_name, $level_name, $url_name, $link, $status_name, $status_value, $tree[$parent_name]);
                 }
@@ -225,4 +217,17 @@ class Tree {
     {
         return array_reverse($this->crumbs);
     }
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Сбрасываем крошки
+	 *
+	 * @access  public
+	 * @return  array
+	 */
+	function reset_crumbs ()
+	{
+		$this->crumbs = array();
+	}
 }

@@ -55,7 +55,7 @@ class Mod_news_latest extends CI_Model {
                 $news[] = array(
                     'news_id'   => $row->news_id,
                     'news_name' => $row->news_name,
-                    'news_url'  => '/post/'.$row->news_url,
+                    'news_url'  => $page_url.'/'.$row->news_url,
                     'news_date' => date_format_rus ( $row->news_date, 'date' ),
                     'news_cut'  => $row->news_cut,
                     'news_img'  => $this->Cms_news->get_img($row->news_id, $row->news_name, 'card-img-top')
@@ -65,7 +65,7 @@ class Mod_news_latest extends CI_Model {
             $data = array(
                 'news_latest_cat'   => $cat_name,
                 'news_latest'       => $news,
-                'news_latest_url'   => '/'.$page_url
+                'news_latest_url'   => $page_url
             );
 
             if ($view) return $this->load->view('site/'.$view, $data, true);

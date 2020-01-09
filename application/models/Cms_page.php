@@ -17,6 +17,8 @@ class Cms_page extends CI_Model {
 	private $foot			= '';
 	private $canonical  	= '';
     private $articles  	    = array();
+	private $page_segment   = 1;
+	private $base_url       = '';
 
     function __construct()
     {
@@ -81,6 +83,129 @@ class Cms_page extends CI_Model {
 		}
 	}
 
+	/**
+	 * Находим страницу по модулю
+	 *
+	 * @access  public
+	 * @param   string
+	 * @param   int
+	 * @return  mixed
+	 */
+	function get_module_page($file, $lang)
+	{
+		$this->db->select('page_id, page_url');
+		$this->db->from('w_includes');
+		$this->db->join('w_pages', 'w_pages.page_id = w_includes.obj_id');
+		$this->db->join('w_cms_modules', 'w_cms_modules.module_id = w_includes.inc_value');
+		$this->db->where('inc_id', 1);
+		$this->db->where('w_pages.page_lang_id', $lang);
+		$this->db->where('w_cms_modules.module_file', $file);
+		$this->db->where('inc_type', 'pages');
+		$this->db->limit(1);
+		$query = $this->db->get();
+
+		if ($query->num_rows() > 0)
+		{
+			$row = $query->row();
+			return $row->page_id;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Получение полного урла страницы по id
+	 *
+	 * @access  public
+	 * @param   int
+	 * @param   mixed
+	 * @return  mixed
+	 */
+	function get_url($id, $menu = false)
+	{
+		$this->load->library(array('tree'));
+
+		$this->db->where('page_status !=', 0);
+		($menu) ? $this->db->where('page_menu_id', $menu) : $this->db->where_in('page_menu_id', $this->config->item('cms_menu_indexing'));
+		$query = $this->db->get('w_pages');
+
+		if ($query->num_rows() > 0) {
+
+			$forest = $this->tree->get_tree( 'page_id', 'page_pid', $query->result_array(), 0 );
+			$this->tree->set_tree( $forest );
+
+			$url = '';
+			$this->tree->reset_crumbs();
+			$this->tree->set_crumbs($forest, 'page_id', 'page_pid', 'page_name', 'page_url', '/', 'page_status', 33, $id);
+			$crumbs = $this->tree->get_crumbs();
+			foreach ($crumbs as $crumb){
+				$url .= '/'.$crumb['page_url'];
+			}
+			return ($url != '') ? $url : false;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Получаем номер сегмента урла для страницы
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	function page_segment()
+	{
+		$segments = $this->uri->segment_array();
+		$statuses = array(1, 2, 3);
+
+		$this->db->select('page_id, page_pid, page_name, page_url');
+		$this->db->from('w_pages');
+		$this->db->where_in('page_status', $statuses);
+		$query = $this->db->get();
+
+		if ($query->num_rows() > 0) {
+			$forest = $this->tree->get_tree('page_id', 'page_pid', $query->result_array(), 0);
+			$this->check_segment($forest, $segments);
+			$this->base_url();
+		}
+
+		return $this->get_page_segment();
+	}
+
+	/**
+	 * Проверка сегментов
+	 *
+	 * @access	private
+	 * @param   array
+	 * @param   array
+	 * @return	string
+	 */
+	function check_segment($forest, $segments){
+		foreach ($forest as $tree)
+		{
+			if(in_array($tree['page_url'], $segments)){
+				$this->set_page_segment(array_search($tree['page_url'], $segments));
+				if (isset($tree['nodes'])) $this->check_segment($tree['nodes'], $segments);
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Базовый УРЛ страницы
+	 *
+	 * @access	private
+	 * @return	string
+	 */
+	function base_url(){
+		$segs = $this->uri->segment_array();
+		for ($i = 1; $i <= $this->page_segment; $i++) {
+			$this->add_base_url('/'.$segs[$i]);
+		}
+	}
+
     // ------------------------------------------------------------------------
 
     /**
@@ -99,6 +224,8 @@ class Cms_page extends CI_Model {
 	function set_foot($value)           { $this->foot           = $value; }
 	function set_canonical($value)      { $this->canonical      = $value; }
     function set_articles($value)       { $this->articles       = $value; }
+	function set_page_segment($value)   { $this->page_segment   = $value; }
+	function set_base_url($value)       { $this->base_url       = $value; }
 	
 	// ------------------------------------------------------------------------
 
@@ -119,6 +246,7 @@ class Cms_page extends CI_Model {
 	function add_foot($value)           { $this->foot          .= $value; }
 	function add_canonical($value)      { $this->canonical     .= $value; }
     function add_articles($value)       { $this->articles      .= $value; }
+	function add_base_url($value)       { $this->base_url      .= $value; }
 
     // ------------------------------------------------------------------------
 
@@ -136,6 +264,8 @@ class Cms_page extends CI_Model {
     function get_description()    { return $this->description; }
     function get_head()           { return $this->head; }
 	function get_foot()           { return $this->foot; }
-	function get_canonical()      { return $this->canonical; }
+	function get_canonical()      { return ($this->canonical != '')?'<link href="//'.$_SERVER['HTTP_HOST'].'/'.$this->canonical.'" rel="canonical" />':''; }
     function get_articles()       { return $this->articles; }
+	function get_page_segment()   { return $this->page_segment; }
+	function get_base_url()       { return $this->base_url; }
 }

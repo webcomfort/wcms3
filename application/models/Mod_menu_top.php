@@ -47,11 +47,11 @@ class Mod_menu_top extends CI_Model {
 		            array (
 			            'page_id' => $max+1,
 			            'page_pid' => 0,
-			            'page_name' => 'Выход',
+			            'page_name' => lang('global_exit'),
 			            'page_url' => '-/exit',
 			            'page_status' => 1,
 			            'page_redirect' => '',
-			            'page_link_title' => 'Выход'
+			            'page_link_title' => lang('global_exit')
 		            )
 	            );
             }

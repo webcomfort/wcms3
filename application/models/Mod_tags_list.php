@@ -27,6 +27,7 @@ class Mod_tags_list extends CI_Model {
 
     	$label  = false;
     	$incs   = $this->Cms_inclusions->get_active_inclusions();
+	    $page   = $this->Cms_page->get_base_url();
     	$conf   = $this->config->item('cms_site_inclusions');
 
     	foreach ($incs as $key => $value){
@@ -44,7 +45,7 @@ class Mod_tags_list extends CI_Model {
 			    $data = array(
 				    'tags'       => $tags,
 				    'tags_limit' => 2,
-				    'page'       => '/'.$this->uri->segment(1)
+				    'page'       => $page
 			    );
 
 			    return $this->load->view( 'site/tags_list', $data, true );

@@ -8,6 +8,7 @@
 $lang['global_search'] = '/search-en';
 $lang['global_print']  = 'print';
 $lang['global_crumbs'] = '<a href="/index-en">Home</a>';
+$lang['global_exit']   = 'Log out';
 
 /*
 |--------------------------------------------------------------------------

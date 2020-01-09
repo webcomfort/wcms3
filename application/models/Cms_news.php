@@ -10,6 +10,7 @@ class Cms_news extends CI_Model {
     function __construct()
     {
         parent::__construct();
+	    $this->load->model('Cms_page');
         $this->load->helper(array('html'));
     }
 
@@ -25,7 +26,7 @@ class Cms_news extends CI_Model {
     function get_news_page($id)
     {
         // Урл страницы, к которой подключена лента
-        $this->db->select('page_url');
+        $this->db->select('page_id, page_url');
         $this->db->from('w_includes');
         $this->db->join('w_pages', 'w_pages.page_id = w_includes.obj_id');
         $this->db->where('inc_id', 2);
@@ -37,7 +38,7 @@ class Cms_news extends CI_Model {
         if ($query->num_rows() > 0)
         {
             $row = $query->row();
-            return $row->page_url;
+            return $this->Cms_page->get_url($row->page_id);
         }
         else
         {

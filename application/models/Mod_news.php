@@ -7,7 +7,10 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Mod_news extends CI_Model {
 
-    function __construct()
+	private $segment;
+	private $base_url;
+
+	function __construct()
     {
         parent::__construct();
         $this->load->model('Cms_news');
@@ -25,10 +28,13 @@ class Mod_news extends CI_Model {
      */
     function get_output($params = array())
     {
-        $id = (isset($params[0])) ? $params[0] : false;
+	    $this->segment = $this->Cms_page->get_page_segment();
+	    $this->base_url = $this->Cms_page->get_base_url();
 
-        if (!$this->uri->segment(2) || ($this->uri->segment(2) && preg_int ($this->uri->segment(2)))) $output = $this->_get_list($id);
-        if ($this->uri->segment(1) && $this->uri->segment(1) == 'post' && $this->uri->segment(2) && preg_ext_string ($this->uri->segment(2))) $output = $this->_get_news($id, $this->uri->segment(2));
+	    $id = (isset($params[0])) ? intval($params[0]) : false;
+
+	    if (!$this->uri->segment($this->segment+1) || ($this->uri->segment($this->segment+1) && preg_int ($this->uri->segment($this->segment+1)))) $output = $this->_get_list($id);
+	    if ($this->uri->segment($this->segment+1) && !preg_int($this->uri->segment($this->segment+1)) && preg_ext_string ($this->uri->segment($this->segment+1))) $output = $this->_get_news($id, $this->uri->segment($this->segment+1));
 
         return $output;
     }
@@ -50,24 +56,24 @@ class Mod_news extends CI_Model {
         $pages = ceil($count/$limit);
         $page = ceil($start/$limit)+1;
 
-        if($page == 1 && $pages > $page) $this->Cms_page->add_head('<link rel="next" href="http://'.$_SERVER['HTTP_HOST'].'/'.$this->uri->segment(1).'/'.$limit.'">'."\r\n");
+        if($page == 1 && $pages > $page) $this->Cms_page->add_head('<link rel="next" href="http://'.$_SERVER['HTTP_HOST'].$this->base_url.'/'.$limit.'">'."\r\n");
         if($pages == $page)
         {
-            if($page == 2) $this->Cms_page->add_head('<link rel="prev" href="http://'.$_SERVER['HTTP_HOST'].'/'.$this->uri->segment(1).'">'."\r\n");
+            if($page == 2) $this->Cms_page->add_head('<link rel="prev" href="http://'.$_SERVER['HTTP_HOST'].$this->base_url.'">'."\r\n");
 			elseif($page == 1) {}
-            else $this->Cms_page->add_head('<link rel="prev" href="http://'.$_SERVER['HTTP_HOST'].'/'.$this->uri->segment(1).'/'.(($page*$limit) - (2*$limit)).'">'."\r\n");
+            else $this->Cms_page->add_head('<link rel="prev" href="http://'.$_SERVER['HTTP_HOST'].$this->base_url.'/'.(($page*$limit) - (2*$limit)).'">'."\r\n");
         }
         if($page != 1 && $pages != $page && $pages > $page)
         {
             if($page == 2)
             {
-                $this->Cms_page->add_head('<link rel="prev" href="http://'.$_SERVER['HTTP_HOST'].'/'.$this->uri->segment(1).'">'."\r\n");
-                if($pages > $page) $this->Cms_page->add_head('<link rel="next" href="http://'.$_SERVER['HTTP_HOST'].'/'.$this->uri->segment(1).'/'.($page*$limit).'">'."\r\n");
+                $this->Cms_page->add_head('<link rel="prev" href="http://'.$_SERVER['HTTP_HOST'].$this->base_url.'">'."\r\n");
+                if($pages > $page) $this->Cms_page->add_head('<link rel="next" href="http://'.$_SERVER['HTTP_HOST'].$this->base_url.'/'.($page*$limit).'">'."\r\n");
             }
             else
             {
-                $this->Cms_page->add_head('<link rel="prev" href="http://'.$_SERVER['HTTP_HOST'].'/'.$this->uri->segment(1).'/'.(($page*$limit) - (2*$limit)).'">'."\r\n");
-                $this->Cms_page->add_head('<link rel="next" href="http://'.$_SERVER['HTTP_HOST'].'/'.$this->uri->segment(1).'/'.($page*$limit).'">'."\r\n");
+                $this->Cms_page->add_head('<link rel="prev" href="http://'.$_SERVER['HTTP_HOST'].$this->base_url.'/'.(($page*$limit) - (2*$limit)).'">'."\r\n");
+                $this->Cms_page->add_head('<link rel="next" href="http://'.$_SERVER['HTTP_HOST'].$this->base_url.'/'.($page*$limit).'">'."\r\n");
             }
         }
     }
@@ -96,12 +102,15 @@ class Mod_news extends CI_Model {
 		    ));
 		    $tag_items = $tag['result'];
 		    $tag_name  = $tag['name'];
+		    $tag_title = ', '.lang('tags_with').' '.$tag_name;
+		    $this->Cms_page->add_title($tag_title);
 	    } else {
 		    $tag_items = array();
 		    $tag_name  = false;
+		    $tag_title = '';
 	    }
 
-    	$page_url   = $this->uri->segment(1);
+    	$page_url   = $this->base_url;
         $cat        = $this->Cms_news->get_cat_params($id);
         $cat_name   = $cat['name'];
         $views      = $this->config->item('cms_news_views');
@@ -126,25 +135,26 @@ class Mod_news extends CI_Model {
 		$count_rows = $query_count->num_rows();
 
         $this->load->library('pagination');
-        $config['base_url']     = '/'.$page_url;
+        $config['base_url']     = $page_url;
         $config['total_rows']   = $query_count->num_rows();
         $config['per_page']     = $limit;
         $config['first_link']   = $this->lang->line('pagination_first_link');
         $config['last_link']    = $this->lang->line('pagination_last_link');
         $config['next_link']    = $this->lang->line('pagination_next_link');
         $config['prev_link']    = $this->lang->line('pagination_prev_link');
-        $config['uri_segment']  = 2;
+        $config['uri_segment']  = $this->segment + 1;
 	    $config['reuse_query_string'] = TRUE;
 	    $config['attributes']   = array('class' => 'page-link');
         $this->pagination->initialize($config);
         $pages = $this->pagination->create_links();
 
-        // Лимиты
-        $start = (preg_int ($this->uri->segment(2))) ? $this->uri->segment(2) : 0;
+        // Лимиты и мета
+        $start = (preg_int ($this->uri->segment($this->segment + 1))) ? $this->uri->segment($this->segment + 1) : 0;
+	    $description = $this->Cms_page->get_description();
+	    $this->Cms_page->set_description(($description != '') ? $description : $this->Cms_page->get_title() . ' | '.$this->lang->line('news_page').' '.(ceil(($start/$limit)+1)).' / '.ceil($count_rows/$limit));
         if($start) $this->Cms_page->add_title(' - '.$this->lang->line('news_page').' '.(ceil(($start/$limit)+1)));
-		$description = $this->Cms_page->get_description();
-		$this->Cms_page->set_description($description . ' | '.$this->lang->line('news_page').' '.(ceil(($start/$limit)+1)).' из '.ceil($count_rows/$limit));
         $this->_set_next_prev($start, $limit, $count_rows);
+	    $this->Cms_page->set_canonical('');
 
         // Новости
         $this->db->select('w_news.news_id, news_name, news_date, news_cut, news_url');
@@ -171,7 +181,7 @@ class Mod_news extends CI_Model {
                 $news[] = array(
                     'news_id'   => $row->news_id,
                     'news_name' => $row->news_name,
-                    'news_url'  => '/post/'.$row->news_url,
+                    'news_url'  => $page_url.'/'.$row->news_url,
                     'news_date' => date_format_rus ( $row->news_date, 'date' ),
                     'news_cut'  => $row->news_cut,
                     'news_img'  => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-fluid'),
@@ -182,7 +192,7 @@ class Mod_news extends CI_Model {
             $data = array(
                 'news_list_cat'   => $cat_name,
                 'news_list'       => $news,
-                'news_list_url'   => '/'.$page_url,
+                'news_list_url'   => $page_url,
                 'news_list_pages' => $pages,
 	            'tag_name'        => $tag_name
             );
@@ -236,23 +246,16 @@ class Mod_news extends CI_Model {
             if($row->news_meta_keywords != '') $this->Cms_page->set_keywords($row->news_meta_keywords);
             if($row->news_meta_description != '') $this->Cms_page->set_description($row->news_meta_description);
 	        $this->Cms_page->set_name($this->lang->line('news_name'));
-	        if(isset($news_cat['name']) && $news_cat['name'] != '') $this->Cms_page->add_crumbs(Array(
-		        'page_id' => $row->news_id,
-		        'page_pid' => 0,
-		        'page_name' => $news_cat['name'],
-		        'page_url' => $news_page,
-	        ));
 	        if($row->news_name != '') $this->Cms_page->add_crumbs(Array(
 		        'page_id' => $row->news_id,
 		        'page_pid' => 0,
 		        'page_name' => $row->news_name,
-		        'page_url' => '/post/'.$row->news_url,
+		        'page_url' => $news_page.'/'.$row->news_url,
 	        ));
+	        $this->Cms_page->set_canonical(substr($news_page, 1).'/'.$news);
 
             // Тексты
             $articles = $this->Cms_articles->get_articles($row->news_id, 'news');
-            $sidebar  = '';
-
             if(isset($articles) && is_array($articles) && isset($articles[1])){
                 $this->Cms_page->set_articles(array(0 => array(), 1 => $articles[1]));
             }
@@ -263,8 +266,8 @@ class Mod_news extends CI_Model {
                 'news_date'     => date_format_rus ( $row->news_date, 'date' ),
                 'news_articles' => $articles,
                 'news_img'      => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-fluid'),
-                'news_tags' => $this->Cms_tags->get_tags_by_item($row->news_id,'news'),
-	            'news_list_url' => '/'.$this->Cms_news->get_news_page($row->news_cat_id)
+                'news_tags'     => $this->Cms_tags->get_tags_by_item($row->news_id,'news'),
+	            'news_list_url' => $news_page
             );
 
             // Подключения

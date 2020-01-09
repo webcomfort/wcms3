@@ -21,6 +21,7 @@ class Adm_pages extends CI_Model {
         $this->load->model('Cms_inclusions');
         $this->load->model('Cms_articles');
         $this->load->model('Cms_utils');
+	    $this->load->model('Cms_page');
     }
 
 	// ------------------------------------------------------------------------
@@ -465,6 +466,23 @@ class Adm_pages extends CI_Model {
         return $menu;
     }
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Ссылка на страницу
+	 *
+	 * @access	public
+	 * @param   int
+	 * @param   string
+	 * @return	string
+	 */
+
+	function get_page_link($key, $value)
+	{
+		$url = $this->Cms_page->get_url($key);
+		return '<a href="'.$url.'" target="_blank">Посмотреть</a>';
+	}
+
     // ------------------------------------------------------------------------
 	
 	/**
@@ -649,9 +667,10 @@ class Adm_pages extends CI_Model {
             'name'          => 'URL страницы',
             'options'       => 'LACPDV',
             'select'        => 'T',
-            'URL'           => '/$value',
-            'URLdisp'       => '/$value',
-            'URLtarget'     => '_blank',
+            'cell_func' => array(
+	            'model' => 'adm_pages',
+	            'func'  => 'get_page_link'
+            ),
             'maxlen'        => 65535,
             'required'      => true,
             'sort'          => true,

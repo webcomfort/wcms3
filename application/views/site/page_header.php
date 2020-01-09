@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title><?php echo @$page_title; ?></title>
-        <link href="http://<?php echo @$_SERVER['HTTP_HOST']; ?>/<?php echo @$page_canonical; ?>" rel="canonical" />
+        <?php echo @$page_canonical; ?>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="keywords" content="<?php echo @$page_keywords; ?>">
         <meta name="description" content="<?php echo @$page_description; ?>">
@@ -45,7 +45,7 @@
 			<div class="col-md-12">
 
                 <nav class="navbar navbar-expand-md navbar-light bg-light">
-                    <a class="navbar-brand" href="#"><?php echo @$page_name; ?></a>
+                    <a class="navbar-brand" href="<?php echo @$page_base_url; ?>"><?php echo @$page_name; ?></a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>

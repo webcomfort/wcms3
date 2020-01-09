@@ -9,7 +9,8 @@ class Mod_menu_second extends CI_Model {
 
     function __construct()
     {
-        parent::__construct();
+	    $this->load->model('Cms_page');
+    	parent::__construct();
     }
 
     // ------------------------------------------------------------------------
@@ -53,7 +54,15 @@ class Mod_menu_second extends CI_Model {
                     $forest =& $this->tree->get_tree('page_id', 'page_pid', $query->result_array(), $top);
                 }
 
-                $menu = get_ul_menu ($forest, 'page_id', 'page_pid', 'page_name', 'page_url', 'page_link_title', '/', 'page_status', 3, PAGE_ID, 'active', $ul_class);
+			    $query_top = $this->db->get_where('w_pages', array('page_id' => $top), 1, 0);
+			    if ($query_top->num_rows() > 0) {
+			    	$row_top = $query_top->row();
+			    	$link = '/'.$row_top->page_url;
+			    } else {
+				    $link = '/';
+			    }
+
+                $menu = get_ul_menu ($forest, 'page_id', 'page_pid', 'page_name', 'page_url', 'page_link_title', $link, 'page_status', 3, PAGE_ID, 'active', $ul_class);
 				
                 if($menu == '<ul></ul>' || $menu == '<ul class="'.$ul_class.'"></ul>' || $menu == '') return '';
                 else return $menu;

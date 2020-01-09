@@ -10,7 +10,7 @@
 	<?php } ?>
     </div>
 
-    <?php if($i > $tags_limit){ ?>
+    <?php if($i >= $tags_limit){ ?>
         <a href="javascript:void(0)" class="btn btn-dark all-tags"><?php echo lang('tags_all'); ?></a>
     <?php } ?>
 

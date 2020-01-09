@@ -327,4 +327,51 @@ class MY_Image_lib extends CI_Image_lib {
             }
         }
 	}
+
+	/**
+	 * Вернет массив параметров изображения для вывода в макет
+	 *
+	 * @access  public
+	 * @param   string - каталог, где хранятся изображения
+	 * @param   array - массив постфиксов и параметров
+	 * @param   int - id изображения
+	 * @param   string - alt
+	 * @param   string - css class
+	 * @return  array
+	 */
+	function get_img($dir, $thumbs, $id, $name, $css='')
+	{
+		$CI =& get_instance();
+		$CI->load->helper(array('html'));
+
+		$images = array();
+		$iid = ceil(intval($id)/1000);
+
+		foreach ($thumbs as $key => $value)
+		{
+			$path = FCPATH.substr($dir, 1).$iid.'/'.$id.$key.'.jpg';
+			$url  = $dir.$iid.'/'.$id.$key.'.jpg';
+
+			if (is_file ($path))
+			{
+				$size   = getimagesize ($path);
+				$width  = $size[0];
+				$height = $size[1];
+
+				$image_properties = array(
+					'src'       => $url,
+					'alt'       => $name,
+					'width'     => $width,
+					'height'    => $height,
+					'title'     => $name,
+					'class'     => $css
+				);
+
+				$images[$key]['img'] = img($image_properties);
+				$images[$key]['url'] = $url;
+			}
+		}
+
+		return $images;
+	}
 }

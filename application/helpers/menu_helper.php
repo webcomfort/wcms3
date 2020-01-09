@@ -21,7 +21,7 @@
 */
 if ( ! function_exists('get_ul_menu'))
 {
-	function get_ul_menu ($forest, $id_name, $parent_name, $level_name, $url_name, $link_title, $link = '/', $status_name, $status_value, $active_id, $css = 'active', $ul_css = false, $menu = '')
+	function get_ul_menu ($forest, $id_name, $parent_name, $level_name, $url_name, $link_title, $link = '/', $status_name, $status_value, $active_id, $css = 'active', $ul_css = false, $menu = '', $crumbs='')
 	{
         if ($ul_css) $menu .= '<ul class="'.$ul_css.'">';
         else $menu .= '<ul>';
@@ -32,7 +32,8 @@ if ( ! function_exists('get_ul_menu'))
 
 			if (isset($tree[$status_name]) && $tree[$status_name] == $status_value && isset($tree['nodes'][0][$id_name]))
             {
-                $tree[$url_name] = $tree['nodes'][0][$url_name];
+                $tree[$url_name] = $tree[$url_name].'/'.$tree['nodes'][0][$url_name];
+	            $tree['nodes'][0][$url_name] = '';
             }
 
             if (isset($tree[$status_name]) && $tree[$status_name] == 4)
@@ -42,19 +43,18 @@ if ( ! function_exists('get_ul_menu'))
 			
 			if ((isset ($link_title) && $link_title == '') || (isset ($tree[$link_title]) && $tree[$link_title] == '')) $tree[$link_title] = $tree[$level_name];
 
-            if ($tree[$id_name] == $active_id)
-            {
+			$crumbs = ($tree[ $url_name ] != '') ? $link . $crumbs . '/' . $tree[ $url_name ] : $link . $crumbs;
+
+			if ($tree[$id_name] == $active_id) {
                 $menu .= ' class="'.$css.'"';
                 $href = '';
-            }
-            else
-            {
-                $href = ' href="'.$link.$tree[$url_name].'"';
+            } else {
+            	$href = ' href="'.$crumbs.'"';
             }
 
 			$menu .= '><a'.$href.' title="'.@$tree[$link_title].'">'.$tree[$level_name].'</a>';
 
-			if (isset($tree['nodes'])) $menu = get_ul_menu($tree['nodes'], $id_name, $parent_name, $level_name, $url_name, $link_title, $link, $status_name, $status_value, $active_id, $css, $ul_css, $menu);
+			if (isset($tree['nodes'])) $menu = get_ul_menu($tree['nodes'], $id_name, $parent_name, $level_name, $url_name, $link_title, '', $status_name, $status_value, $active_id, $css, $ul_css, $menu, $crumbs);
 
 			$menu .= '</li>';
 		}
@@ -220,11 +220,12 @@ if ( ! function_exists('get_bootstrap_menu'))
  * @param    string  - сгенерированный html
  * @param    int     - счетчик
  * @param    array   - массив разрешенных id
+ * @param    string  - сгенерированный накапливающийся урл
  * @return	string
  */
 if ( ! function_exists('get_bootstrap4_menu'))
 {
-	function get_bootstrap4_menu ($forest, $id_name, $parent_name, $level_name, $url_name, $link_title, $link = '/', $status_name, $status_value, $active_id, $css = 'active', $menu = '', $i = 0, $valid = false)
+	function get_bootstrap4_menu ($forest, $id_name, $parent_name, $level_name, $url_name, $link_title, $link = '/', $status_name, $status_value, $active_id, $css = 'active', $menu = '', $i = 0, $valid = false, $crumbs = '')
 	{
 		$j = 1;
 		if ($i == 0) $menu .= '<ul class="navbar-nav mr-auto">';
@@ -254,12 +255,27 @@ if ( ! function_exists('get_bootstrap4_menu'))
 				$menu .= '<a href="';
 				if (isset($tree[$status_name]) && $tree[$status_name] == $status_value && isset($tree['nodes'][0][$id_name]))
 				{
-					$menu .= '#';
+					$tree[$url_name] = $tree[$url_name].'/'.$tree['nodes'][0][$url_name];
+					$tree['nodes'][0][$url_name] = '';
+
+					if ($i != 0) {
+						$crumbs = $crumbs . '/' . $tree[ $url_name ];
+					} else {
+						$crumbs = $link . $tree[ $url_name ];
+					}
+					$menu   .= $crumbs;
 				}
 				else
 				{
-					if($tree[$url_name] == 'index') $menu .= '/';
-					else $menu .= $link.$tree[$url_name];
+					if($tree[$url_name] == 'index') { $menu .= '/'; }
+					else {
+						if ($i != 0) {
+							$crumbs = $crumbs . '/' . $tree[ $url_name ];
+						} else {
+							$crumbs = $link . $tree[ $url_name ];
+						}
+						$menu   .= $crumbs;
+					}
 				}
 				$menu .= '"';
 				$menu .= ' title="'.$tree[$link_title].'"';
@@ -273,7 +289,7 @@ if ( ! function_exists('get_bootstrap4_menu'))
 				$menu .= $tree[$level_name];
 				$menu .= '</a>';
 
-				if (isset($tree['nodes']) && $i == 0) $menu = get_bootstrap4_menu($tree['nodes'], $id_name, $parent_name, $level_name, $url_name, $link_title, $link, $status_name, $status_value, $active_id, $css, $menu, $i+1);
+				if (isset($tree['nodes']) && $i == 0) $menu = get_bootstrap4_menu($tree['nodes'], $id_name, $parent_name, $level_name, $url_name, $link_title, $link, $status_name, $status_value, $active_id, $css, $menu, $i+1, $valid, $crumbs);
 
 				if ($i == 0) $menu .= '</li>';
 			}

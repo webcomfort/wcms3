@@ -406,6 +406,28 @@ class Adm_news extends CI_Model {
         }
     }
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Ссылка на страницу
+	 *
+	 * @access	public
+	 * @param   int
+	 * @param   string
+	 * @return	string
+	 */
+
+	function get_news_link($key, $value){
+		$cats = $this->_news_rubrics($key);
+		if(count($cats['defaults']) > 0){
+			$id = array_shift($cats['defaults']);
+			$url = $this->Cms_news->get_news_page($id);
+			return ($url) ? '<a href="'.$url.'/'.$value.'" target="_blank">Посмотреть</a>' : 'Не подключено';
+		} else {
+			return 'Не подключено';
+		}
+	}
+
     // ------------------------------------------------------------------------
 
     /**
@@ -611,9 +633,10 @@ class Adm_news extends CI_Model {
         $opts['fdd']['news_url'] = array(
             'name'          => 'URL страницы',
             'options'       => 'LACPDV',
-            'URL'           => '/post/$value',
-            'URLdisp'       => 'Посмотреть',
-            'URLtarget'     => '_blank',
+            'cell_func' => array(
+	            'model' => 'adm_news',
+	            'func'  => 'get_news_link'
+            ),
             'select'        => 'T',
             'maxlen'        => 65535,
             'required'      => true,
