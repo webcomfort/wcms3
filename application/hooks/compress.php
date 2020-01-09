@@ -25,7 +25,7 @@ function compress()
           | \z          # or end of file.
           )             # End alternation group.
         )  # If we made it here, we are not in a blacklist tag.
-        %Six';
+        %Sixu';
 
 		$new_buffer = preg_replace( $re, " ", $buffer );
 
