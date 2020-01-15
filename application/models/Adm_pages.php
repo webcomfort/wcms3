@@ -38,29 +38,34 @@ class Adm_pages extends CI_Model {
 		{
 			$this->load->library('search');
 			$this->load->helper('text');
+			$this->search->index_delete_by_type('page');
 
-			$this->db->where('page_status !=', 3);
+			$this->db->where('page_status !=', 0);
 			$this->db->where_in('page_menu_id', $this->config->item('cms_menu_indexing'));
 			$query = $this->db->get('w_pages');
-			foreach ($query->result() as $row)
-			{
-				$articles = '';
-				$query_a = $this->db->get_where('w_pages_articles', array('article_pid' => $row->page_id, 'article_pid_type' => 'pages'));
-				foreach ($query_a->result() as $row_a)
-				{
-					$articles .= $row_a->article_text;
-				}
 
-				if($articles != ''){
-					$url 			= '/'.$row->page_url;
-					$title 			= $row->page_name;
-					$article_words 	= text2words(html_entity_decode($articles));
-					$title_words 	= text2words($title);
-					$short 			= ($row->page_meta_description != '') ? $row->page_meta_description : word_limiter($article_words, 50);
-					$lang_array 	= $this->config->item('cms_lang');
-					$lang			= $lang_array[$this->session->userdata('w_alang')]['search'];
-					$words_array = $this->search->index_prepare($article_words . ' ' . $title_words, $lang);
-					$this->search->index_insert($url, $title, $short, $words_array);
+			if ($query->num_rows() > 0) {
+				$forest = $this->tree->get_tree( 'page_id', 'page_pid', $query->result_array(), 0 );
+				foreach ( $query->result() as $row ) {
+					$articles = '';
+					$query_a  = $this->db->get_where( 'w_pages_articles', array( 'article_pid'      => $row->page_id,
+					                                                             'article_pid_type' => 'pages'
+					) );
+					foreach ( $query_a->result() as $row_a ) {
+						$articles .= $row_a->article_text;
+					}
+
+					if ( $articles != '' ) {
+						$url           = $this->Cms_page->get_url_with_forest($row->page_id, $forest);
+						$title         = $row->page_name;
+						$article_words = text2words( html_entity_decode( $articles ) );
+						$title_words   = text2words( $title );
+						$short         = ( $row->page_meta_description != '' ) ? $row->page_meta_description : word_limiter( $article_words, 50 );
+						$lang_array    = $this->config->item( 'cms_lang' );
+						$lang          = $lang_array[ $this->session->userdata( 'w_alang' ) ]['search'];
+						$words_array   = $this->search->index_prepare( $article_words . ' ' . $title_words, $lang );
+						$this->search->index_insert( $url, $title, $short, $words_array, 'page', $row->page_id);
+					}
 				}
 			}
 		}

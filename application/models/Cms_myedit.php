@@ -94,7 +94,7 @@ class Cms_myedit extends CI_Model {
 		if ( is_array( $rights ) && $rights[ $module ] != '' ) {
 			$path = FCPATH . 'tmp/';
 			if ( ! is_dir( $path ) ) {
-				mkdir( $path, 0, true );
+				mkdir( $path, 0755, true );
 			}
 
 			$chunk = ( $this->input->post( 'dzchunkindex', true ) != '' ) ? $this->input->post( 'dzchunkindex', true ) : false;
@@ -139,7 +139,7 @@ class Cms_myedit extends CI_Model {
 			}
 
 			if ( ! is_dir( $path ) ) {
-				mkdir( $path, 0, true );
+				mkdir( $path, 0755, true );
 			}
 
 			$file_path = $path . $file_name;
@@ -248,7 +248,7 @@ class Cms_myedit extends CI_Model {
 		$module = $this->input->post('module', TRUE);
 		$rights = $this->cms_user->get_user_rights();
 		$path = FCPATH.'tmp/';
-		if(!is_dir($path)) mkdir($path, 0, true);
+		if(!is_dir($path)) mkdir($path, 0755, true);
 		if ( is_array($rights) && $rights[$module] != '' )
 		{
 			if(is_file($path.$this->input->post('file_name', TRUE))) unlink ($path.$this->input->post('file_name', TRUE));

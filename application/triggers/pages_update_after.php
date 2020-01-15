@@ -130,12 +130,14 @@ if ($total > $i) {
 $this->CI->Cms_inclusions->admin_inclusions_insert_update($id, 'pages');
 
 // Индексирование статей
-if($this->CI->config->item('cms_site_indexing'))
-{
+if ($newvals['page_status'] == '0' || $newvals['page_status'] == '3' || $articles == '') $this->CI->search->index_delete_by_id($id, 'page');
+if ($newvals['page_url'] != $oldvals['page_url']) $this->CI->search->index_update_by_url($newvals['page_url'], $oldvals['page_url']);
+
+if($this->CI->config->item('cms_site_indexing') && $articles != '' && $newvals['page_status'] != '0' && $newvals['page_status'] != '3'){
     $this->CI->load->library('search');
     $this->CI->load->helper('text');
 
-    $url 			= ($newvals['page_status'] == '4') ? $url = '/' : '/'.$newvals['page_url'];
+	$url            = ($newvals['page_url'] == 'index') ? '/' : $this->CI->Cms_page->get_url($id);
     $title 			= $newvals['page_name'];
     $article_words 	= text2words(html_entity_decode($articles));
     $title_words 	= text2words($title);
@@ -143,8 +145,6 @@ if($this->CI->config->item('cms_site_indexing'))
     $lang_array 	= $this->CI->config->item('cms_lang');
     $lang			= $lang_array[$this->CI->session->userdata('w_alang')]['search'];
 
-    if ($newvals['page_status'] == '4' || $newvals['page_status'] == '3' || $newvals['page_url'] != $oldvals['page_url']) $this->CI->search->index_delete('/'.$oldvals['page_url']);
-
     $words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
-    if ($newvals['page_status'] != '3') $this->CI->search->index_insert($url, $title, $short, $words_array);
+    $this->CI->search->index_insert($url, $title, $short, $words_array, 'page', $id);
 }

@@ -150,6 +150,28 @@ class Cms_page extends CI_Model {
 	}
 
 	/**
+	 * Получение полного урла страницы по id при наличии готового forest
+	 *
+	 * @access  public
+	 * @param   int
+	 * @param   array
+	 * @return  mixed
+	 */
+	function get_url_with_forest($id, $forest)
+	{
+		$this->load->library(array('tree'));
+		$this->tree->set_tree( $forest );
+		$url = '';
+		$this->tree->reset_crumbs();
+		$this->tree->set_crumbs($forest, 'page_id', 'page_pid', 'page_name', 'page_url', '/', 'page_status', 33, $id);
+		$crumbs = $this->tree->get_crumbs();
+		foreach ($crumbs as $crumb){
+			$url .= '/'.$crumb['page_url'];
+		}
+		return ($url != '') ? $url : false;
+	}
+
+	/**
 	 * Получаем номер сегмента урла для страницы
 	 *
 	 * @access	public

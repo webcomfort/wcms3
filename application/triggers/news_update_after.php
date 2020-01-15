@@ -37,7 +37,8 @@ $this->CI->db->delete('w_news_categories_cross', array('news_id' => $id));
 // Вносим новые записи
 if(is_array($this->CI->input->post('news_rubrics_'.$id, TRUE))) {
     foreach ($this->CI->input->post('news_rubrics_'.$id, TRUE) as $value) {
-        $data = array(
+	    if (!isset($rub)) $rub = $value;
+    	$data = array(
             'ncc_id'		=> '',
             'news_id' 		=> $id,
             'news_cat_id'	=> trim($value)
@@ -163,11 +164,12 @@ if($this->CI->config->item('cms_site_indexing'))
 {
     $this->CI->load->library('search');
     $this->CI->load->helper('text');
+	$page = $this->CI->Cms_news->get_news_page($rub);
 
-    if ($newvals['news_url'] != $oldvals['news_url'] || $newvals['news_active'] == 0) $this->CI->search->index_delete('/post/'.$oldvals['news_url']);
+    if ($newvals['news_active'] == '0' || $newvals['news_url'] != $oldvals['news_url']) $this->CI->search->index_delete_by_id($id, 'news');
 
     if($newvals['news_active']) {
-        $url = '/post/' . $newvals['news_url'];
+	    $url = $page . '/' . $newvals['news_url'];
         $title = $newvals['news_name'];
         $article_words = text2words(html_entity_decode($articles));
         $title_words = text2words($title);
@@ -176,7 +178,7 @@ if($this->CI->config->item('cms_site_indexing'))
         $lang = $lang_array[$this->CI->session->userdata('w_alang')]['search'];
 
         $words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
-        $this->CI->search->index_insert($url, $title, $short, $words_array);
+        $this->CI->search->index_insert($url, $title, $short, $words_array, 'news', $id);
     }
 }
 

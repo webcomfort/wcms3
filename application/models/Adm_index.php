@@ -28,7 +28,7 @@ class Adm_index extends CI_Model {
     {
     	$meta = '
 <style>
-#process {
+.process {
 	display: inline-block;
 	padding: 0 1em;
 	margin-left: 10px;
@@ -37,21 +37,15 @@ class Adm_index extends CI_Model {
 </style>
 <script>
 $(document).ready(function() {
-    var reindex_modules = '.json_encode ($this->config->item('cms_site_reindexing')).';
     var load = \'<img src="/public/admin/img/load.gif"> \';
-    $(document).on("click", "#reindex", function(e) {
+    $(".reindex").on("click", function(e) {
         e.preventDefault();
         
-        $.post("/adm_index/p_reindex", { '.$this->security->get_csrf_token_name().': "'.$this->security->get_csrf_hash().'" }, function(result){
-            Object.keys(reindex_modules).forEach(function(key){
-			    var item = reindex_modules[key];
-			    $("#process").removeClass("label-success").addClass("label-default");
-			    $("#process").html(load + item);
-			    $.post("/"+key+"/p_reindex", { '.$this->security->get_csrf_token_name().': "'.$this->security->get_csrf_hash().'" }, function(result){
-	                $("#process").removeClass("label-default").addClass("label-success");
-			        $("#process").html("Индексация завершена");
-				});
-			});
+        var module = $(this).data("module");
+        $.post("/"+module+"/p_reindex", { '.$this->security->get_csrf_token_name().': "'.$this->security->get_csrf_hash().'" }, function(result){
+            $(".process_"+module).removeClass("label-default").addClass("label-success");
+	        $(".process_"+module).html("Индексация завершена");
+	        console.log(result);
 		});
     });
 });
@@ -71,33 +65,14 @@ $(document).ready(function() {
     function get_filters()
     {
 	    if($this->config->item('cms_site_indexing')){
-		    $filters = '
-        <div class="row">
-            <div class="col-xs-12"><div class="p20 ui-block"><button id="reindex" class="btn btn-primary">Переиндексировать</button><span class="label label-default" id="process"></span></div></div>
-        </div>
-        ';
+		    $filters = '<div class="row">';
+	    	foreach ($this->config->item('cms_site_reindexing') as $key => $value){
+			    $filters .= '<div class="col-xs-12"><div class="p20 ui-block"><button data-module="'.$key.'" class="btn btn-primary reindex">'.$value.'</button><span class="label label-default process process_'.$key.'"></span></div></div>';
+		    }
+		    $filters .= '</div>';
 		    return $filters;
 	    }
     }
-
-    // ------------------------------------------------------------------------
-
-	/**
-	 * Функция для переиндексации (внешний вызов)
-	 *
-	 * @access  public
-	 * @return  string
-	 */
-	function p_reindex() {
-		$rights = $this->cms_user->get_user_rights();
-		if ( is_array($rights) && ($rights[basename(__FILE__)]['edit'] || $rights[basename(__FILE__)]['copy'] || $rights[basename(__FILE__)]['add']) )
-		{
-			$this->db->query('TRUNCATE TABLE w_indexing_index');
-			$this->db->query('TRUNCATE TABLE w_indexing_link');
-			$this->db->query('TRUNCATE TABLE w_indexing_word');
-			echo 'Индекс очищен!';
-		}
-	}
 
     // ------------------------------------------------------------------------
 

@@ -37,9 +37,7 @@ class Trigger {
             // Очищаем поисковый индекс, без возможности восстановления
             if(is_array($child_indexing)){
                 $url = $tree[$child_indexing['url']];
-                $url = $child_indexing['pre_url'].$url;
-                echo $url.'<br>';
-                $this->CI->search->index_delete($url);
+                $this->CI->search->index_delete_by_url($url);
             }
 
             // Подключения

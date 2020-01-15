@@ -42,8 +42,9 @@ if (is_array($files))
 
 // Заносим данные в таблицу пересечений
 if(is_array($this->CI->input->post('news_rubrics_'.$pid, TRUE))) {
-    foreach ($this->CI->input->post('news_rubrics_'.$pid, TRUE) as $value) {
-        $data = array(
+	foreach ($this->CI->input->post('news_rubrics_'.$pid, TRUE) as $value) {
+		if (!isset($rub)) $rub = $value;
+		$data = array(
             'ncc_id'		=> '',
             'news_id' 		=> $id,
             'news_cat_id'	=> trim($value)
@@ -102,7 +103,8 @@ if($this->CI->config->item('cms_site_indexing') && $newvals['news_active'])
     $this->CI->load->helper('text');
 
     if($newvals['news_active']) {
-        $url = '/post/' . $newvals['news_url'];
+	    $page = $this->CI->Cms_news->get_news_page($rub);
+    	$url = $page . '/' . $newvals['news_url'];
         $title = $newvals['news_name'];
         $article_words = text2words(html_entity_decode($articles));
         $title_words = text2words($title);
@@ -111,7 +113,7 @@ if($this->CI->config->item('cms_site_indexing') && $newvals['news_active'])
         $lang = $lang_array[$this->CI->session->userdata('w_alang')]['search'];
 
         $words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
-        $this->CI->search->index_insert($url, $title, $short, $words_array);
+        $this->CI->search->index_insert($url, $title, $short, $words_array, 'news', $id);
     }
 }
 

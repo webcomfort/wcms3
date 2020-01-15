@@ -39,19 +39,26 @@ class Adm_news extends CI_Model {
 		{
 			$this->load->library('search');
 			$this->load->helper('text');
+			$this->search->index_delete_by_type('news');
 
-			$query = $this->db->get_where('w_news', array('news_active !=' => 0));
+			$pages = $this->Cms_news->get_news_pages();
+
+			$this->db->select('w_news.news_id, news_name, news_url, news_cut, news_meta_description, news_cat_id')
+			         ->from('w_news')
+			         ->join('w_news_categories_cross', 'w_news.news_id = w_news_categories_cross.news_id')
+			         ->where('news_active !=', 0);
+			$query  = $this->db->get();
+
 			foreach ($query->result() as $row)
 			{
 				$articles = $row->news_cut.' ';
 				$query_a = $this->db->get_where('w_pages_articles', array('article_pid' => $row->news_id, 'article_pid_type' => 'news'));
-				foreach ($query_a->result() as $row_a)
-				{
+				foreach ($query_a->result() as $row_a){
 					$articles .= $row_a->article_text;
 				}
 
-				if($articles != ''){
-					$url = '/post/' . $row->news_url;
+				if($articles != '' && array_key_exists($row->news_cat_id, $pages)){
+					$url = $pages[$row->news_cat_id] . '/' . $row->news_url;
 					$title = $row->news_name;
 					$article_words = text2words(html_entity_decode($articles));
 					$title_words = text2words($title);
@@ -59,7 +66,7 @@ class Adm_news extends CI_Model {
 					$lang_array = $this->config->item('cms_lang');
 					$lang = $lang_array[$this->session->userdata('w_alang')]['search'];
 					$words_array = $this->search->index_prepare($article_words . ' ' . $title_words, $lang);
-					$this->search->index_insert($url, $title, $short, $words_array);
+					$this->search->index_insert($url, $title, $short, $words_array, 'news', $row->news_id);
 				}
 			}
 		}

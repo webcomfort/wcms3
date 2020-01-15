@@ -457,6 +457,14 @@ class Migration_Add_cms extends CI_Migration {
                 'constraint' => 11,
                 'default' => '0',
             ),
+            'type' => array(
+	            'type' => 'varchar',
+	            'constraint' => 255,
+            ),
+            'item_id' => array(
+	            'type' => 'int',
+	            'constraint' => 11,
+            ),
         ));
         $this->dbforge->add_key('id', TRUE);
         $this->dbforge->add_key(array('link', 'word'));
@@ -481,6 +489,14 @@ class Migration_Add_cms extends CI_Migration {
             ),
             'short' => array(
                 'type' => 'text',
+            ),
+            'type' => array(
+	            'type' => 'varchar',
+	            'constraint' => 255,
+            ),
+            'item_id' => array(
+	            'type' => 'int',
+	            'constraint' => 11,
             ),
         ));
         $this->dbforge->add_key('id', TRUE);
@@ -507,6 +523,14 @@ class Migration_Add_cms extends CI_Migration {
                 'type' => 'char',
                 'constraint' => 4,
                 'default' => 'A000',
+            ),
+            'type' => array(
+	            'type' => 'varchar',
+	            'constraint' => 255,
+            ),
+            'item_id' => array(
+	            'type' => 'int',
+	            'constraint' => 11,
             ),
         ));
         $this->dbforge->add_key('id', TRUE);

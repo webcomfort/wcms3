@@ -35,9 +35,8 @@ $child_indexing = false;
 if($this->CI->config->item('cms_site_indexing'))
 {
     $this->CI->load->library('search');
-    $url = ($oldvals['page_status'] == '4') ? $url = '/' : '/'.$oldvals['page_url'];
-    $this->CI->search->index_delete($url);
-    $child_indexing = array('pre_url' => '/', 'url' => 'page_url');
+    $this->CI->search->index_delete_by_url($oldvals['page_url']);
+    $child_indexing = array('url' => 'page_url');
 }
 
 // ------------------------------------------------------------------------

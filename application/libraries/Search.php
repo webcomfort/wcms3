@@ -92,7 +92,7 @@ class Search {
     * @param    array
     * @return   void
     */
-    function index_insert($url, $title, $short, $words_array)
+    function index_insert($url, $title, $short, $words_array, $type, $item_id)
     {
         $words = $words_array['words']; // корни
         $sound = $words_array['sound']; // звучание
@@ -104,10 +104,12 @@ class Search {
 
         // параметры страницы
         $data_link = array(
-           'id'     => '',
-           'url'    => $url,
-           'title'  => htmlspecialchars ($title),
-           'short'  => $short
+           'id'      => '',
+           'url'     => $url,
+           'title'   => htmlspecialchars ($title),
+           'short'   => $short,
+	       'type'    => $type,
+           'item_id' => $item_id
         );
 
         $this->CI->db->insert('w_indexing_link', $data_link);
@@ -123,7 +125,9 @@ class Search {
                    'id'     => '',
                    'url'    => $url,
                    'word'   => $words[$i],
-                   'sound'  => $sound[$i]
+                   'sound'  => $sound[$i],
+                   'type'    => $type,
+                   'item_id' => $item_id
                 );
 
                 $this->CI->db->insert('w_indexing_word', $data_word);
@@ -138,6 +142,8 @@ class Search {
                    'link'   => $page_id,
                    'word'   => $row->id,
                    'times'  => '1',
+                   'type'    => $type,
+                   'item_id' => $item_id
                 );
 
                 $this->CI->db->insert('w_indexing_index', $data_index);
@@ -148,7 +154,7 @@ class Search {
     // ------------------------------------------------------------------------
 
     /**
-    * Удаление индекса
+    * Удаление индекса по полному урлу
     *
     * @access   public
     * @param    string
@@ -160,4 +166,64 @@ class Search {
         $this->CI->db->delete('w_indexing_link', array('url' => $url));
         $this->CI->db->delete('w_indexing_word', array('url' => $url));
     }
+
+	/**
+	 * Удаление индекса по сегменту урла
+	 *
+	 * @access   public
+	 * @param    string
+	 * @return   void
+	 */
+	function index_delete_by_url($url)
+	{
+		$this->CI->db->query('DELETE FROM w_indexing_index WHERE url LIKE "%/'.$url.'/%"');
+		$this->CI->db->query('DELETE FROM w_indexing_link WHERE url LIKE "%/'.$url.'/%"');
+		$this->CI->db->query('DELETE FROM w_indexing_word WHERE url LIKE "%/'.$url.'/%"');
+	}
+
+	/**
+	 * Удаление индекса по id элемента
+	 *
+	 * @access   public
+	 * @param    int
+	 * @param    string
+	 * @return   void
+	 */
+	function index_delete_by_id($id, $type)
+	{
+		$query = $this->CI->db->get_where('w_indexing_link', array('item_id' => $id, 'type' => $type));
+		if ($query->num_rows() > 0) {
+			$row = $query->row();
+			$this->index_delete($row->url);
+		}
+	}
+
+	/**
+	 * Удаление индекса по типу
+	 *
+	 * @access   public
+	 * @param    string
+	 * @return   void
+	 */
+	function index_delete_by_type($type)
+	{
+		$this->CI->db->delete('w_indexing_index', array('type' => $type));
+		$this->CI->db->delete('w_indexing_link', array('type' => $type));
+		$this->CI->db->delete('w_indexing_word', array('type' => $type));
+	}
+
+	/**
+	 * Обновление индекса по сегменту урла
+	 *
+	 * @access   public
+	 * @param    string
+	 * @param    string
+	 * @return   void
+	 */
+	function index_update_by_url($url, $oldurl)
+	{
+		$this->CI->db->query("UPDATE w_indexing_index SET url = REPLACE(url, '/".$oldurl."/', '/".$url."/')");
+		$this->CI->db->query("UPDATE w_indexing_link SET url = REPLACE(url, '/".$oldurl."/', '/".$url."/')");
+		$this->CI->db->query("UPDATE w_indexing_word SET url = REPLACE(url, '/".$oldurl."/', '/".$url."/')");
+	}
 }

@@ -46,6 +46,34 @@ class Cms_news extends CI_Model {
         }
     }
 
+	/**
+	 * Находим урлы страниц, к которым подключены ленты
+	 *
+	 * @access  public
+	 * @return  array
+	 */
+	function get_news_pages()
+	{
+		$pages = array();
+
+		// Урл страницы, к которой подключена лента
+		$this->db->select('page_id, inc_value');
+		$this->db->from('w_includes');
+		$this->db->join('w_pages', 'w_pages.page_id = w_includes.obj_id');
+		$this->db->where('inc_id', 2);
+		$this->db->where('inc_type', 'pages');
+		$this->db->where('page_status !=', 0);
+		$this->db->where('page_status !=', 3);
+		$query = $this->db->get();
+
+		if ($query->num_rows() > 0) {
+			foreach ($query->result() as $row) {
+				$pages[$row->inc_value] = $this->Cms_page->get_url( $row->page_id );
+			}
+		}
+		return $pages;
+	}
+
     /**
      * Параметры категории
      *
