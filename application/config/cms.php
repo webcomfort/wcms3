@@ -39,9 +39,9 @@ $config['cms_code_compression'] = false;
 */
 $config['cms_site_indexing'] = true;
 $config['cms_site_reindexing'] = array(
-	'adm_pages' => 'Переиндексация страниц',
-	'adm_news' => 'Переиндексация новостей',
-	//'adm_shop_item' => 'Переиндексация каталога'
+	'adm_pages'     => 'Переиндексация страниц',
+	'adm_news'      => 'Переиндексация новостей',
+	'adm_shop_item' => 'Переиндексация каталога'
 );
 $config['cms_menu_indexing'] = array(1);
 

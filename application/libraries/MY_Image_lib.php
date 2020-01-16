@@ -140,11 +140,11 @@ class MY_Image_lib extends CI_Image_lib {
 
 		if ( $multiple ) {
 			$dir = FCPATH . substr( $path, 1 ) . $iid . '/' . $id . '/';
-			if(!is_dir($dir)) mkdir($dir, 0, true);
+			if(!is_dir($dir)) mkdir($dir, 0755, true);
 			$i = $this->get_counter($dir);
 		} else {
 			$dir = FCPATH . substr( $path, 1 ) . $iid . '/';
-			if(!is_dir($dir)) mkdir($dir, 0, true);
+			if(!is_dir($dir)) mkdir($dir, 0755, true);
 		}
 
 		$resdir = ($tmp) ? FCPATH . 'tmp/' : $dir;

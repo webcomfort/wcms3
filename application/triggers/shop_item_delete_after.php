@@ -32,13 +32,9 @@ if ($query->num_rows() > 0)
 
 // Очистка индекса удаляемого элемента
 $child_indexing = false;
-if($this->CI->config->item('cms_site_indexing'))
-{
-    $this->CI->load->library('search');
-    $shop_page = $this->CI->Cms_shop->get_shop_page();
-    $url = '/'.$shop_page.'/item/'.$oldvals['item_url'];
-    $this->CI->search->index_delete($url);
-    $child_indexing = array('pre_url' => '/'.$shop_page.'/item/', 'url' => 'item_url');
+if($this->CI->config->item('cms_site_indexing')){
+	$this->CI->search->index_delete_by_id($id, 'shop');
+	$child_indexing = array('url' => 'item_url');
 }
 
 // ------------------------------------------------------------------------

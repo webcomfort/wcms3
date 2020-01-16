@@ -44,7 +44,8 @@ if (is_array($files))
 // Заносим данные в таблицу пересечений с категориями
 if(is_array($this->CI->input->post('item_cats_'.$pid, TRUE))) {
     foreach ($this->CI->input->post('item_cats_'.$pid, TRUE) as $value) {
-        $data = array(
+	    if (!isset($rub)) $rub = $value;
+    	$data = array(
             'sic_id' => '',
             'item_id' => $id,
             'cat_id' => trim($value)
@@ -98,24 +99,22 @@ foreach ($this->CI->input->post(NULL, FALSE) as $key => $value)
 // ------------------------------------------------------------------------
 
 // Индексирование текстов
-if($this->CI->config->item('cms_site_indexing'))
+if($this->CI->config->item('cms_site_indexing') && $newvals['item_active'])
 {
-    $this->CI->load->library('search');
-    $this->CI->load->helper('text');
+	$this->CI->load->library('search');
+	$this->CI->load->helper('text');
 
-    if($newvals['item_active']) {
-        $shop_page = $this->CI->Cms_shop->get_shop_page();
-        $url = '/' . $shop_page . '/item/' . $newvals['item_url'];
-        $title = $newvals['item_name'];
-        $article_words = text2words(html_entity_decode($articles));
-        $title_words = text2words($title);
-        $short = word_limiter($article_words, 50);
-        $lang_array = $this->CI->config->item('cms_lang');
-        $lang = $lang_array[$this->CI->session->userdata('w_alang')]['search'];
+	$page = $this->CI->Cms_shop->get_shop_cat_page($rub);
+	$url = $page . '/' . $newvals['item_url'];
+	$title = $newvals['item_name'];
+	$article_words = text2words(html_entity_decode($articles));
+	$title_words = text2words($title);
+	$short = word_limiter($article_words, 50);
+	$lang_array = $this->CI->config->item('cms_lang');
+	$lang = $lang_array[$this->CI->session->userdata('w_alang')]['search'];
 
-        $words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
-        $this->CI->search->index_insert($url, $title, $short, $words_array);
-    }
+	$words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
+	$this->CI->search->index_insert($url, $title, $short, $words_array, 'shop', $id);
 }
 
 // ------------------------------------------------------------------------

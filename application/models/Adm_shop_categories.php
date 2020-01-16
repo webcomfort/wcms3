@@ -228,6 +228,23 @@ class Adm_shop_categories extends CI_Model {
         }
     }
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Вывод дочерних элементов
+	 *
+	 * @access	public
+	 * @param   int
+	 * @param   string
+	 * @return	string
+	 */
+
+	function get_page_url($key, $value)
+	{
+		$url = $this->Cms_shop->get_shop_cat_page($key);
+		return ($url) ? '<a href="'.$url.'" target="_blank">Посмотреть</a>' : 'Не подключено';
+	}
+
     // ------------------------------------------------------------------------
 
     /**
@@ -510,9 +527,10 @@ class Adm_shop_categories extends CI_Model {
             'name'          => 'URL страницы',
             'options'       => 'LACPDV',
             'select'        => 'T',
-            'URL'           => '/'.$shop_page.'/$value',
-            'URLdisp'       => '/'.$shop_page.'/$value',
-            'URLtarget'     => '_blank',
+            'cell_func' => array(
+	            'model' => 'adm_shop_categories',
+	            'func'  => 'get_page_url'
+            ),
             'maxlen'        => 65535,
             'required'      => true,
             'sort'          => true,

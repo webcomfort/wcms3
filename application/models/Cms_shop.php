@@ -15,14 +15,14 @@ class Cms_shop extends CI_Model {
     function __construct()
     {
         parent::__construct();
-
+	    $this->load->model('Cms_page');
         $this->load->helper(array('html'));
     }
 
     // ------------------------------------------------------------------------
 
     /**
-     * Находим страницу
+     * Находим страницу, если каталог подключен модулем
      *
      * @access  public
      * @return  string
@@ -49,6 +49,64 @@ class Cms_shop extends CI_Model {
             return false;
         }
     }
+
+	/**
+	 * Находим страницу категории
+	 *
+	 * @access  public
+	 * @param   int
+	 * @return  int
+	 */
+	function get_shop_cat_page($id)
+	{
+		// Урл страницы, к которой подключена лента
+		$this->db->select('page_id, page_url');
+		$this->db->from('w_includes');
+		$this->db->join('w_pages', 'w_pages.page_id = w_includes.obj_id');
+		$this->db->where('inc_id', 4);
+		$this->db->where('inc_value', $id);
+		$this->db->where('inc_type', 'pages');
+		$this->db->limit(1);
+		$query = $this->db->get();
+
+		if ($query->num_rows() > 0)
+		{
+			$row = $query->row();
+			return $this->Cms_page->get_url($row->page_id);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Находим урлы страниц, к которым подключены категории
+	 *
+	 * @access  public
+	 * @return  array
+	 */
+	function get_shop_pages()
+	{
+		$pages = array();
+
+		// Урл страницы, к которой подключена категория
+		$this->db->select('page_id, inc_value');
+		$this->db->from('w_includes');
+		$this->db->join('w_pages', 'w_pages.page_id = w_includes.obj_id');
+		$this->db->where('inc_id', 4);
+		$this->db->where('inc_type', 'pages');
+		$this->db->where('page_status !=', 0);
+		$this->db->where('page_status !=', 3);
+		$query = $this->db->get();
+
+		if ($query->num_rows() > 0) {
+			foreach ($query->result() as $row) {
+				$pages[$row->inc_value] = $this->Cms_page->get_url( $row->page_id );
+			}
+		}
+		return $pages;
+	}
 
     // ------------------------------------------------------------------------
 

@@ -102,19 +102,17 @@ if($this->CI->config->item('cms_site_indexing') && $newvals['news_active'])
     $this->CI->load->library('search');
     $this->CI->load->helper('text');
 
-    if($newvals['news_active']) {
-	    $page = $this->CI->Cms_news->get_news_page($rub);
-    	$url = $page . '/' . $newvals['news_url'];
-        $title = $newvals['news_name'];
-        $article_words = text2words(html_entity_decode($articles));
-        $title_words = text2words($title);
-        $short = word_limiter($article_words, 50);
-        $lang_array = $this->CI->config->item('cms_lang');
-        $lang = $lang_array[$this->CI->session->userdata('w_alang')]['search'];
+    $page = $this->CI->Cms_news->get_news_page($rub);
+    $url = $page . '/' . $newvals['news_url'];
+    $title = $newvals['news_name'];
+    $article_words = text2words(html_entity_decode($articles));
+    $title_words = text2words($title);
+    $short = word_limiter($article_words, 50);
+    $lang_array = $this->CI->config->item('cms_lang');
+    $lang = $lang_array[$this->CI->session->userdata('w_alang')]['search'];
 
-        $words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
-        $this->CI->search->index_insert($url, $title, $short, $words_array, 'news', $id);
-    }
+    $words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
+    $this->CI->search->index_insert($url, $title, $short, $words_array, 'news', $id);
 }
 
 // ------------------------------------------------------------------------

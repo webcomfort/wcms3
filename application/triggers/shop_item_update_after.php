@@ -37,7 +37,8 @@ $this->CI->db->delete('w_shop_items_cats', array('item_id' => $id));
 // Вносим новые записи
 if(is_array($this->CI->input->post('item_cats_'.$id, TRUE))) {
     foreach ($this->CI->input->post('item_cats_'.$id, TRUE) as $value) {
-        $data = array(
+	    if (!isset($rub)) $rub = $value;
+    	$data = array(
             'sic_id' => '',
             'item_id' => $id,
             'cat_id' => trim($value)
@@ -159,26 +160,24 @@ if ($total > $i) {
 // Индексирование статей
 if($this->CI->config->item('cms_site_indexing'))
 {
-    $this->CI->load->library('search');
-    $this->CI->load->helper('text');
+	$this->CI->load->library('search');
+	$this->CI->load->helper('text');
+	$page = $this->CI->Cms_shop->get_shop_cat_page($rub);
 
-    $shop_page = $this->CI->Cms_shop->get_shop_page();
-    $url = '/'.$shop_page.'/item/'.$newvals['item_url'];
-    $old_url = '/'.$shop_page.'/item/'.$oldvals['item_url'];
+	if ($newvals['item_active'] == '0' || $newvals['item_url'] != $oldvals['item_url']) $this->CI->search->index_delete_by_id($id, 'shop');
 
-    if ($url != $old_url || $newvals['item_active'] == 0) $this->CI->search->index_delete($old_url);
+	if($newvals['item_active']) {
+		$url = $page . '/' . $newvals['item_url'];
+		$title = $newvals['item_name'];
+		$article_words = text2words(html_entity_decode($articles));
+		$title_words = text2words($title);
+		$short = word_limiter($article_words, 50);
+		$lang_array = $this->CI->config->item('cms_lang');
+		$lang = $lang_array[$this->CI->session->userdata('w_alang')]['search'];
 
-    if($newvals['item_active']) {
-        $title = $newvals['item_name'];
-        $article_words = text2words(html_entity_decode($articles));
-        $title_words = text2words($title);
-        $short = word_limiter($article_words, 50);
-        $lang_array = $this->CI->config->item('cms_lang');
-        $lang = $lang_array[$this->CI->session->userdata('w_alang')]['search'];
-
-        $words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
-        $this->CI->search->index_insert($url, $title, $short, $words_array);
-    }
+		$words_array = $this->CI->search->index_prepare($article_words . ' ' . $title_words, $lang);
+		$this->CI->search->index_insert($url, $title, $short, $words_array, 'shop', $id);
+	}
 }
 
 // ------------------------------------------------------------------------

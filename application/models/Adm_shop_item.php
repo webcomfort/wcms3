@@ -45,26 +45,26 @@ class Adm_shop_item extends CI_Model {
 		{
 			$this->load->library('search');
 			$this->load->helper('text');
+			$this->search->index_delete_by_type('shop');
 
-			$query = $this->db->get_where('w_shop_items', array('item_active !=' => 0));
+			$pages = $this->Cms_shop->get_shop_pages();
+
+			$this->db->select('*')
+			         ->from('w_shop_items')
+			         ->join('w_shop_items_cats', 'w_shop_items.item_id = w_shop_items_cats.item_id')
+			         ->where('item_active !=', 0);
+			$query  = $this->db->get();
+
 			foreach ($query->result() as $row)
 			{
 				$articles = $row->item_cut.' ';
 				$query_a = $this->db->get_where('w_pages_articles', array('article_pid' => $row->item_id, 'article_pid_type' => 'shop'));
-				foreach ($query_a->result() as $row_a)
-				{
+				foreach ($query_a->result() as $row_a){
 					$articles .= $row_a->article_text;
 				}
 
-				$query_b = $this->db->get_where('w_shop_items_cats', array('item_id' => $row->item_id));
-				foreach ($query_b->result() as $row_b)
-				{
-					$category_id = $row_b->cat_id;
-				}
-
-				if($articles != ''){
-					$shop_page = $this->Cms_shop->get_shop_page($category_id);
-					$url = '/'.$shop_page.'/' . $row->item_url;
+				if($articles != '' && array_key_exists($row->cat_id, $pages)){
+					$url = $pages[$row->cat_id] . '/' . $row->item_url;
 					$title = $row->item_article.' '.$row->item_name;
 					$article_words = text2words(html_entity_decode($articles));
 					$title_words = text2words($title);
@@ -72,7 +72,7 @@ class Adm_shop_item extends CI_Model {
 					$lang_array = $this->config->item('cms_lang');
 					$lang = $lang_array[$this->session->userdata('w_alang')]['search'];
 					$words_array = $this->search->index_prepare($article_words . ' ' . $title_words, $lang);
-					$this->search->index_insert($url, $title, $short, $words_array);
+					$this->search->index_insert($url, $title, $short, $words_array, 'shop', $row->item_id);
 				}
 			}
 		}
@@ -462,6 +462,28 @@ class Adm_shop_item extends CI_Model {
         $query = $this->db->get('w_shop_items');
         if ($query->num_rows() > 0) $this->forest = $this->tree->get_tree('item_id', 'item_pid', $query->result_array(), 0);
     }
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Ссылка на страницу
+	 *
+	 * @access	public
+	 * @param   int
+	 * @param   string
+	 * @return	string
+	 */
+
+	function get_item_link($key, $value){
+		$cats = $this->_item_cats($key);
+		if(count($cats['defaults']) > 0){
+			$id = array_shift($cats['defaults']);
+			$url = $this->Cms_shop->get_shop_cat_page($id);
+			return ($url) ? '<a href="'.$url.'/'.$value.'" target="_blank">Посмотреть</a>' : 'Не подключено';
+		} else {
+			return 'Не подключено';
+		}
+	}
 
     // ------------------------------- РУБРИКИ -----------------------------------------
 
@@ -1006,9 +1028,10 @@ class Adm_shop_item extends CI_Model {
             'name'          => 'URL',
             'options'       => 'LACPDV',
             'select'        => 'T',
-            'URL'           => '/item/$value',
-            'URLdisp'       => 'На сайте',
-            'URLtarget'     => '_blank',
+            'cell_func' => array(
+	            'model' => 'adm_shop_item',
+	            'func'  => 'get_item_link'
+            ),
             'maxlen'        => 65535,
             'required'      => true,
             'sort'          => true,

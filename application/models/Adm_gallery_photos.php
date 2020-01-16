@@ -461,7 +461,7 @@ class Adm_gallery_photos extends CI_Model {
 		    $this->load->library('image_lib');
 		    $dimensions = $this->config->item('cms_gallery_sizes');
 		    $path = FCPATH.substr($this->config->item('cms_gallery_dir'), 1);
-		    if(!is_dir($path)) mkdir($path, 0, true);
+		    if(!is_dir($path)) mkdir($path, 0755, true);
 
 		    $this->db->select('gallery_name AS name, gallery_view_id AS vid');
 		    $this->db->from('w_galleries');
@@ -493,7 +493,7 @@ class Adm_gallery_photos extends CI_Model {
 				    $id  = $this->db->insert_id();
 				    $iid = ceil( intval( $id ) / 1000 );
 				    if ( ! is_dir( $path . $iid . '/' ) ) {
-					    mkdir( $path . $iid . '/', 0, true );
+					    mkdir( $path . $iid . '/', 0755, true );
 				    }
 			    }
 
