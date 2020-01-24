@@ -12,7 +12,7 @@ else
 
     <h4><?php echo $news_name; ?></h4>
     <p><em><?php echo $news_date; ?></em></p>
-    <p><?php echo @$news_img['_big']; ?></p>
+    <p><?php echo @$news_img; ?></p>
     <?php
     if(isset($news_articles) && is_array($news_articles) && isset($news_articles[0])){
         foreach ($news_articles[0] as $value) echo @$value;

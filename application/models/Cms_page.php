@@ -228,6 +228,113 @@ class Cms_page extends CI_Model {
 		}
 	}
 
+	/**
+	 * Изображения
+	 *
+	 * @access  public
+	 * @param   int
+	 * @param   string
+	 * @return  array
+	 */
+	function get_img($id, $name, $thumbs, $dir, $css='')
+	{
+		$images = array();
+		$iid = ceil(intval($id)/1000);
+		$folder = $dir.$iid.'/';
+		$folder_path = FCPATH.substr($folder, 1);
+
+		// Src
+		if ($handle = opendir($folder_path))
+		{
+			while (($file = readdir($handle)) !== false)
+			{
+				if (preg_match ("/^".$id."_src\.([[:alnum:]])*$/", $file))
+				{
+					$url  = $folder.$file;
+					$size = getimagesize($folder_path.$file);
+					$width  = $size[0];
+					$height = $size[1];
+
+					$image_properties = array(
+						'src'       => $url,
+						'alt'       => $name,
+						'class'     => $css,
+						'width'     => $width,
+						'height'    => $height,
+						'title'     => $name,
+						'rel'       => ''
+					);
+
+					$images['_src']['url']  = $url;
+					$images['_src']['img']  = img($image_properties, FALSE);
+					$images['_src']['name'] = $name;
+				}
+			}
+		}
+
+		// Main image
+		if ($this->config->item('cms_webp')){
+			$path = $folder_path.$id.'_webp.webp';
+			$url  = $folder.$id.'_webp.webp';
+		} else {
+			$path = $folder_path.$id.'.jpg';
+			$url  = $folder.$id.'.jpg';
+		}
+		if (is_file ($path))
+		{
+			$size   = getimagesize ($path);
+			$width  = $size[0];
+			$height = $size[1];
+
+			$image_properties = array(
+				'src'       => $url,
+				'alt'       => $name,
+				'width'     => $width,
+				'height'    => $height,
+				'title'     => $name,
+				'class'     => $css
+			);
+
+			$images['_main']['url']  = $url;
+			$images['_main']['img']  = img($image_properties, FALSE);
+			$images['_main']['name'] = $name;
+		}
+
+		// Thumbs
+		foreach ($thumbs as $key => $value)
+		{
+			if ($this->config->item('cms_webp')){
+				$path = $folder_path.$id.$key.'.webp';
+				$url  = $folder.$id.$key.'.webp';
+			} else {
+				$path = $folder_path.$id.$key.'.jpg';
+				$url  = $folder.$id.$key.'.jpg';
+			}
+
+			if (is_file ($path))
+			{
+				$size   = getimagesize ($path);
+				$width  = $size[0];
+				$height = $size[1];
+
+				$image_properties = array(
+					'src'       => $url,
+					'alt'       => $name,
+					'width'     => $width,
+					'height'    => $height,
+					'title'     => $name,
+					'class'     => $css
+				);
+
+				$images[$key]['url']  = $url;
+				$images[$key]['img']  = img($image_properties, FALSE);
+				$images[$key]['name'] = $name;
+			}
+		}
+
+		return $images;
+	}
+
     // ------------------------------------------------------------------------
 
     /**

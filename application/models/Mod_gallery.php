@@ -51,9 +51,44 @@ class Mod_gallery extends CI_Model {
 
                 	foreach ($dimensions as $key => $value)
                     {
-                        $path = FCPATH.substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.$key.'.jpg';
-                        $url  = substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.$key.'.jpg';
+	                    // Main image
+	                    if ($this->config->item('cms_webp')){
+		                    $path = FCPATH.substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.'_webp.webp';
+		                    $url  = substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.'_webp.webp';
+	                    } else {
+		                    $path = FCPATH.substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.'.jpg';
+		                    $url  = substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.'.jpg';
+	                    }
+	                    if (is_file ($path))
+	                    {
+		                    $size   = getimagesize ($path);
+		                    $width  = $size[0];
+		                    $height = $size[1];
 
+		                    $image_properties = array(
+			                    'src'       => $url,
+			                    'alt'       => $row->photo_name,
+			                    'class'     => '',
+			                    'width'     => $width,
+			                    'height'    => $height,
+			                    'title'     => $row->photo_name,
+			                    'rel'       => ''
+		                    );
+
+		                    $images['_main'][$row->photo_id]['url']  = $url;
+		                    $images['_main'][$row->photo_id]['img']  = img($image_properties, FALSE);
+		                    $images['_main'][$row->photo_id]['link'] = ($row->photo_link) ? $row->photo_link : '#';
+		                    $images['_main'][$row->photo_id]['text'] = $row->photo_text;
+		                    $images['_main'][$row->photo_id]['name'] = $row->photo_name;
+	                    }
+
+                    	if ($this->config->item('cms_webp')){
+		                    $path = FCPATH.substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.$key.'.webp';
+		                    $url  = substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.$key.'.webp';
+	                    } else {
+		                    $path = FCPATH.substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.$key.'.jpg';
+		                    $url  = substr($this->config->item('cms_gallery_dir'), 1).$iid.'/'.$row->photo_id.$key.'.jpg';
+	                    }
                         if (is_file ($path))
                         {
                             $size   = getimagesize ($path);
@@ -111,13 +146,12 @@ class Mod_gallery extends CI_Model {
 			                }
 		                }
 	                }
-
-                    $data = array(
-                        'gallery_id'        => $id,
-                        'gallery_images'    => $images
-                    );
                 }
 
+			    $data = array(
+				    'gallery_id'        => $id,
+				    'gallery_images'    => $images
+			    );
                 return $this->load->view('site/'.$view, $data, true);
             }
         }

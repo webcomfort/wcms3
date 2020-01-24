@@ -13,7 +13,7 @@ else
 
     <h4><a href="<?php echo $value['news_url']; ?>" title="<?php echo $value['news_name']; ?>"><?php echo $value['news_name']; ?></a></h4>
     <p><small><em><?php echo $value['news_date']; ?></em></small></p>
-    <p><a href="<?php echo $value['news_url']; ?>" title="<?php echo $value['news_name']; ?>"><?php if (isset($value['news_img']['_big'])) echo $value['news_img']['_big']; ?></a></p>
+    <p><a href="<?php echo $value['news_url']; ?>" title="<?php echo $value['news_name']; ?>"><?php if (isset($value['news_img'])) echo $value['news_img']; ?></a></p>
     <p><?php echo word_limiter(strip_tags($value['news_cut']), 20); ?></p>
 
     <?php if (isset($value['news_tags']) && is_array($value['news_tags']) && count($value['news_tags'])) { ?>

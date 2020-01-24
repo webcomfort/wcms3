@@ -1,9 +1,11 @@
 <?php
 class MY_Image_lib extends CI_Image_lib {
 
-    public function __construct()
+	private $CI;
+	public function __construct()
     {
-        parent::__construct();
+	    $this->CI =& get_instance();
+    	parent::__construct();
     }
 
     /**
@@ -189,6 +191,7 @@ class MY_Image_lib extends CI_Image_lib {
 
 		    $src_pic_path   = $dir . DIRECTORY_SEPARATOR . $filename . '_src' . '.' . $extension;
 		    $ready_pic_path = $dir . DIRECTORY_SEPARATOR . $filename . '.jpg';
+		    $ready_pic_path_webp = $dir . DIRECTORY_SEPARATOR . $filename . '_webp' . '.webp';
 
 		    if ( $extension == 'jpeg' ) {
 			    copy( $path, $ready_pic_path );
@@ -208,6 +211,14 @@ class MY_Image_lib extends CI_Image_lib {
 
 			    ImageJPEG( $ee, $ready_pic_path, 100 );
 			    rename( $path, $src_pic_path );
+		    }
+
+		    if($this->CI->config->item('cms_webp')) {
+			    $ii = imagecreatefromjpeg( $ready_pic_path );
+			    imagewebp( $ii, $ready_pic_path_webp, 80);
+			    if (filesize($ready_pic_path_webp) % 2 == 1) {
+				    file_put_contents($ready_pic_path_webp, "\0", FILE_APPEND);
+			    }
 		    }
 
 		    return $ready_pic_path;
@@ -237,6 +248,7 @@ class MY_Image_lib extends CI_Image_lib {
 	    $dir            = $path_parts['dirname'];
 
 	    $dst_file = $dir . DIRECTORY_SEPARATOR . $filename . $prefix . '.jpg';
+	    $dst_file_webp = $dir . DIRECTORY_SEPARATOR . $filename . $prefix . '.webp';
 
         if (is_file($path) || ($x != 0 && $y != 0))
         {
@@ -323,8 +335,16 @@ class MY_Image_lib extends CI_Image_lib {
 				$src_image = imagecreatefromjpeg($dst_file);
 
 				@imagecopyresized ($dst_image, $src_image, 0, 0, $x_axis, $y_axis, $x, $y, $x, $y);
-				$ready_tn = ImageJPEG ($dst_image, $dst_file, 100);
+				ImageJPEG ($dst_image, $dst_file, 100);
             }
+
+	        if($this->CI->config->item('cms_webp')) {
+		        $ii = imagecreatefromjpeg( $dst_file );
+		        imagewebp( $ii, $dst_file_webp, 80 );
+		        if ( filesize( $dst_file_webp ) % 2 == 1 ) {
+			        file_put_contents( $dst_file_webp, "\0", FILE_APPEND );
+		        }
+	        }
         }
 	}
 

@@ -3,7 +3,7 @@
 <?php foreach ($news_latest as $value) { ?>
 
     <div class="card mb-2">
-        <a href="<?php echo $value['news_url']; ?>" title="<?php echo $value['news_name']; ?>"><?php echo $value['news_img']['_thumb']; ?></a>
+        <a href="<?php echo $value['news_url']; ?>" title="<?php echo $value['news_name']; ?>"><?php echo $value['news_img']; ?></a>
         <div class="card-body">
             <h5 class="card-title"><a href="<?php echo $value['news_url']; ?>" title="<?php echo $value['news_name']; ?>"><?php echo $value['news_name']; ?></a></h5>
             <p class="card-text"><small><em><?php echo $value['news_date']; ?></em></small></p>

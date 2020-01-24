@@ -178,13 +178,14 @@ class Mod_news extends CI_Model {
 
             foreach ($query->result() as $row)
             {
-                $news[] = array(
+	            $image = $this->Cms_page->get_img($row->news_id, $row->news_name, $this->config->item('cms_news_images'), $this->config->item('cms_news_dir'), 'img-fluid' );
+            	$news[] = array(
                     'news_id'   => $row->news_id,
                     'news_name' => $row->news_name,
                     'news_url'  => $page_url.'/'.$row->news_url,
                     'news_date' => date_format_rus ( $row->news_date, 'date' ),
                     'news_cut'  => $row->news_cut,
-                    'news_img'  => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-fluid'),
+                    'news_img'  => $image['_big']['img'],
 	                'news_tags' => $this->Cms_tags->get_tags_by_item($row->news_id,'news')
                 );
             }
@@ -260,12 +261,14 @@ class Mod_news extends CI_Model {
                 $this->Cms_page->set_articles(array(0 => array(), 1 => $articles[1]));
             }
 
+	        $image = $this->Cms_page->get_img($row->news_id, $row->news_name, $this->config->item('cms_news_images'), $this->config->item('cms_news_dir'), 'img-fluid' );
+
             $data = array(
                 'news_id'       => $row->news_id,
                 'news_name'     => $row->news_name,
                 'news_date'     => date_format_rus ( $row->news_date, 'date' ),
                 'news_articles' => $articles,
-                'news_img'      => $this->Cms_news->get_img($row->news_id, $row->news_name, 'img-fluid'),
+                'news_img'      => $image['_big']['img'],
                 'news_tags'     => $this->Cms_tags->get_tags_by_item($row->news_id,'news'),
 	            'news_list_url' => $news_page
             );

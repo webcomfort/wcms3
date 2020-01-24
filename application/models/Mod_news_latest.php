@@ -52,13 +52,14 @@ class Mod_news_latest extends CI_Model {
 
             foreach ($query->result() as $row)
             {
-                $news[] = array(
+                $image = $this->Cms_page->get_img($row->news_id, $row->news_name, $this->config->item('cms_news_images'), $this->config->item('cms_news_dir'), 'card-img-top' );
+            	$news[] = array(
                     'news_id'   => $row->news_id,
                     'news_name' => $row->news_name,
                     'news_url'  => $page_url.'/'.$row->news_url,
                     'news_date' => date_format_rus ( $row->news_date, 'date' ),
                     'news_cut'  => $row->news_cut,
-                    'news_img'  => $this->Cms_news->get_img($row->news_id, $row->news_name, 'card-img-top')
+                    'news_img'  => $image['_thumb']['img']
                 );
             }
 

@@ -69,6 +69,9 @@ $config['cms_lang'] = array(
 |--------------------------------------------------------------------------
 */
 
+// Webp support
+$config['cms_webp'] = true;
+
 // Фоны
 $config['cms_bg_dir'] = '/public/upload/backgrounds/';
 
