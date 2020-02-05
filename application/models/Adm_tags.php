@@ -116,7 +116,7 @@ class Adm_tags extends CI_Model {
         // $this->opts['triggers']['insert']['after'] = '';
         // $this->opts['triggers']['update']['after'] = '';
         // $this->opts['triggers']['delete']['before'] = '';
-        $opts['triggers']['delete']['after']  = FCPATH.APPPATH.'triggers/tags_delete_after.php';
+        $opts['triggers']['delete']['after']  = APPPATH.'triggers/tags_delete_after.php';
 
         // Логирование: общее название класса и поле где хранится название объекта
         $opts['logtable_title'] = 'Тег';
