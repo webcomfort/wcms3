@@ -319,11 +319,19 @@ class Adm_gallery_photos extends CI_Model {
 		             ->order_by('gallery_name', 'asc')
 		             ->where('gallery_lang_id', $this->session->userdata('w_alang'));
 	    } else {
-		    $this->db->select('gallery_id AS id, gallery_name AS name')
-		             ->from('w_galleries')
-		             ->order_by('gallery_name', 'asc')
-			         ->where_in('gallery_id', $user_rights)
-		             ->where('gallery_lang_id', $this->session->userdata('w_alang'));
+		    if(count($user_rights)){
+				$this->db->select('gallery_id AS id, gallery_name AS name')
+					->from('w_galleries')
+					->order_by('gallery_name', 'asc')
+					->where_in('gallery_id', $user_rights)
+					->where('gallery_lang_id', $this->session->userdata('w_alang'));
+			} else {
+				$this->db->select('gallery_id AS id, gallery_name AS name')
+					->from('w_galleries')
+					->order_by('gallery_name', 'asc')
+					->where('gallery_id', 0)
+					->where('gallery_lang_id', $this->session->userdata('w_alang'));
+			}
 	    }
 
         $query  = $this->db->get();

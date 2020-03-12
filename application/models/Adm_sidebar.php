@@ -1,12 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Управление модулями
+ * Управление
  */
 
-class Adm_modules extends CI_Model {
-
-    private $modules_array = array();
+class Adm_sidebar extends CI_Model {
 
     function __construct()
     {
@@ -41,47 +39,7 @@ class Adm_modules extends CI_Model {
 	 */
     function get_filters()
     {
-        // Получаем данные
-        $filter_init = array(
-            '1' => 'Модули сайта',
-			'2' => 'Модули администрирования',
-			'3' => 'Модули сайдбара'
-        );
-
-        foreach ($filter_init as $key => $value)
-        {
-            $filter_values[$key] = $value;
-        }
-
-        // Сессия
-        if (!$this->session->userdata('modules_filter'))
-        {
-            $this->session->set_userdata(array('modules_filter' => current(array_keys($filter_values))));
-        }
-
-        if($this->input->post('modules_filter', true) && preg_int($this->input->post('modules_filter', true)))
-        {
-            $this->session->set_userdata(array('modules_filter' => $this->input->post('modules_filter', true)));
-        }
-
-        // Отображение
-        $data = array(
-            'filter_name'   => 'Выберите тип модуля',
-            'filter_action' => '/'.$this->uri->segment(1).'/'.$this->uri->segment(2).'/',
-            'filter_field'  => 'modules_filter',
-            'filter_class'  => ' select2',
-            'filter_active' => $this->session->userdata('modules_filter'),
-            'filter_values' => $filter_values
-        );
-
-        $filters = '
-        <div class="row">
-            <div class="col-xs-12"><div class="p20 ui-block">'.
-                $this->load->view('admin/filter_default', $data, true)
-            .'</div>
-        </div></div>
-        ';
-
+        $filters = '';
         return $filters;
     }
 
@@ -99,31 +57,25 @@ class Adm_modules extends CI_Model {
         return $this->myedit->get_output();
     }
 
+    // ------------------------------------------------------------------------
+
     /**
-     * Файлы модулей
+     * Массив макетов для формирования выпадающего списка
      *
      * @access  private
-     * @return  void
+     * @return  array
      */
 
-    function _find_modules($dir)
+    function _get_view_list()
     {
-        $handle = opendir($dir);
-        while($f = readdir($handle))
+        $views  = $this->config->item('cms_sidebar_views');
+
+        foreach ($views as $key => $value)
         {
-            if ($f != '.' && $f != '..')
-            {
-                if (is_dir($dir.$f))
-                {
-                    $this->_find_modules($dir.$f.'/');
-                }
-                else if (preg_match('/[0-9A-Za-z_]+\.php/',$f))
-                {
-                    $this->modules_array[$f] = $f;
-                }
-            }
+            $val_arr[$key] = $value['name'];
         }
-        asort($this->modules_array);
+
+        return $val_arr;
     }
 
     // ------------------------------------------------------------------------
@@ -136,19 +88,33 @@ class Adm_modules extends CI_Model {
 	 */
 	function _get_crud_model ()
 	{
+		// $id текущей записи
+		if($this->input->get('PME_sys_rec', TRUE)) $id = $this->input->get('PME_sys_rec', TRUE);
+		elseif($this->input->post('PME_sys_rec', TRUE)) $id = $this->input->post('PME_sys_rec', TRUE);
+		else $id = 0;
+
+		// Массив переменных из урла
+        $uri_assoc_array = $this->uri->uri_to_assoc(1);
+
         // Получаем базовые настройки
         $this->load->model('Cms_myedit');
         $opts = $this->Cms_myedit->get_base_opts();
+		
+		// Переопределяем кнопки
+		$opts['buttons']['L']['up'] = array('add','save','<<','<','>','>>','goto_combo');
+		$opts['buttons']['L']['down'] = $opts['buttons']['L']['up'];
+        $opts['buttons']['F']['up'] = $opts['buttons']['L']['up'];
+        $opts['buttons']['F']['down'] = $opts['buttons']['L']['up'];
 
         // Таблица
-        $opts['tb'] = 'w_cms_modules';
+        $opts['tb'] = 'w_sidebar';
 
         // Ключ
-        $opts['key'] = 'module_id';
+        $opts['key'] = 'sidebar_id';
 
         // Начальная и ручная(UI) сортировка
-        $opts['sort_field'] = array('module_sort');
-        $opts['ui_sort_field'] = 'module_sort';
+        $opts['sort_field'] = array('sidebar_name');
+        $opts['ui_sort_field'] = '';
 
         // Кол-во записей для вывода на экран
         $opts['inc'] = 100;
@@ -159,22 +125,27 @@ class Adm_modules extends CI_Model {
         // Права пользователя, получаем из модуля cms_user:
         // A - добавление,  C - изменение, P - копирование, V - просмотр, D - удаление,
         // F - фильтры (всегда активно), I - начальная сортировка (всегда активно)
-        $rights = $this->cms_user->get_user_myedit_rights();
+        $publish = $this->cms_user->get_user_rights();
+		$publish = $publish[basename(__FILE__)]['active'];
+		$rights = $this->cms_user->get_user_myedit_rights();
         $opts['options'] = $rights[basename(__FILE__)];
 
         // Фильтрация вывода
         $opts['filters'] = array (
-            "module_type = '" . $this->session->userdata('modules_filter') . "'"
+            "sidebar_lang_id = '" . $this->session->userdata('w_alang') . "'"
         );
 
         // Триггеры
 		// $this->opts['triggers']['insert']['after'] = '';
 		// $this->opts['triggers']['update']['after'] = '';
 		// $this->opts['triggers']['delete']['before'] = '';
+		$opts['triggers']['insert']['after']  = APPPATH.'triggers/sidebar_insert_after.php';
+		$opts['triggers']['update']['after']  = APPPATH.'triggers/sidebar_update_after.php';
+		$opts['triggers']['delete']['after']  = APPPATH.'triggers/sidebar_delete_after.php';
 
         // Логирование: общее название класса и поле где хранится название объекта
-        $opts['logtable_title'] = 'Модуль';
-        $opts['logtable_field'] = 'module_name';
+        $opts['logtable_title'] = 'Сайдбар';
+        $opts['logtable_field'] = 'sidebar_name';
 
         // ------------------------------------------------------------------------
         // Опции полей (об этих и других опциях читайте в справке по phpMyEdit):
@@ -236,18 +207,7 @@ class Adm_modules extends CI_Model {
         // F - присутствует в фильтрах
         // ------------------------------------------------------------------------
 
-        $opts['fdd']['go'] = array(
-            'name'          => '',
-            'css'           => array('postfix'=>'nav'),
-            'nodb'          => true,
-            'options'       => 'L',
-            'cell_display'   => '<div class="mr20"><a href="'.$opts['page_name'].'/move/up/id/$key" class="btn btn-sm btn-default mr2" rel="tooltip" title="Сдвинуть вверх"><i class="glyphicon glyphicon-chevron-up"></i></a><a href="'.$opts['page_name'].'/move/down/id/$key" class="btn btn-sm btn-default" rel="tooltip" title="Сдвинуть вниз"><i class="glyphicon glyphicon-chevron-down"></i></a></div>',
-            'sort'          => false,
-        );
-
-        // ------------------------------------------------------------------------
-
-        $opts['fdd']['module_id'] = array(
+        $opts['fdd']['sidebar_id'] = array(
             'name'          => 'Номер по б/д',
             'select'        => 'T',
             'options'       => 'F', // Автоинкремент
@@ -255,56 +215,39 @@ class Adm_modules extends CI_Model {
             'default'       => '0',
             'sort'          => true
         );
-        $opts['fdd']['module_name'] = array(
-            'name'          => 'Название блока',
+        $opts['fdd']['sidebar_name'] = array(
+            'name'          => 'Название',
             'options'       => 'LACPDV',
             'select'        => 'T',
             'maxlen'        => 65535,
             'required'      => true,
             'sort'          => true,
-            'help'          => 'Введите название блока.'
+            'help'          => 'Введите название сайдбара.'
         );
-        $this->_find_modules(APPPATH."models/");
-        $opts['fdd']['module_file'] = array(
-            'name'          => 'Файл модуля',
-            'options'       => 'ACPDV',
-            'select'        => 'D',
-            'maxlen'        => 65535,
-            'required'      => false,
-            'sort'          => true,
-            'values2'       => $this->modules_array,
-            'help'          => 'Выберите модуль.'
-        );
-        $opts['fdd']['module_active'] = array(
-            'name'          => 'Статус',
-            'select'        => 'D',
-            'options'       => 'LACPDV',
-            'values2'       => array (
-                '1'         => 'Активен',
-                '0'         => 'Неактивен'
-            ),
-            'default'       => 1,
-            'help'          => 'Сделайте модуль неактивным, чтобы его скрыть'
-        );
+
+		// ------------------------------------------------------------------------
+
+		$opts['user_rights'] = $this->cms_user->get_right_items('sidebar');
+		$opts = array_merge_recursive((array)$opts, (array)$this->cms_user->get_users_field($id, 'sidebar'));
 
         // ------------------------------------------------------------------------
 
-        $opts['fdd']['module_type'] = array(
-            'name'          => 'Тип',
+        $opts['fdd']['sidebar_lang_id'] = array(
+            'name'          => 'Язык',
             'select'        => 'T',
             'options'       => 'ACPH',
             'maxlen'        => 3,
-            'default'       => $this->session->userdata('modules_filter'),
+            'default'       => $this->session->userdata('w_alang'),
             'sort'          => false
         );
-        $opts['fdd']['module_sort'] = array(
-            'name'          => 'Сортировка',
-            'select'        => 'T',
-            'options'       => 'ACPH',
-            'default'       => time(),
-            'fdefault'      => time(),
-            'sort'          => false
-        );
+		$opts['fdd']['created_at'] = array(
+			'name'          => 'Дата создания',
+			'select'        => 'T',
+			'options'       => 'ACPH',
+			'default'       => date('Y-m-d G:i:s'),
+			'sort'          => false
+		);
+
 
         // ------------------------------------------------------------------------
 

@@ -17,6 +17,10 @@ class Migration_Add_cms extends CI_Migration {
                 'type' => 'varchar',
                 'constraint' => 255,
             ),
+			'bg_label' => array(
+				'type' => 'varchar',
+				'constraint' => 255,
+			),
             'bg_active' => array(
                 'type' => 'tinyint',
                 'constraint' => 1,
