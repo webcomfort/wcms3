@@ -15,23 +15,7 @@
 
                 <?php echo @module('mod_menu_second', array(1, '')); ?>
 
-	            <?php
-	            if(($news_latest = @module('mod_news_latest', array(1, 2, 'news_latest'))) != ''){
-		            echo $news_latest;
-	            }
-	            ?>
-
-                <?php
-                if(($tags_list = @module('mod_tags_list', array())) != ''){
-                    echo $tags_list;
-                }
-                ?>
-
-                <?php
-                if(isset($page_articles) && is_array($page_articles) && isset($page_articles[1])){
-                    foreach ($page_articles[1] as $value) echo @$value;
-                }
-                ?>
+				<?php echo @$inc_module_5; ?>
             </div>
         </div>
     </div>

@@ -15,12 +15,12 @@ $this->CI->db->cache_delete_all();
 // ------------------------------------------------------------------------
 // Удаление модулей
 
-/*$query = $this->CI->db->get_where('w_gallery_photos', array('photo_gallery_id' => $id));
+$query = $this->CI->db->get_where('w_sidebar_widgets', array('sidebar_id' => $id));
 
 if ($query->num_rows() > 0)
 {
     foreach ($query->result() as $row)
     {
-        $this->CI->trigger->delete_relative($row->photo_id, $last_basket_element, 'w_gallery_photos', 'photo_id', 'Фото', '', $this->CI->config->item('cms_gallery_dir'));
+        $this->CI->trigger->delete_relative($row->widget_id, $last_basket_element, 'w_sidebar_widgets', 'widget_id', 'Виджет', '', false);
     }
-}*/
+}

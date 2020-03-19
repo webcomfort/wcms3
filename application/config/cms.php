@@ -10,6 +10,7 @@ $config['cms_version'] = '3.1.11';
 /*
 |--------------------------------------------------------------------------
 | Email администратора (для инсталляции)
+| Email администратора (для инсталляции)
 |--------------------------------------------------------------------------
 */
 $config['cms_admin_email'] = 'info@webcomfort.ru';
@@ -278,7 +279,20 @@ $config['cms_site_inclusions'] = array(
 		    'model' => 'Cms_shop',
 		    'method'=> 'get_tag_items'
 	    )
-    )
+    ),
+	'5' => array(
+		'label'         => '',
+		'file'          => 'cms_sidebar',
+		'name'          => 'Сайдбар',
+		'help'          => 'Выберите из списка сайдбар для подключения.',
+		'table'         => 'w_sidebar',
+		'key'           => 'sidebar_id',
+		'filter'        => '$filters = "sidebar_lang_id=\'{$this->session->userdata(\'w_alang\')}\'";',
+		'description'   => 'sidebar_name',
+		'orderby'       => 'sidebar_name',
+		'where'         => array('pages'),
+		'tags'          => false,
+	),
 );
 
 /*
@@ -416,4 +430,65 @@ $config['cms_admin_views'] = array(
         'file'  => 'page_default',
         'name'  => 'Базовый макет страницы администрирования'
     )
+);
+
+/*
+|--------------------------------------------------------------------------
+| Сайдбар
+|--------------------------------------------------------------------------
+*/
+
+$banner_vals = array();
+foreach ($config['cms_banners_places'] as $key => $value) $banner_vals[$key] = $value['name'];
+
+$config['cms_widgets'] = array(
+	'Mod_sidetext.php' => array(
+		'widget_param_1' => array(
+			'name'          => 'Текст',
+			'select'        => 'T',
+			'addcss'        => 'htmleditor',
+			'options'       => 'ACPDV',
+			'maxlen'        => 65535,
+			'textarea'      => array(
+				'rows'      => 5,
+				'cols'      => 66
+			),
+			'required'      => false,
+			'escape'        => false,
+			'help'          => 'Введите в это текст для вывода в сайдбар.'
+		)
+	),
+	'Mod_news_latest.php' => array(
+		'widget_param_1' => array(
+			'name'     => 'Лента новостей',
+			'select'   => 'D',
+			'options'  => 'ACPDV',
+			'values'   => array (
+				'table' => 'w_news_categories',
+				'column' => 'news_cat_id',
+				'description' => 'news_cat_name',
+				'orderby' => 'news_cat_name'),
+			'required' => true,
+			'sort'     => true,
+			'help'     => 'Выберите из списка ленту.'
+		),
+		'widget_param_2' => array(
+			'name'          => 'Количество',
+			'options'       => 'ACPDV',
+			'select'        => 'T',
+			'maxlen'        => 65535,
+			'required'      => true,
+			'help'          => 'Введите целое число.'
+		),
+	),
+	'Mod_banner.php' => array(
+		'widget_param_1' => array(
+			'name'          => 'Баннер',
+			'select'        => 'D',
+			'options'       => 'ACPDV',
+			'values2'       => $banner_vals,
+			'required'      => true,
+			'help'          => 'Выберите категорию баннеров для вывода'
+		)
+	),
 );

@@ -24,9 +24,9 @@ class Mod_news_latest extends CI_Model {
      */
     function get_output($params = array())
     {
-        $id         = (isset($params[0])) ? $params[0] : false;
+    	$id         = (isset($params[0])) ? $params[0] : false;
         $limit      = (isset($params[1])) ? $params[1] : 3;
-        $view       = (isset($params[2])) ? $params[2] : false;
+        $view       = (isset($params[2]) && $params[2] != '') ? $params[2] : 'news_latest';
         $cat        = $this->Cms_news->get_cat_params($id);
         $cat_name   = $cat['name'];
         $page_url   = $this->Cms_news->get_news_page($id);
@@ -47,7 +47,7 @@ class Mod_news_latest extends CI_Model {
 
         if ($query->num_rows() > 0)
 		{
-            $this->load->helper(array('date','text'));
+			$this->load->helper(array('date','text'));
             $news   = array();
 
             foreach ($query->result() as $row)
