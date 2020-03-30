@@ -1387,6 +1387,73 @@ class Migration_Add_cms extends CI_Migration {
 	    $this->dbforge->add_key('tag_id');
 	    $this->dbforge->add_key('item_id');
 	    $this->dbforge->create_table('w_tags_cross', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
+		// Сайдбары
+		$this->dbforge->add_field(array(
+			'sidebar_id' => array(
+				'type' => 'int',
+				'constraint' => 11,
+				'unsigned' => TRUE,
+				'auto_increment' => TRUE
+			),
+			'sidebar_name' => array(
+				'type' => 'text',
+			),
+			'sidebar_lang_id' => array(
+				'type' => 'int',
+				'constraint' => 11,
+			),
+		));
+		$this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+		$this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+		$this->dbforge->add_key('sidebar_id', TRUE);
+		$this->dbforge->create_table('w_sidebar', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
+
+		// Виджеты
+		$this->dbforge->add_field(array(
+			'widget_id' => array(
+				'type' => 'int',
+				'constraint' => 11,
+				'unsigned' => TRUE,
+				'auto_increment' => TRUE
+			),
+			'sidebar_id' => array(
+				'type' => 'int',
+				'constraint' => 11,
+			),
+			'widget_type' => array(
+				'type' => 'int',
+				'constraint' => 11,
+			),
+			'widget_param_1' => array(
+				'type' => 'text',
+			),
+			'widget_param_2' => array(
+				'type' => 'text',
+			),
+			'widget_param_3' => array(
+				'type' => 'text',
+			),
+			'widget_param_4' => array(
+				'type' => 'text',
+			),
+			'widget_param_5' => array(
+				'type' => 'text',
+			),
+			'widget_sort' => array(
+				'type' => 'int',
+				'constraint' => 11,
+			),
+			'widget_lang_id' => array(
+				'type' => 'int',
+				'constraint' => 11,
+			),
+		));
+		$this->dbforge->add_field("`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'");
+		$this->dbforge->add_field("`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+		$this->dbforge->add_key('widget', TRUE);
+		$this->dbforge->add_key('sidebar_id');
+		$this->dbforge->create_table('w_sidebar_widgets', FALSE, array('ENGINE' => 'InnoDB', 'DEFAULT CHARSET' => 'utf8'));
     }
 
     public function down()
@@ -1422,5 +1489,7 @@ class Migration_Add_cms extends CI_Migration {
 	    $this->dbforge->drop_table('w_shop_vendors');
 	    $this->dbforge->drop_table('w_tags');
 	    $this->dbforge->drop_table('w_tags_cross');
+		$this->dbforge->drop_table('w_sidebar');
+		$this->dbforge->drop_table('w_sidebar_widgets');
     }
 }
